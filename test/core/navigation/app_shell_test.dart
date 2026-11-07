@@ -34,7 +34,8 @@ void main() {
 
     await tester.tap(find.text('Planner'));
     await tester.pumpAndSettle();
-    expect(find.text('Planner — coming soon'), findsOneWidget);
+    expect(find.text('0 targets · 0 materials short'), findsOneWidget);
+    expect(find.text('Nothing missing — fully stocked.'), findsOneWidget);
 
     await tester.tap(find.text('Today'));
     await tester.pumpAndSettle();

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'catalog_database.dart';
+import 'weekday_mask.dart' as weekday_mask;
 
 /// Thin read-only wrapper over [CatalogDatabase]. No aggregation logic —
 /// that's a future Planner-screen feature built on top of these queries.
@@ -83,11 +84,8 @@ class CatalogRepository {
     return drops.any((drop) => _isOpenOnWeekday(drop.weekdayMask, serverDate.weekday));
   }
 
-  /// Bit0 = Monday. Sunday is always open, regardless of the stored mask.
   bool _isOpenOnWeekday(int weekdayMask, int isoWeekday) {
-    if (isoWeekday == DateTime.sunday) return true;
-    final bitIndex = isoWeekday - DateTime.monday;
-    return (weekdayMask & (1 << bitIndex)) != 0;
+    return weekday_mask.isOpenOnWeekday(weekdayMask, isoWeekday);
   }
 
   Future<List<AscensionRequirement>> ascensionRequirements(

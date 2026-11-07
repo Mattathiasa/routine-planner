@@ -12,6 +12,13 @@ const _dayAbbreviations = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 /// row for a domain) covers every day of the week.
 bool isAlwaysOpen(int mask) => (mask & nonSundayBitsMask) == nonSundayBitsMask;
 
+/// Whether [mask] is open on [isoWeekday] (`DateTime.monday..sunday`).
+/// Sunday is always open, regardless of the stored mask.
+bool isOpenOnWeekday(int mask, int isoWeekday) {
+  if (isoWeekday == DateTime.sunday) return true;
+  return (mask & (1 << (isoWeekday - DateTime.monday))) != 0;
+}
+
 /// `"Tue, Fri, Sun"`-style formatting of the days set in [mask].
 String formatWeekdayMask(int mask) {
   return [

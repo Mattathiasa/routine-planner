@@ -30,6 +30,19 @@ abstract final class AppColors {
   static const hydro = Color(0xFF1C7ED6);
   static const electro = Color(0xFF7048E8);
 
+  // Element-avatar tints (distinct from the solid badge colors above —
+  // these are the soft circle background + text pair behind an entity's
+  // initial letter).
+  static const pyroAvatarBackground = Color(0xFFFDEBE3);
+  static const pyroAvatarText = Color(0xFFB33F0A);
+  static const hydroAvatarBackground = Color(0xFFE3F0FC);
+  static const hydroAvatarText = Color(0xFF17609F);
+  static const electroAvatarBackground = Color(0xFFEFE9FD);
+  static const electroAvatarText = Color(0xFF5B34C9);
+
+  // Weapon-tile background (Planner's square weapon avatar).
+  static const weaponTileBackground = Color(0xFFF1F3F6);
+
   // Rarity chips
   static const rarity5Background = Color(0xFFFDF0E1);
   static const rarity5Text = Color(0xFFA35F0B);

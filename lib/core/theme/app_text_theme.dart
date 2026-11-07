@@ -75,4 +75,9 @@ abstract final class AppDisplayNumbers {
       height: 1,
     );
   }
+
+  /// The Planner target cards' small ring-gauge percent label.
+  static TextStyle gaugePercent({Color color = AppColors.textPrimary}) {
+    return GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w800, color: color, height: 1);
+  }
 }
