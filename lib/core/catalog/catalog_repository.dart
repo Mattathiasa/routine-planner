@@ -34,6 +34,14 @@ class CatalogRepository {
 
   Future<List<Domain>> allDomains() => _db.select(_db.domains).get();
 
+  Future<List<Material>> materialsForDomain(String domainId) {
+    return (_db.select(_db.materials)..where((t) => t.domainId.equals(domainId))).get();
+  }
+
+  Future<List<DomainDrop>> dropsForDomain(String domainId) {
+    return (_db.select(_db.domainDrops)..where((t) => t.domainId.equals(domainId))).get();
+  }
+
   /// Every domain with at least one [DomainDrops] row open on [serverDate]
   /// (per [isoWeekday] of that date — never the phone's local clock).
   Future<List<Domain>> domainsOpenOn(DateTime serverDate) async {

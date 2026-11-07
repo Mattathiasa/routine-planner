@@ -24,4 +24,17 @@ class ServerClock {
     final shifted = utc.add(server.utcOffset).subtract(_dailyResetOffset);
     return DateTime.utc(shifted.year, shifted.month, shifted.day);
   }
+
+  /// The UTC instant of the current server day's 04:00-local reset
+  /// boundary — the reverse of [serverDateFor].
+  DateTime dayStartUtc([DateTime? now]) {
+    final date = serverDateFor(now ?? _clock.nowUtc());
+    return date.subtract(server.utcOffset).add(_dailyResetOffset);
+  }
+
+  /// The server date of the Monday starting this week.
+  DateTime serverWeekStart([DateTime? now]) {
+    final date = serverDateFor(now ?? _clock.nowUtc());
+    return date.subtract(Duration(days: date.weekday - DateTime.monday));
+  }
 }

@@ -26,6 +26,20 @@ void main() {
     expect(dawnBooks.map((m) => m.tier), [2, 3]);
   });
 
+  test('materialsForDomain returns every material dropping from a domain', () async {
+    final materials = await repository.materialsForDomain('dawn');
+    expect(materials.map((m) => m.id).toSet(), {'dawn_books_t2', 'dawn_books_t3'});
+  });
+
+  test('dropsForDomain returns every domain_drops row for a domain', () async {
+    final drops = await repository.dropsForDomain('dawn');
+    expect(drops.map((d) => d.materialId).toSet(), {'dawn_books_t2', 'dawn_books_t3'});
+    expect(drops, isNotEmpty);
+    for (final drop in drops) {
+      expect(drop.domainId, 'dawn');
+    }
+  });
+
   test('catalogVersion reads the seeded metadata row', () async {
     expect(await repository.catalogVersion(), '0.1.0-seed');
   });

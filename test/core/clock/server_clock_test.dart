@@ -101,6 +101,57 @@ void main() {
     });
   });
 
+  group('ServerClock.dayStartUtc', () {
+    test('is the exact instant when queried right at the boundary', () {
+      final clock = ServerClock(FakeClock(DateTime.utc(2026)), GameServer.asia);
+      final boundary = DateTime.utc(2026, 11, 6, 20, 0, 0);
+
+      expect(clock.dayStartUtc(boundary), boundary);
+    });
+
+    test('is the previous boundary for an instant mid-day', () {
+      final clock = ServerClock(FakeClock(DateTime.utc(2026)), GameServer.asia);
+
+      expect(
+        clock.dayStartUtc(DateTime.utc(2026, 11, 6, 19, 59, 59)),
+        DateTime.utc(2026, 11, 5, 20, 0, 0),
+      );
+      expect(
+        clock.dayStartUtc(DateTime.utc(2026, 11, 6, 21, 0, 0)),
+        DateTime.utc(2026, 11, 6, 20, 0, 0),
+      );
+    });
+
+    test('defaults to the injected clock when no instant is given', () {
+      final fake = FakeClock(DateTime.utc(2026, 11, 6, 21, 0, 0));
+      final clock = ServerClock(fake, GameServer.asia);
+
+      expect(clock.dayStartUtc(), clock.dayStartUtc(fake.nowUtc()));
+    });
+  });
+
+  group('ServerClock.serverWeekStart', () {
+    test('finds Monday of the current server week', () {
+      final clock = ServerClock(FakeClock(DateTime.utc(2026)), GameServer.asia);
+
+      // 2026-11-06 12:00 UTC is a Friday server date (Nov 6).
+      expect(
+        clock.serverWeekStart(DateTime.utc(2026, 11, 6, 12)),
+        DateTime.utc(2026, 11, 2),
+      );
+      // A Sunday server date falls in the same week.
+      expect(
+        clock.serverWeekStart(DateTime.utc(2026, 11, 8, 12)),
+        DateTime.utc(2026, 11, 2),
+      );
+      // Already a Monday server date.
+      expect(
+        clock.serverWeekStart(DateTime.utc(2026, 11, 9, 12)),
+        DateTime.utc(2026, 11, 9),
+      );
+    });
+  });
+
   group('SystemClock', () {
     test('nowUtc() tracks real wall-clock time', () {
       final before = DateTime.now().toUtc();

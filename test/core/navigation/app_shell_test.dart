@@ -26,7 +26,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Today — coming soon'), findsOneWidget);
+    expect(find.text('Original Resin'), findsOneWidget);
 
     await tester.tap(find.text('Resin'));
     await tester.pumpAndSettle();
@@ -38,14 +38,14 @@ void main() {
 
     await tester.tap(find.text('Today'));
     await tester.pumpAndSettle();
-    expect(find.text('Today — coming soon'), findsOneWidget);
+    expect(find.text('Original Resin'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('Settings'));
+    await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Settings — coming soon'), findsOneWidget);
 
     await tester.tap(find.text('Today')); // the "‹ Today" back-link
     await tester.pumpAndSettle();
-    expect(find.text('Today — coming soon'), findsOneWidget);
+    expect(find.text('Original Resin'), findsOneWidget);
   });
 }

@@ -11,3 +11,14 @@ enum GameServer {
   /// Fixed offset from UTC for this server (no daylight saving changes).
   final Duration utcOffset;
 }
+
+/// Human-readable labels matching the approved design (`.name` alone gives
+/// e.g. `'twHkMo'`, not display-ready).
+extension GameServerDisplay on GameServer {
+  String get label => switch (this) {
+    GameServer.asia => 'Asia',
+    GameServer.europe => 'Europe',
+    GameServer.america => 'America',
+    GameServer.twHkMo => 'TW, HK, MO',
+  };
+}
