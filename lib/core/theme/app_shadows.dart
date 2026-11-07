@@ -14,4 +14,10 @@ abstract final class AppShadows {
     BoxShadow(color: Color(0x0F101828), offset: Offset(0, 1), blurRadius: 2),
     BoxShadow(color: Color(0x0F101828), offset: Offset(0, 4), blurRadius: 12),
   ];
+
+  /// The floating pill bottom-nav shadow.
+  static const pillNav = <BoxShadow>[
+    BoxShadow(color: Color(0x0D101828), spreadRadius: 1),
+    BoxShadow(color: Color(0x24101828), offset: Offset(0, 10), blurRadius: 30),
+  ];
 }

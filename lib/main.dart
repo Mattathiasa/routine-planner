@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/catalog/seed/seed_catalog.dart';
+import 'core/navigation/app_router.dart';
+import 'core/providers/database_providers.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
-  runApp(const MainApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final catalogDb = await openSeedCatalogDatabaseInMemory();
+  runApp(
+    ProviderScope(
+      overrides: [catalogDatabaseProvider.overrideWithValue(catalogDb)],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -11,24 +22,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Routine Planner',
       theme: AppTheme.light(),
-      home: const _Placeholder(),
-    );
-  }
-}
-
-/// A real home screen doesn't exist until the Today screen is built.
-class _Placeholder extends StatelessWidget {
-  const _Placeholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('Routine Planner', style: Theme.of(context).textTheme.displayMedium),
-      ),
+      routerConfig: appRouter,
     );
   }
 }
