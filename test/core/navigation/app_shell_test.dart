@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:routine_planner/core/catalog/seed/seed_catalog.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/navigation/app_router.dart';
+import 'package:routine_planner/core/notifications/data/fake_notification_scheduler.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 
 void main() {
@@ -20,6 +22,7 @@ void main() {
         overrides: [
           catalogDatabaseProvider.overrideWithValue(catalogDb),
           userDatabaseProvider.overrideWithValue(userDb),
+          notificationSchedulerProvider.overrideWithValue(FakeNotificationScheduler()),
         ],
         child: MaterialApp.router(theme: AppTheme.light(), routerConfig: appRouter),
       ),
