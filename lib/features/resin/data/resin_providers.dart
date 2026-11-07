@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/database_providers.dart';
+import '../../../core/providers/repository_providers.dart';
 import '../application/resin_controller.dart';
 import 'resin_repository.dart';
 
@@ -56,4 +57,18 @@ Future<List<ResinActivityEntry>> resinRecentEvents(Ref ref) async {
         isUndo: row.isUndo,
       ),
   ];
+}
+
+/// Plain fields only — same reason as [ResinActivityEntry].
+typedef ResinAlertEntry = ({String id, int threshold, bool enabled});
+
+/// A profile's resin-value alerts, sorted ascending. Callers must
+/// `ref.invalidate(resinAlertsProvider)` after adding/removing/toggling one
+/// (there's no controller wrapping this — it's a thin enough read that a
+/// dedicated `AsyncNotifier` isn't warranted).
+@riverpod
+Future<List<ResinAlertEntry>> resinAlerts(Ref ref) async {
+  final profileId = (await ref.watch(currentProfileProvider.future)).id;
+  final rows = await ref.watch(settingsRepositoryProvider).alertsForProfile(profileId);
+  return [for (final row in rows) (id: row.id, threshold: row.threshold, enabled: row.enabled)];
 }

@@ -30,7 +30,7 @@ void main() {
 
     await tester.tap(find.text('Resin'));
     await tester.pumpAndSettle();
-    expect(find.text('Resin — coming soon'), findsOneWidget);
+    expect(find.text('Sync with game', skipOffstage: false), findsOneWidget);
 
     await tester.tap(find.text('Planner'));
     await tester.pumpAndSettle();
