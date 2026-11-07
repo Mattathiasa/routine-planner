@@ -44,6 +44,52 @@ void main() {
     expect(await repository.catalogVersion(), '0.1.0-seed');
   });
 
+  test('allCharacters and allWeapons return every seeded row, ordered by name', () async {
+    final characters = await repository.allCharacters();
+    expect(characters.map((c) => c.id).toSet(), {'aster', 'wren', 'corvin'});
+    expect(characters.map((c) => c.name), ['Aster', 'Corvin', 'Wren']); // alphabetical
+
+    final weapons = await repository.allWeapons();
+    expect(weapons.map((w) => w.id), ['larkspur_spear']);
+  });
+
+  test('materialsByCategory filters correctly', () async {
+    final currency = await repository.materialsByCategory('currency');
+    expect(currency.map((m) => m.id), ['gleam']);
+
+    final expBooks = await repository.materialsByCategory('expBook');
+    expect(expBooks.map((m) => m.id).toSet(), {'insight_primer', 'insight_tome'});
+
+    expect(await repository.materialsByCategory('nonexistent'), isEmpty);
+  });
+
+  test('expCurvesInRange uses [from, to) — matches the table\'s own "cost of leaving L" semantics', () async {
+    // Seed only has (character, 70) and (character, 80).
+    final rows = await repository.expCurvesInRange(
+      'character',
+      fromLevelInclusive: 70,
+      toLevelExclusive: 90,
+    );
+    expect(rows.map((r) => r.level).toSet(), {70, 80});
+
+    // A range that excludes 70 (exclusive-of-goal semantics would wrongly
+    // include it if this were off by one).
+    final excludingSeventy = await repository.expCurvesInRange(
+      'character',
+      fromLevelInclusive: 71,
+      toLevelExclusive: 90,
+    );
+    expect(excludingSeventy.map((r) => r.level), [80]);
+
+    // A range that excludes 80 (the end is exclusive).
+    final excludingEighty = await repository.expCurvesInRange(
+      'character',
+      fromLevelInclusive: 70,
+      toLevelExclusive: 80,
+    );
+    expect(excludingEighty.map((r) => r.level), [70]);
+  });
+
   group('domainsOpenOn / isDomainOpenOn', () {
     // Nov 3 2026 = Tuesday, Nov 4 = Wednesday, Nov 8 = Sunday, Nov 9 = Monday.
     // Dawn/Tidal are open Tue/Fri/Sun; Mire is open Wed/Sat/Sun; the boss

@@ -34,6 +34,28 @@ class CatalogRepository {
 
   Future<List<Domain>> allDomains() => _db.select(_db.domains).get();
 
+  Future<List<Character>> allCharacters() {
+    return (_db.select(_db.characters)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+  }
+
+  Future<List<Weapon>> allWeapons() {
+    return (_db.select(_db.weapons)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+  }
+
+  /// Materials of one [category] (`'tieredMaterial'|'bossMaterial'|
+  /// 'expBook'|'currency'`), ordered by id for deterministic results. Used
+  /// to find "the" currency material for derived Mora need — if the
+  /// catalog ever grows a second `'currency'` row, callers that want a
+  /// single material currently just take the first result, which is a
+  /// guess, not a real resolution (nothing in the schema marks which
+  /// currency material is canonical).
+  Future<List<Material>> materialsByCategory(String category) {
+    return (_db.select(_db.materials)
+          ..where((t) => t.category.equals(category))
+          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+        .get();
+  }
+
   Future<List<Material>> materialsForDomain(String domainId) {
     return (_db.select(_db.materials)..where((t) => t.domainId.equals(domainId))).get();
   }
@@ -107,6 +129,25 @@ class CatalogRepository {
     return (_db.select(
       _db.expCurves,
     )..where((t) => t.entityKind.equals(entityKind) & t.level.equals(level))).getSingleOrNull();
+  }
+
+  /// Every seeded EXP-curve row for `fromLevelInclusive <= level <
+  /// toLevelExclusive` — the row at `level = L` is the cost of the step
+  /// *leaving* L, so going `current -> goal` needs levels
+  /// `[current, goal)`, not `(current, goal]`. Sparse seed data means most
+  /// levels in a real range won't have a row; callers sum whatever comes
+  /// back and treat the rest as contributing 0, not an error.
+  Future<List<ExpCurve>> expCurvesInRange(
+    String entityKind, {
+    required int fromLevelInclusive,
+    required int toLevelExclusive,
+  }) {
+    return (_db.select(_db.expCurves)..where(
+      (t) =>
+          t.entityKind.equals(entityKind) &
+          t.level.isBiggerOrEqualValue(fromLevelInclusive) &
+          t.level.isSmallerThanValue(toLevelExclusive),
+    )).get();
   }
 
   Future<Character?> characterById(String id) {

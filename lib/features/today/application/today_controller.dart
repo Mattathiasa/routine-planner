@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/catalog/weekday_mask.dart';
 import '../../../core/providers/clock_providers.dart';
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/repository_providers.dart';
@@ -7,17 +8,6 @@ import '../../resin/application/resin_controller.dart';
 import 'today_view_models.dart';
 
 part 'today_controller.g.dart';
-
-const _nonSundayBitsMask = 0x3F; // Mon..Sat (bits 0-5); Sunday is always open
-
-const _dayAbbreviations = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-String _formatWeekdayMask(int mask) {
-  return [
-    for (var i = 0; i < _dayAbbreviations.length; i++)
-      if (mask & (1 << i) != 0) _dayAbbreviations[i],
-  ].join(', ');
-}
 
 @riverpod
 class TodayController extends _$TodayController {
@@ -47,7 +37,7 @@ class TodayController extends _$TodayController {
       final materials = await catalog.materialsForDomain(domain.id);
       final drops = await catalog.dropsForDomain(domain.id);
       final combinedMask = drops.fold<int>(0, (mask, drop) => mask | drop.weekdayMask);
-      final alwaysOpen = (combinedMask & _nonSundayBitsMask) == _nonSundayBitsMask;
+      final alwaysOpen = isAlwaysOpen(combinedMask);
 
       final resetsWeekly = domain.resetCadence == 'weekly';
       final periodAnchor = resetsWeekly ? weekStart : serverDate;
@@ -76,7 +66,7 @@ class TodayController extends _$TodayController {
         FarmDomainCardData(
           domainId: domain.id,
           name: domain.name,
-          scheduleLabel: alwaysOpen ? 'Open every day' : _formatWeekdayMask(combinedMask),
+          scheduleLabel: alwaysOpen ? 'Open every day' : formatWeekdayMask(combinedMask),
           alwaysOpen: alwaysOpen,
           costResin: domain.costResin,
           rows: rows,
