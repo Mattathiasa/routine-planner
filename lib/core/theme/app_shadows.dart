@@ -20,4 +20,10 @@ abstract final class AppShadows {
     BoxShadow(color: Color(0x0D101828), spreadRadius: 1),
     BoxShadow(color: Color(0x24101828), offset: Offset(0, 10), blurRadius: 30),
   ];
+
+  /// The colored shadow under a filled primary-indigo button (e.g. "Sync
+  /// with game").
+  static const primaryButton = <BoxShadow>[
+    BoxShadow(color: Color(0x4D3B4FE0), offset: Offset(0, 8), blurRadius: 20),
+  ];
 }

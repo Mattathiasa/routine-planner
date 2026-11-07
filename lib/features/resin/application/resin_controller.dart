@@ -48,6 +48,14 @@ class ResinController extends _$ResinController {
     return _mutate((state, now) => _engine.useTransient(state, now, batchId: batchId));
   }
 
+  /// Reverses the most recent mutation, if it's reversible — see
+  /// [ResinRepository.undoLastMutation].
+  Future<void> undoLast() async {
+    final profileId = (await ref.read(currentProfileProvider.future)).id;
+    await ref.read(resinRepositoryProvider).undoLastMutation(profileId);
+    ref.invalidateSelf();
+  }
+
   Future<void> _mutate(
     (ResinState, ResinEvent) Function(ResinState state, DateTime now) run, {
     String? label,

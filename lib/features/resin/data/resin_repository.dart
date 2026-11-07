@@ -2,8 +2,30 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/ids.dart';
 import '../../../core/database/user_database.dart';
+import '../domain/resin_engine.dart';
 import '../domain/resin_event.dart';
 import '../domain/resin_state.dart';
+
+/// Thrown by [ResinRepository.undoLastMutation] when there's no live event
+/// to undo, or the most recent one is itself an undo (no chained undo).
+class NothingToUndoException implements Exception {
+  const NothingToUndoException();
+
+  @override
+  String toString() => 'NothingToUndoException';
+}
+
+/// Thrown by [ResinRepository.undoLastMutation] for a mutation kind with no
+/// well-defined inverse: `sync` (an external observation, not a derivable
+/// delta) and `useTransient` (the consumed batch's `expiresAt` isn't
+/// preserved in the event log).
+class UndoNotSupportedException implements Exception {
+  const UndoNotSupportedException(this.kind);
+  final String kind;
+
+  @override
+  String toString() => 'UndoNotSupportedException: cannot undo "$kind"';
+}
 
 /// Persists [ResinState]/[ResinEvent] (the already-tested pure `ResinEngine`
 /// domain model) into `user.db`. Pure persistence — no regen math here.
@@ -113,6 +135,81 @@ class ResinRepository {
           ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
           ..limit(limit))
         .get();
+  }
+
+  /// Reverses the most recent mutation for [profileId], by reversing its
+  /// delta against the *current* live state (a forward-moving compensating
+  /// mutation, not a rollback to a historical snapshot — robust to regen
+  /// ticks that happened since). Only `spend`/`craftCondensed`/
+  /// `useFragile`/`useCondensed` are reversible; see [UndoNotSupportedException].
+  Future<void> undoLastMutation(String profileId) {
+    return _db.transaction(() async {
+      final recent = await (_db.select(_db.resinEvents)
+            ..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())
+            ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (recent == null || recent.isUndo) {
+        throw const NothingToUndoException();
+      }
+
+      final row = await _getOrCreateStateRow(profileId);
+      final now = DateTime.now().toUtc();
+      var newV = row.v;
+      var newCondensed = row.condensed;
+      var newFragile = row.fragile;
+
+      switch (recent.kind) {
+        case 'spend':
+          newV += recent.cost!;
+        case 'craftCondensed':
+          newV += recent.cost!;
+          newCondensed -= recent.amount!;
+        case 'useFragile':
+          newV -= ResinEngine.fragileOrTransientResinValue * recent.amount!;
+          newFragile += recent.amount!;
+        case 'useCondensed':
+          newV -= ResinEngine.condensedResinValue * recent.amount!;
+          newCondensed += recent.amount!;
+        default:
+          throw UndoNotSupportedException(recent.kind);
+      }
+
+      final newN = newV >= row.cap
+          ? null
+          : now.add(const ResinEngine().regenInterval);
+
+      await (_db.update(_db.resinStateTable)..where((t) => t.id.equals(row.id))).write(
+        ResinStateTableCompanion(
+          v: Value(newV),
+          n: Value(newN),
+          condensed: Value(newCondensed),
+          fragile: Value(newFragile),
+          updatedAt: Value(now),
+        ),
+      );
+
+      await _db.into(_db.resinEvents).insert(
+        ResinEventsCompanion.insert(
+          id: newId(),
+          profileId: profileId,
+          occurredAt: now,
+          kind: recent.kind,
+          x: Value(recent.x),
+          fullInSeconds: Value(recent.fullInSeconds),
+          cost: Value(recent.cost),
+          amount: Value(recent.amount),
+          batchId: Value(recent.batchId),
+          count: Value(recent.count),
+          label: Value(recent.label),
+          resultingV: newV,
+          isUndo: const Value(true),
+          undoneEventId: Value(recent.id),
+          updatedAt: now,
+        ),
+      );
+    });
   }
 
   ResinEventsCompanion _eventToRow(

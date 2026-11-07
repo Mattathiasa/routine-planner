@@ -10,15 +10,7 @@ import '../../../core/theme/app_text_theme.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../resin/application/resin_controller.dart';
 import '../../resin/domain/resin_engine.dart';
-
-String _formatCountdown(Duration d) {
-  final clamped = d.isNegative ? Duration.zero : d;
-  return '${clamped.inMinutes}:${(clamped.inSeconds % 60).toString().padLeft(2, '0')}';
-}
-
-String _formatTime(DateTime utc) {
-  return '${utc.hour.toString().padLeft(2, '0')}:${utc.minute.toString().padLeft(2, '0')}';
-}
+import '../../resin/presentation/resin_formatting.dart';
 
 /// Tapping opens the Resin tab — the same [ResinController] state the Resin
 /// screen itself will read, so the two never disagree.
@@ -82,14 +74,14 @@ class ResinHeroCard extends ConsumerWidget {
                 if (nextTick != null) ...[
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    '+1 in ${_formatCountdown(nextTick.difference(now))}',
+                    '+1 in ${formatCountdown(nextTick.difference(now))}',
                     style: textTheme.titleSmall?.copyWith(color: Colors.white),
                   ),
                 ],
                 const SizedBox(height: AppSpacing.md),
                 if (fullAt != null)
                   Text(
-                    'Full at ${_formatTime(fullAt)}',
+                    'Full at ${formatTime(fullAt)}',
                     style: textTheme.bodyLarge?.copyWith(color: AppColors.onGradientSecondary),
                   ),
                 const SizedBox(height: AppSpacing.lg),
