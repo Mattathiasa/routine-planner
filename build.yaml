@@ -1,0 +1,11 @@
+# Every DateTime this app writes is UTC (see core/clock). The default
+# unix-epoch-integer storage mode reads DateTimes back flagged as local
+# time (isUtc: false) even though the instant is unchanged — which breaks
+# `==` and any code reading `.year`/`.month`/`.day` off a reloaded value.
+# Storing as UTC-aware text round-trips `isUtc` correctly instead.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          store_date_time_values_as_text: true

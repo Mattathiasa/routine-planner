@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../../features/resin/data/tables/resin_tables.dart';
 import 'tables/daily_tasks_table.dart';
 import 'tables/planner_tables.dart';
 import 'tables/profiles_table.dart';
@@ -18,6 +19,9 @@ part 'user_database.g.dart';
     PlannerTargets,
     MaterialInventory,
     DailyTasks,
+    ResinStateTable,
+    TransientResinBatches,
+    ResinEvents,
   ],
 )
 class UserDatabase extends _$UserDatabase {
