@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resin tracker</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#0B1814}
+a{color:#E3A46F}a:hover{color:#F0C29A}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1400px; box-sizing: border-box; padding-bottom: 96px; background: #0F1F1A; color: #F3EBDD; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 20px; overflow: hidden">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px 0 20px; flex-shrink: 0">
+    <span style="font-family: Fraunces, Georgia, serif; font-size: 17px; font-weight: 600">Routine Planner</span>
+    <a href="Settings.dc.html" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #A9B8AE">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+    </a>
+  </header>
+
+  <section aria-labelledby="resin-heading" style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 0 20px; flex-shrink: 0">
+    <h1 id="resin-heading" style="align-self: flex-start; margin: 0; font-family: Fraunces, Georgia, serif; font-size: 32px; font-weight: 600">Original Resin</h1>
+    <div style="position: relative; width: 232px; height: 232px">
+      <svg aria-hidden="true" width="232" height="232" viewBox="0 0 232 232">
+        <circle cx="116" cy="116" r="100" fill="none" stroke="#21443B" stroke-width="12"></circle>
+        <circle cx="116" cy="116" r="100" fill="none" stroke="#D9935A" stroke-width="12" stroke-linecap="round" stroke-dasharray="{{ ringDash }}" transform="rotate(-90 116 116)"></circle>
+        <line x1="32.3" y1="88.8" x2="9.5" y2="81.4" stroke="#F3EBDD" stroke-width="2" stroke-linecap="round" opacity="0.7"></line>
+      </svg>
+      <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-family: Fraunces, Georgia, serif; font-size: 60px; font-weight: 600; line-height: 1">{{ v }}</span>
+        <span style="font-size: 14px; color: #A9B8AE">of 200</span>
+        <span style="margin-top: 8px; font-size: 13px; font-weight: 600; color: #E3A46F">{{ nextTick }}</span>
+      </div>
+    </div>
+    <div style="width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45">
+        <span style="font-size: 12px; color: #A9B8AE">Reaches 160</span>
+        <span style="font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 600">{{ at160 }}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45">
+        <span style="font-size: 12px; color: #A9B8AE">Full at 200</span>
+        <span style="font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 600; color: #E3A46F">{{ at200 }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="alert-heading" style="display: flex; flex-direction: column; gap: 10px; padding: 0 20px; flex-shrink: 0">
+    <h2 id="alert-heading" style="margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Alert me at</h2>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="2">
+        <button type="button" aria-pressed="{{ chip.pressed }}" onClick="{{ chip.toggle }}" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid {{ chip.border }}; background: {{ chip.bg }}; color: {{ chip.fg }}; font-family: inherit; font-size: 14px; font-weight: 600">{{ chip.label }}</button>
+      </sc-for>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1px dashed #3E6B5A; background: transparent; color: #A9B8AE; font-family: inherit; font-size: 14px; font-weight: 600">+ Custom</button>
+    </div>
+  </section>
+
+  <section aria-label="Resin in stock" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 20px; flex-shrink: 0">
+    <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45">
+      <span style="font-size: 12px; color: #A9B8AE">Condensed</span>
+      <span style="font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600">{{ condensedText }}</span>
+      <span style="font-size: 11px; color: #A9B8AE">40 each</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45">
+      <span style="font-size: 12px; color: #A9B8AE">Fragile</span>
+      <span style="font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600">{{ fragile }}</span>
+      <span style="font-size: 11px; color: #A9B8AE">+60 each</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45">
+      <span style="font-size: 12px; color: #A9B8AE">Transient</span>
+      <span style="font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600">{{ transient }}</span>
+      <span style="font-size: 11px; color: #E3A46F">{{ transientSub }}</span>
+    </div>
+  </section>
+
+  <section aria-label="Actions" style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px; flex-shrink: 0">
+    <button type="button" style="height: 52px; border-radius: 14px; border: none; background: #D9935A; color: #10201B; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"></path><path d="M4 4v4h4"></path><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"></path><path d="M20 20v-4h-4"></path></svg>
+      Sync with game
+    </button>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{ actions }}" as="act" hint-placeholder-count="6">
+        <button type="button" onClick="{{ act.run }}" disabled="{{ act.disabled }}" style="min-height: 60px; padding: 10px 14px; border-radius: 14px; border: 1px solid #2C4F45; background: #16302A; color: #F3EBDD; font-family: inherit; text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 2px; opacity: {{ act.opacity }}">
+          <span style="font-size: 14px; font-weight: 600">{{ act.label }}</span>
+          <span style="font-size: 12px; color: #A9B8AE">{{ act.sub }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="log-heading" style="display: flex; flex-direction: column; gap: 10px; padding: 0 20px; flex-shrink: 0">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h2 id="log-heading" style="margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Recent changes</h2>
+      <button type="button" onClick="{{ undo }}" disabled="{{ undoDisabled }}" style="height: 44px; padding: 0 12px; border: none; background: transparent; color: #E3A46F; font-family: inherit; font-size: 14px; font-weight: 600; opacity: {{ undoOpacity }}">Undo last</button>
+    </div>
+    <ol style="list-style: none; margin: 0; padding: 0; border-radius: 16px; background: #16302A; border: 1px solid #2C4F45; overflow: hidden">
+      <sc-for list="{{ log }}" as="row" hint-placeholder-count="3">
+        <li style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: {{ row.border }}">
+          <span style="width: 40px; font-size: 12px; color: #A9B8AE; font-variant-numeric: tabular-nums">{{ row.t }}</span>
+          <span style="flex: 1; font-size: 14px">{{ row.what }}</span>
+          <span style="font-family: Fraunces, Georgia, serif; font-size: 16px; font-weight: 600; color: #E3A46F">{{ row.after }}</span>
+        </li>
+      </sc-for>
+    </ol>
+  </section>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; box-sizing: border-box; padding: 8px 16px 16px; background: #0B1814; border-top: 1px solid #2C4F45; display: flex; gap: 8px">
+    <a href="Main.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; color: #A9B8AE; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      <span>Today</span>
+    </a>
+    <a href="Resin.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; background: #1C3A33; color: #E3A46F; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg>
+      <span>Resin</span>
+    </a>
+    <a href="Planner.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; color: #A9B8AE; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.6"></circle></svg>
+      <span>Planner</span>
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const cap = 200;
+    const v = st.v != null ? st.v : 143;
+    const condensed = st.condensed != null ? st.condensed : 2;
+    const fragile = st.fragile != null ? st.fragile : 3;
+    const transient = st.transient != null ? st.transient : 1;
+    const restarted = !!st.restarted;
+    const th = st.th || { t160: true, t200: true };
+    const log = st.log || [
+      { t: '10:24', what: 'Synced with game', after: '143' },
+      { t: '08:02', what: 'Spent 40 · Ember core', after: '127' },
+      { t: '07:40', what: 'Used Fragile Resin', after: '164' }
+    ];
+    const nowMin = 630;
+    const first = restarted ? 8 : 5.2;
+    const clock = (m) => {
+      const total = Math.round(m);
+      const day = Math.floor(total / 1440);
+      const mm = total % 1440;
+      const h = Math.floor(mm / 60);
+      const mi = mm % 60;
+      return (h < 10 ? '0' : '') + h + ':' + (mi < 10 ? '0' : '') + mi + (day > 0 ? ' tmrw' : '');
+    };
+    const timeTo = (T) => (v >= T ? 'Reached' : clock(nowMin + first + (T - v - 1) * 8));
+    const C = 2 * Math.PI * 100;
+    const fill = (Math.min(v, cap) / cap) * C;
+    const snap = { v: v, condensed: condensed, fragile: fragile, transient: transient, restarted: restarted, log: log };
+    const apply = (patch, what, nv) => {
+      const next = Object.assign({ prev: snap }, patch);
+      next.log = [{ t: 'Now', what: what, after: String(nv) }].concat(log).slice(0, 6);
+      this.setState(next);
+    };
+    const spend = (cost, what) => () => {
+      if (v < cost) return;
+      const nv = v - cost;
+      apply({ v: nv, restarted: restarted || (v >= cap && nv < cap) }, what, nv);
+    };
+    const actions = [
+      { key: 's20', label: 'Spend 20', sub: 'Domain run', ok: v >= 20, run: spend(20, 'Spent 20') },
+      { key: 's40', label: 'Spend 40', sub: 'Boss run', ok: v >= 40, run: spend(40, 'Spent 40') },
+      { key: 'craft', label: 'Craft Condensed', sub: 'Uses 40 Original', ok: v >= 40 && condensed < 5,
+        run: () => {
+          if (v < 40 || condensed >= 5) return;
+          const nv = v - 40;
+          apply({ v: nv, condensed: condensed + 1, restarted: restarted || (v >= cap && nv < cap) }, 'Crafted Condensed', nv);
+        } },
+      { key: 'cond', label: 'Use Condensed', sub: 'Double-reward run', ok: condensed > 0,
+        run: () => {
+          if (condensed < 1) return;
+          apply({ condensed: condensed - 1 }, 'Used Condensed', v);
+        } },
+      { key: 'frag', label: 'Use Fragile', sub: '+60, can pass the cap', ok: fragile > 0,
+        run: () => {
+          if (fragile < 1) return;
+          apply({ v: v + 60, fragile: fragile - 1 }, 'Used Fragile Resin', v + 60);
+        } },
+      { key: 'trans', label: 'Use Transient', sub: '+60, expires first', ok: transient > 0,
+        run: () => {
+          if (transient < 1) return;
+          apply({ v: v + 60, transient: transient - 1 }, 'Used Transient Resin', v + 60);
+        } }
+    ].map((a) => Object.assign({}, a, { disabled: !a.ok, opacity: a.ok ? 1 : 0.45 }));
+    const chip = (key, label) => {
+      const on = !!th[key];
+      return {
+        key: key, label: label, pressed: on ? 'true' : 'false',
+        bg: on ? '#D9935A' : 'transparent', fg: on ? '#10201B' : '#F3EBDD', border: on ? '#D9935A' : '#3E6B5A',
+        toggle: () => this.setState({ th: Object.assign({}, th, { [key]: !on }) })
+      };
+    };
+    const undo = () => {
+      if (!st.prev) return;
+      this.setState(Object.assign({}, st.prev, { prev: null }));
+    };
+    return {
+      v: v,
+      ringDash: fill.toFixed(1) + ' ' + C.toFixed(1),
+      nextTick: v >= cap ? 'At cap · regen paused' : '+1 in ' + (restarted ? '08:00' : '05:12'),
+      at160: timeTo(160),
+      at200: timeTo(200),
+      chips: [chip('t160', '160'), chip('t200', '200 · cap')],
+      condensedText: condensed + ' / 5',
+      fragile: fragile,
+      transient: transient,
+      transientSub: transient > 0 ? 'Expires in 4 d' : 'None held',
+      actions: actions,
+      log: log.map((r, i) => Object.assign({}, r, { border: i > 0 ? '1px solid #2C4F45' : 'none' })),
+      undo: undo,
+      undoDisabled: !st.prev,
+      undoOpacity: st.prev ? 1 : 0.45
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — v3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#3B4FE0}a:hover{color:#2B3BC0}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #3B4FE0;outline-offset:2px}
+.sw{appearance:none;-webkit-appearance:none;margin:0;flex-shrink:0;width:51px;height:31px;border-radius:999px;background:#D5D9E0;position:relative;cursor:pointer;transition:background .2s ease}
+.sw::before{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 3px rgba(16,24,40,.25);transition:transform .2s ease}
+.sw:checked{background:#3B4FE0}
+.sw:checked::before{transform:translateX(20px)}
+.sw:focus-visible,.rad:focus-visible{outline:2px solid #3B4FE0;outline-offset:2px}
+.rad{appearance:none;-webkit-appearance:none;margin:0;flex-shrink:0;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2px solid #C9CED6;background:#FFFFFF;cursor:pointer;transition:border .15s ease}
+.rad:checked{border:7px solid #3B4FE0}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1200px; box-sizing: border-box; padding: 8px 20px 40px; background: #F4F5F7; color: #0E1116; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 22px; overflow: hidden">
+
+  <header style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 0">
+    <a href="TodayV3.dc.html" style="align-self: flex-start; height: 44px; margin-left: -8px; padding: 0 10px 0 4px; display: flex; align-items: center; gap: 2px; border-radius: 12px; color: #3B4FE0; text-decoration: none; font-size: 16px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+      Today
+    </a>
+    <h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 36px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Settings</h1>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 8px; flex-shrink: 0">
+    <h2 id="server-h" style="margin: 0 0 0 4px; font-size: 13px; font-weight: 600; color: #5F6774">Game server</h2>
+    <div role="radiogroup" aria-labelledby="server-h" style="border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06); overflow: hidden">
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; cursor: pointer">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 600">Asia</span><span style="font-size: 12px; color: #5F6774">UTC+8 · resets 23:00 the day before</span></span>
+        <input type="radio" name="server" class="rad" checked="{{ sAsia }}" onChange="{{ pickAsia }}">
+      </label>
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border-top: 1px solid #EEF0F3; cursor: pointer">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 600">Europe</span><span style="font-size: 12px; color: #5F6774">UTC+1 · resets 06:00</span></span>
+        <input type="radio" name="server" class="rad" checked="{{ sEurope }}" onChange="{{ pickEurope }}">
+      </label>
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border-top: 1px solid #EEF0F3; cursor: pointer">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 600">America</span><span style="font-size: 12px; color: #5F6774">UTC−5 · resets 12:00</span></span>
+        <input type="radio" name="server" class="rad" checked="{{ sAmerica }}" onChange="{{ pickAmerica }}">
+      </label>
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border-top: 1px solid #EEF0F3; cursor: pointer">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 600">TW, HK, MO</span><span style="font-size: 12px; color: #5F6774">UTC+8 · resets 23:00 the day before</span></span>
+        <input type="radio" name="server" class="rad" checked="{{ sTw }}" onChange="{{ pickTw }}">
+      </label>
+    </div>
+    <p style="margin: 0 0 0 4px; font-size: 12px; color: #5F6774">Reset times are shown in your time zone (Addis Ababa).</p>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 8px; flex-shrink: 0">
+    <h2 style="margin: 0 0 0 4px; font-size: 13px; font-weight: 600; color: #5F6774">Planner</h2>
+    <div style="border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06); overflow: hidden">
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 12px 0 16px">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span id="wl-label" style="font-size: 15px; font-weight: 600">World Level</span><span style="font-size: 12px; color: #5F6774">Used for run estimates in v2</span></span>
+        <div role="group" aria-labelledby="wl-label" style="display: flex; align-items: center; gap: 4px; padding: 3px; border-radius: 14px; background: #F4F5F7">
+          <button type="button" aria-label="Lower World Level" onClick="{{ wlDown }}" style="width: 40px; height: 40px; border: none; border-radius: 11px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08); color: #0E1116; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path></svg></button>
+          <output aria-live="polite" style="width: 30px; text-align: center; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 800">{{ wl }}</output>
+          <button type="button" aria-label="Raise World Level" onClick="{{ wlUp }}" style="width: 40px; height: 40px; border: none; border-radius: 11px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08); color: #0E1116; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></button>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border-top: 1px solid #EEF0F3; box-sizing: border-box">
+        <label for="totals" style="flex: 1; display: flex; flex-direction: column; gap: 1px; cursor: pointer"><span style="font-size: 15px; font-weight: 600">Totals-only mode</span><span style="font-size: 12px; color: #5F6774">Skip inventory and show full material totals</span></label>
+        <input type="checkbox" role="switch" id="totals" class="sw" checked="{{ totals }}" onChange="{{ toggleTotals }}">
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 8px; flex-shrink: 0">
+    <h2 style="margin: 0 0 0 4px; font-size: 13px; font-weight: 600; color: #5F6774">Notifications</h2>
+    <div style="border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06); overflow: hidden">
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; box-sizing: border-box">
+        <label for="n160" style="flex: 1; display: flex; flex-direction: column; gap: 1px; cursor: pointer"><span style="font-size: 15px; font-weight: 600">Resin reaches 160</span><span style="font-size: 12px; color: #5F6774">5 h 20 min before it caps</span></label>
+        <input type="checkbox" role="switch" id="n160" class="sw" checked="{{ n160 }}" onChange="{{ t160 }}">
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border-top: 1px solid #EEF0F3; box-sizing: border-box">
+        <label for="n200" style="flex: 1; display: flex; flex-direction: column; gap: 1px; cursor: pointer"><span style="font-size: 15px; font-weight: 600">Resin reaches 200</span><span style="font-size: 12px; color: #5F6774">At cap, regeneration stops</span></label>
+        <input type="checkbox" role="switch" id="n200" class="sw" checked="{{ n200 }}" onChange="{{ t200 }}">
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border-top: 1px solid #EEF0F3; box-sizing: border-box">
+        <label for="ntr" style="flex: 1; display: flex; flex-direction: column; gap: 1px; cursor: pointer"><span style="font-size: 15px; font-weight: 600">Transient Resin expiring</span><span style="font-size: 12px; color: #5F6774">24 h before a stack expires</span></label>
+        <input type="checkbox" role="switch" id="ntr" class="sw" checked="{{ ntr }}" onChange="{{ ttr }}">
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid #EEF0F3; background: #F7FBF9">
+        <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #12B76A; flex-shrink: 0"></span>
+        <span style="font-size: 13px"><strong style="font-weight: 600; color: #0F7552">Exact alarms allowed.</strong> <span style="color: #5F6774">Alerts fire on time.</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 8px; flex-shrink: 0">
+    <h2 style="margin: 0 0 0 4px; font-size: 13px; font-weight: 600; color: #5F6774">Data</h2>
+    <div style="border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06); overflow: hidden">
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 12px 10px 16px; box-sizing: border-box">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 600">Game catalog 7.2</span><span style="font-size: 12px; color: #5F6774">Bundle 7.2.0 · works offline</span></span>
+        <button type="button" style="height: 40px; padding: 0 14px; border-radius: 12px; border: none; background: #EEF0FD; color: #2B3BC0; font-family: inherit; font-size: 14px; font-weight: 700">Check</button>
+      </div>
+      <button type="button" style="width: 100%; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border: none; border-top: 1px solid #EEF0F3; background: #FFFFFF; color: #0E1116; font-family: inherit; font-size: 15px; font-weight: 600; text-align: left">
+        <span style="flex: 1">Export backup (JSON)</span>
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F6774" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+      <button type="button" style="width: 100%; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border: none; border-top: 1px solid #EEF0F3; background: #FFFFFF; color: #0E1116; font-family: inherit; font-size: 15px; font-weight: 600; text-align: left">
+        <span style="flex: 1">Import backup</span>
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F6774" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+    </div>
+  </section>
+
+  <footer style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 20px 0; text-align: center; flex-shrink: 0">
+    <span style="font-family: Manrope, Inter, sans-serif; font-size: 14px; font-weight: 800">Routine Planner 0.1.0</span>
+    <span style="font-size: 12px; line-height: 1.5; color: #5F6774">Unofficial fan-made companion. Not affiliated with or endorsed by HoYoverse.</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const server = st.server || 'europe';
+    const wl = st.wl != null ? st.wl : 8;
+    const n = st.n || { n160: true, n200: true, ntr: true };
+    const totals = !!st.totals;
+    const pick = (id) => () => this.setState({ server: id });
+    const flip = (k) => () => this.setState({ n: Object.assign({}, n, { [k]: !n[k] }) });
+    return {
+      sAsia: server === 'asia', sEurope: server === 'europe', sAmerica: server === 'america', sTw: server === 'tw',
+      pickAsia: pick('asia'), pickEurope: pick('europe'), pickAmerica: pick('america'), pickTw: pick('tw'),
+      wl: wl,
+      wlDown: () => this.setState({ wl: Math.max(0, wl - 1) }),
+      wlUp: () => this.setState({ wl: Math.min(9, wl + 1) }),
+      totals: totals,
+      toggleTotals: () => this.setState({ totals: !totals }),
+      n160: !!n.n160, n200: !!n.n200, ntr: !!n.ntr,
+      t160: flip('n160'), t200: flip('n200'), ttr: flip('ntr')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-06T07:40:00Z"},
+  "title": "Routine Planner — App Screens",
+  "launch": {"view": "canvas", "page": "v3"},
+  "pages": [
+    {"id": "v3", "name": "v3 · Clean modern"},
+    {"id": "earlier", "name": "Earlier explorations"}
+  ],
+  "boards": {
+    "TodayV3.dc.html": {"x": 0, "y": 0, "w": 390, "h": 1280, "title": "Today", "page": "v3", "is_interactive": true, "radius": 32},
+    "ResinV3.dc.html": {"x": 470, "y": 0, "w": 390, "h": 1500, "title": "Resin", "page": "v3", "is_interactive": true, "radius": 32},
+    "PlannerV3.dc.html": {"x": 940, "y": 0, "w": 390, "h": 1240, "title": "Planner", "page": "v3", "is_interactive": true, "radius": 32},
+    "SettingsV3.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 1200, "title": "Settings", "page": "v3", "is_interactive": true, "radius": 32},
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 1300, "title": "Today · farming checklist", "page": "earlier", "is_interactive": true, "radius": 32},
+    "Resin.dc.html": {"x": 470, "y": 0, "w": 390, "h": 1400, "title": "Resin tracker", "page": "earlier", "is_interactive": true, "radius": 32},
+    "Planner.dc.html": {"x": 940, "y": 0, "w": 390, "h": 980, "title": "Target planner", "page": "earlier", "is_interactive": true, "radius": 32},
+    "Settings.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 1320, "title": "Settings", "page": "earlier", "is_interactive": true, "radius": 32},
+    "TodayV2.dc.html": {"x": 0, "y": 1840, "w": 390, "h": 1340, "title": "v2 · Today", "page": "earlier", "is_interactive": true, "radius": 32},
+    "ResinV2.dc.html": {"x": 470, "y": 1840, "w": 390, "h": 1520, "title": "v2 · Resin", "page": "earlier", "is_interactive": true, "radius": 32},
+    "PlannerV2.dc.html": {"x": 940, "y": 1840, "w": 390, "h": 1080, "title": "v2 · Planner", "page": "earlier", "is_interactive": true, "radius": 32},
+    "SettingsV2.dc.html": {"x": 1410, "y": 1840, "w": 390, "h": 1300, "title": "v2 · Settings", "page": "earlier", "is_interactive": true, "radius": 32},
+    "KitV2.dc.html": {"x": 1880, "y": 1840, "w": 880, "h": 1580, "title": "v2 · Component kit → Flutter widgets", "page": "earlier"}
+  },
+  "order": ["TodayV3.dc.html", "ResinV3.dc.html", "PlannerV3.dc.html", "SettingsV3.dc.html", "Main.dc.html", "Resin.dc.html", "Planner.dc.html", "Settings.dc.html", "TodayV2.dc.html", "ResinV2.dc.html", "PlannerV2.dc.html", "SettingsV2.dc.html", "KitV2.dc.html"],
+  "notes": {
+    "title3": {"x": 0, "y": -260, "text": "Routine Planner · v3 clean modern", "kind": "title1", "maxW": 1800, "page": "v3"},
+    "brief3": {"x": 1880, "y": 0, "w": 340, "fill": "blue", "page": "v3", "text": "Light base, one accent (indigo #3B4FE0), Manrope for headings and numbers, Inter for text.\n\nDepth comes from layered white cards, soft shadows and one gradient hero card per screen, not from ornament.\n\nRarity shows as a soft tint on material tiles; element shows as a small badge on avatars.\n\nPlay mode: tabs link the screens; checkboxes, alert switches, server, World Level and settings toggles work. The resin action buttons are visual only in this round.\n\nNames and numbers are sample data."},
+    "title": {"x": 0, "y": -260, "text": "Routine Planner · v1 screens", "kind": "title1", "maxW": 1800, "page": "earlier"},
+    "brief": {"x": 1880, "y": 0, "w": 340, "fill": "orange", "page": "earlier", "text": "Field almanac: an original look (forest green, ivory, copper, serif headings, a sun-dial for the server day). It does not copy Genshin Impact's UI.\n\nCharacter, weapon and material names are invented placeholders; the numbers are sample data until the catalog bundle loads.\n\nTimes assume the Europe server, viewed from Addis Ababa at 10:30 on Fri 6 Nov (server time 08:30).\n\nPress Play to try it: tick tasks, log runs, spend resin, undo, switch server. The bottom tabs link the screens."},
+    "title2": {"x": 0, "y": 1560, "text": "v2 · Enchanted almanac", "kind": "title1", "maxW": 2760, "page": "earlier"},
+    "brief2": {"x": 2840, "y": 1840, "w": 340, "fill": "teal", "page": "earlier", "text": "v2 keeps the same data and flows and adds game-grade chrome: framed panels with corner gems, a day dial, a liquid resin orb, rarity tiles, element sigils, ascension pips, talent badges and crest tabs.\n\nEvery ornament uses fantasy-RPG genre conventions drawn from scratch, not Genshin's assets or layouts.\n\nThe kit board maps each piece to the Flutter widget it becomes. Build those once, then the screens are just layout.\n\nAnimations respect the system's reduce-motion setting."}
+  },
+  "designSystems": []
+}

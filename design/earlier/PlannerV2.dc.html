@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Planner — v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#06100D}
+a{color:#F2D69C}a:hover{color:#FFF1CF}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #F2D69C;outline-offset:2px}
+.cn{position:absolute;width:7px;height:7px;background:#D7A75E;transform:rotate(45deg);box-shadow:0 0 6px rgba(215,167,94,.6);pointer-events:none}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="position: relative; isolation: isolate; width: 390px; height: 1080px; box-sizing: border-box; padding-bottom: 104px; background: #0B1714; color: #F4ECDC; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 18px; overflow: hidden">
+
+  <svg aria-hidden="true" width="390" height="420" viewBox="0 0 390 420" style="position: absolute; top: 0; left: 0; z-index: -1">
+    <defs>
+      <radialGradient id="skyGlow" cx="30%" cy="10%" r="60%"><stop offset="0" stop-color="#2A4A3E" stop-opacity="0.9"></stop><stop offset="1" stop-color="#0B1714" stop-opacity="0"></stop></radialGradient>
+    </defs>
+    <rect width="390" height="420" fill="url(#skyGlow)"></rect>
+    <circle cx="300" cy="50" r="1.2" fill="#F2D69C" style="animation: twinkle 3.2s ease-in-out infinite"></circle>
+    <circle cx="60" cy="140" r="0.9" fill="#F4ECDC" opacity="0.4"></circle>
+    <circle cx="360" cy="180" r="1" fill="#F2D69C" style="animation: twinkle 4.2s ease-in-out infinite 1s"></circle>
+  </svg>
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px 0 18px; flex-shrink: 0">
+    <span style="display: flex; align-items: center; gap: 10px">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D7A75E" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"></path><path d="M12 7l1 4 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#D7A75E"></path></svg>
+      <span style="font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 0.08em">Routine Planner</span>
+    </span>
+    <a href="SettingsV2.dc.html" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #D7A75E">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; border: 1px solid #7A5E36; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+      </span>
+    </a>
+  </header>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 16px; flex-shrink: 0">
+    <div style="width: 100%; display: flex; align-items: center; gap: 8px">
+      <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+      <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+      <h1 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #F2D69C">Planner</h1>
+      <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+      <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(270deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+    </div>
+    <span style="font-size: 12px; color: #A8B5AB">4 targets · 5 materials still short</span>
+  </div>
+
+  <div role="group" aria-label="Planner view" style="margin: 0 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 999px; background: #0F1F1A; border: 1px solid #7A5E36; box-shadow: inset 0 0 0 3px #0F1F1A, inset 0 0 0 4px #2A2418; flex-shrink: 0">
+    <sc-for list="{{ segs }}" as="seg" hint-placeholder-count="2">
+      <button type="button" aria-pressed="{{ seg.pressed }}" onClick="{{ seg.pick }}" style="height: 44px; border-radius: 999px; border: none; background: {{ seg.bg }}; box-shadow: {{ seg.glow }}; color: {{ seg.fg }}; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">{{ seg.label }}</button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ showTargets }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 0 16px; flex-shrink: 0">
+      <button type="button" style="height: 48px; border-radius: 4px; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.08); box-shadow: inset 0 0 0 3px #0B1714, inset 0 0 0 4px #3A3222; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 12px">
+        <span aria-hidden="true" style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #D7A75E; transform: rotate(45deg); display: flex; align-items: center; justify-content: center">
+          <svg style="transform: rotate(-45deg)" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F2D69C" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        </span>
+        Add target
+      </button>
+      <sc-for list="{{ targets }}" as="t" hint-placeholder-count="4">
+        <article style="position: relative; display: flex; gap: 12px; padding: 10px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222, 0 10px 28px rgba(0, 0, 0, 0.4)">
+          <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+          <div role="img" aria-label="{{ t.portraitLabel }}" style="position: relative; width: 86px; height: 116px; flex-shrink: 0; box-sizing: border-box; border-radius: 4px; background: {{ t.portraitBg }}; border: 1px solid {{ t.portraitBorder }}; overflow: hidden">
+            <sc-if value="{{ t.isChar }}" hint-placeholder-val="{{ true }}">
+              <svg aria-hidden="true" width="84" height="114" viewBox="0 0 84 114" style="position: absolute; top: 0; left: 0">
+                <circle cx="42" cy="44" r="17" fill="#FFF1CF" opacity="0.22"></circle>
+                <path d="M9 114c0-24 14-40 33-40s33 16 33 40z" fill="#FFF1CF" opacity="0.22"></path>
+              </svg>
+              <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid {{ t.elColor }}; background: rgba(6, 16, 13, 0.7); display: flex; align-items: center; justify-content: center">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.elColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.elGlyph }}"></path></svg>
+              </span>
+            </sc-if>
+            <sc-if value="{{ t.isWeapon }}" hint-placeholder-val="{{ false }}">
+              <svg aria-hidden="true" width="84" height="114" viewBox="0 0 84 114" style="position: absolute; top: 0; left: 0">
+                <path d="M16 96L66 20M66 20l-3 17M66 20l-16 5M24 84l9 9M20 90l-6 6" fill="none" stroke="#FFF1CF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"></path>
+              </svg>
+            </sc-if>
+            <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background: linear-gradient(0deg, rgba(6, 16, 13, 0.9), rgba(6, 16, 13, 0)); display: flex; align-items: center; justify-content: center; gap: 1px">
+              <sc-for list="{{ t.stars }}" as="star" hint-placeholder-count="5">
+                <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: flex-start; gap: 4px">
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 17px; font-weight: 700; line-height: 1.2">{{ t.name }}</h2>
+                <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: {{ t.kindColor }}">{{ t.kind }}</span>
+              </div>
+              <button type="button" aria-label="{{ t.reorderLabel }}" style="width: 36px; height: 44px; margin: -8px -6px 0 0; padding: 0; border: none; background: transparent; color: #7A5E36; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+              </button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+              <span style="font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">Lv {{ t.lvFrom }} <span style="color: #A8B5AB">→</span> <span style="color: #F2D69C">{{ t.lvTo }}</span></span>
+              <span role="img" aria-label="{{ t.pipsLabel }}" style="display: flex; gap: 4px">
+                <sc-for list="{{ t.pips }}" as="pip" hint-placeholder-count="6">
+                  <span aria-hidden="true" style="width: 8px; height: 8px; box-sizing: border-box; transform: rotate(45deg); background: {{ pip.fill }}; border: 1px solid {{ pip.border }}; box-shadow: {{ pip.glow }}"></span>
+                </sc-for>
+              </span>
+            </div>
+            <sc-if value="{{ t.isChar }}" hint-placeholder-val="{{ true }}">
+              <div role="img" aria-label="{{ t.talentLabel }}" style="display: flex; align-items: center; gap: 6px">
+                <sc-for list="{{ t.talents }}" as="tal" hint-placeholder-count="3">
+                  <span aria-hidden="true" style="width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D7A75E; background: #0F1F1A; display: flex; align-items: center; justify-content: center; font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700">{{ tal.n }}</span>
+                </sc-for>
+                <span aria-hidden="true" style="margin-left: 4px; font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700; color: #F2D69C">→ {{ t.talentTarget }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ t.isWeapon }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; align-items: center; gap: 8px; height: 26px">
+                <span aria-hidden="true" style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #E8734A; background: #183029; display: flex; align-items: center; justify-content: center; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700">A</span>
+                <span style="font-size: 12px; color: #A8B5AB">Equipped on Aster</span>
+              </div>
+            </sc-if>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <div style="position: relative; flex: 1; height: 8px; box-sizing: border-box; border: 1px solid #3A3222; background: #08120F; border-radius: 999px; overflow: hidden">
+                <div style="width: {{ t.pct }}%; height: 100%; background: linear-gradient(90deg, #B07E40, #F2D69C); box-shadow: 0 0 8px rgba(242, 214, 156, 0.6)"></div>
+              </div>
+              <span style="font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700; color: #F2D69C; white-space: nowrap">{{ t.pct }}%</span>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showMaterials }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 0 16px; flex-shrink: 0">
+      <p style="margin: 0; font-size: 13px; color: #A8B5AB; text-align: center">Needed across all targets, most missing first</p>
+      <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 10px">
+        <sc-for list="{{ materials }}" as="m" hint-placeholder-count="5">
+          <li style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+            <div style="position: relative; width: 74px; height: 74px; box-sizing: border-box; border-radius: 8px; background: {{ m.bg }}; border: 1px solid {{ m.border }}; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.04), 0 6px 14px rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; overflow: hidden">
+              <svg aria-hidden="true" style="margin-top: -10px" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFF1CF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ m.glyph }}"></path></svg>
+              <span style="position: absolute; top: 4px; right: 4px; min-width: 22px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 999px; background: #E9B872; color: #1A140B; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">−{{ m.missing }}</span>
+              <span style="position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 0; background: rgba(6, 16, 13, 0.75); font-size: 11px; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums">{{ m.count }}</span>
+            </div>
+            <span style="font-size: 11px; font-weight: 600; text-align: center; line-height: 1.3">{{ m.name }}</span>
+            <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: {{ m.whenColor }}">
+              <span aria-hidden="true" style="width: 5px; height: 5px; border-radius: 50%; background: {{ m.whenColor }}; box-shadow: {{ m.whenGlow }}"></span>{{ m.when }}
+            </span>
+          </li>
+        </sc-for>
+      </ul>
+    </div>
+  </sc-if>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 86px; box-sizing: border-box; padding: 12px 12px 16px; background: linear-gradient(180deg, #0E1D18, #07110E); border-top: 1px solid #7A5E36; display: flex; gap: 6px">
+    <span aria-hidden="true" style="position: absolute; top: -5px; left: 50%; margin-left: -4px; width: 8px; height: 8px; background: #D7A75E; transform: rotate(45deg); box-shadow: 0 0 8px rgba(215, 167, 94, 0.7)"></span>
+    <a href="TodayV2.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </span>
+      <span>Today</span>
+    </a>
+    <a href="ResinV2.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg>
+      </span>
+      <span>Resin</span>
+    </a>
+    <a href="PlannerV2.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.16); transform: rotate(45deg); box-shadow: 0 0 14px rgba(215, 167, 94, 0.5)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.6"></circle></svg>
+      </span>
+      <span>Planner</span>
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const tab = st.tab || 'targets';
+    const seg = (id, label) => {
+      const on = tab === id;
+      return {
+        id: id, label: label, pressed: on ? 'true' : 'false',
+        bg: on ? 'linear-gradient(180deg, #F6DDA6, #D7A75E 60%, #B07E40)' : 'transparent',
+        fg: on ? '#1A140B' : '#A8B5AB',
+        glow: on ? '0 0 14px rgba(215, 167, 94, 0.35)' : 'none',
+        pick: () => this.setState({ tab: id })
+      };
+    };
+    const EL = {
+      pyro: { name: 'Pyro', color: '#F08A5D', glyph: 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2.5-5 .3 1.6 1.2 2.6 2.3 3-.8-2.6-.4-5.5.2-8z' },
+      hydro: { name: 'Hydro', color: '#62B6EA', glyph: 'M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z' },
+      electro: { name: 'Electro', color: '#B794EC', glyph: 'M13 3L6 13h5l-1 8 7-10h-5l1-8z' }
+    };
+    const R = {
+      5: { bg: 'linear-gradient(170deg, #9A6A34 0%, #5A3A1E 55%, #2C1C12 100%)', border: '#C08A4A' },
+      4: { bg: 'linear-gradient(170deg, #6A4E94 0%, #3C2C5E 55%, #1F1832 100%)', border: '#8A6FBA' }
+    };
+    const pipsFor = (have, want) => {
+      const out = [];
+      for (let i = 1; i <= 6; i++) {
+        const got = i <= have;
+        const aim = !got && i <= want;
+        out.push({
+          i: i,
+          fill: got ? '#D7A75E' : 'transparent',
+          border: got || aim ? '#D7A75E' : '#3A3222',
+          glow: got ? '0 0 6px rgba(215, 167, 94, 0.6)' : 'none'
+        });
+      }
+      return out;
+    };
+    const starsFor = (n) => {
+      const out = [];
+      for (let i = 0; i < n; i++) out.push({ i: i });
+      return out;
+    };
+    const targets = [
+      { id: 'aster', name: 'Aster', type: 'char', el: 'pyro', rarity: 5, lvFrom: 70, lvTo: 90, asc: [4, 6], talents: [6, 6, 6], talentTarget: '9 · 9 · 9', pct: 58 },
+      { id: 'wren', name: 'Wren', type: 'char', el: 'hydro', rarity: 4, lvFrom: 80, lvTo: 90, asc: [5, 6], talents: [8, 8, 8], talentTarget: '10 · 10 · 10', pct: 71 },
+      { id: 'larkspur', name: 'Larkspur Spear', type: 'weapon', rarity: 5, lvFrom: 60, lvTo: 90, asc: [3, 6], pct: 47 },
+      { id: 'corvin', name: 'Corvin', type: 'char', el: 'electro', rarity: 4, lvFrom: 90, lvTo: 90, asc: [6, 6], talents: [4, 6, 6], talentTarget: '8 · 8 · 8', pct: 34 }
+    ].map((t) => {
+      const isChar = t.type === 'char';
+      const el = isChar ? EL[t.el] : null;
+      return Object.assign({}, t, {
+        isChar: isChar,
+        isWeapon: !isChar,
+        kind: isChar ? el.name + ' · character' : 'Polearm · weapon',
+        kindColor: isChar ? el.color : '#A8B5AB',
+        elColor: isChar ? el.color : '#D7A75E',
+        elGlyph: isChar ? el.glyph : '',
+        portraitBg: R[t.rarity].bg,
+        portraitBorder: R[t.rarity].border,
+        portraitLabel: t.rarity + '-star ' + (isChar ? el.name + ' character' : 'weapon') + ', placeholder art',
+        stars: starsFor(t.rarity),
+        pips: pipsFor(t.asc[0], t.asc[1]),
+        pipsLabel: 'Ascension ' + t.asc[0] + ' of 6, target ' + t.asc[1],
+        talents: isChar ? t.talents.map((n, i) => ({ i: i, n: n })) : [],
+        talentLabel: isChar ? 'Talents ' + t.talents.join(', ') + ', target ' + t.talentTarget.split(' · ').join(', ') : '',
+        lvTo: t.lvFrom === t.lvTo ? 'max' : t.lvTo,
+        reorderLabel: 'Reorder ' + t.name
+      });
+    });
+    const G = {
+      book: 'M6 4h9a3 3 0 0 1 3 3v13H9a3 3 0 0 1-3-3zM6 17a3 3 0 0 1 3-3h9',
+      gem: 'M12 3l7 7-7 11-7-11zM5 10h14M9.5 10L12 21l2.5-11',
+      core: 'M4 12a8 8 0 1 0 16 0a8 8 0 1 0-16 0zM8.5 12a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0z',
+      shard: 'M8 3l9 5-3 13-8-6zM8 3l6 18M17 8l-11 7'
+    };
+    const TILE = {
+      2: { bg: 'linear-gradient(160deg, #2E5A45, #1A3127)', border: '#3F7A5E' },
+      3: { bg: 'linear-gradient(160deg, #2D4E73, #192B40)', border: '#46709E' },
+      4: { bg: 'linear-gradient(160deg, #55407A, #2A2040)', border: '#7A5FA8' },
+      5: { bg: 'linear-gradient(160deg, #8A5A2B, #43281A)', border: '#C08A4A' }
+    };
+    const materials = [
+      { id: 'm1', name: 'Dawn books II', count: '15/24', missing: 9, rarity: 2, glyph: 'book', open: true, when: 'Today' },
+      { id: 'm2', name: 'Ember core', count: '40/46', missing: 6, rarity: 4, glyph: 'core', open: true, when: 'Any day' },
+      { id: 'm3', name: 'Tidal relic III', count: '3/9', missing: 6, rarity: 3, glyph: 'gem', open: true, when: 'Today' },
+      { id: 'm4', name: 'Silt shard IV', count: '1/6', missing: 5, rarity: 5, glyph: 'shard', open: false, when: 'Wed · Sat' },
+      { id: 'm5', name: 'Dawn books III', count: '8/12', missing: 4, rarity: 3, glyph: 'book', open: true, when: 'Today' }
+    ].map((m) => Object.assign({}, m, {
+      glyph: G[m.glyph],
+      bg: TILE[m.rarity].bg,
+      border: TILE[m.rarity].border,
+      whenColor: m.open ? '#8FD1AE' : '#A8B5AB',
+      whenGlow: m.open ? '0 0 6px #8FD1AE' : 'none'
+    }));
+    return {
+      segs: [seg('targets', 'Targets'), seg('materials', 'Materials')],
+      showTargets: tab === 'targets',
+      showMaterials: tab === 'materials',
+      targets: targets,
+      materials: materials
+    };
+  }
+}
+</script>
+</body>
+</html>

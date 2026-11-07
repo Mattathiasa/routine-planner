@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Component kit — v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#06100D}
+a{color:#F2D69C}a:hover{color:#FFF1CF}
+.cn{position:absolute;width:7px;height:7px;background:#D7A75E;transform:rotate(45deg);box-shadow:0 0 6px rgba(215,167,94,.6);pointer-events:none}
+@keyframes drift{to{transform:translateX(-80px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{transform:translateX(-120%)}55%,100%{transform:translateX(320%)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 880px; height: 1580px; box-sizing: border-box; padding: 40px 40px 48px; background: #0B1714; color: #F4ECDC; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D7A75E" stroke-width="1.3" stroke-linejoin="round"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"></path><path d="M12 7l1 4 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#D7A75E"></path></svg>
+      <h1 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: 0.08em; color: #F2D69C">Enchanted almanac · component kit</h1>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #A8B5AB; max-width: 720px">Twelve pieces cover every screen. Each card names the Flutter widget it becomes. Build these first, then the screens are mostly layout.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">OrnatePanel · FiligreeHeader</h2>
+        <span style="font-size: 12px; color: #A8B5AB">CustomPainter: double border, corner gems, fading rules</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+          <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+          <span style="font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #F2D69C">Section title</span>
+          <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+          <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(270deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+        </div>
+        <div style="position: relative; padding: 14px; background: #0F1F1A; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #0F1F1A, inset 0 0 0 4px #3A3222">
+          <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+          <span style="font-size: 13px">Content sits inside. Ornament stays on the frame, never on the data.</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">GoldButton · FrameButton · GhostButton</h2>
+        <span style="font-size: 12px; color: #A8B5AB">One primary per screen; shimmer sweep every 4 s</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <button type="button" style="position: relative; overflow: hidden; height: 50px; border-radius: 999px; border: 1px solid #FBE3B0; background: linear-gradient(180deg, #F6DDA6, #D7A75E 55%, #B07E40); box-shadow: 0 0 0 3px rgba(215, 167, 94, 0.18); color: #1A140B; font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 0.08em">
+          <span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: 0; width: 34%; background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)); animation: shimmer 4s ease-in-out infinite"></span>
+          <span style="position: relative">Sync with game</span>
+        </button>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <button type="button" style="height: 46px; border-radius: 4px; border: 1px solid #7A5E36; background: linear-gradient(180deg, #1A3530, #12241F); box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #2A2418; color: #F4ECDC; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">Frame</button>
+          <button type="button" style="height: 46px; border-radius: 4px; border: 1px dashed #7A5E36; background: transparent; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">+ Ghost</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">RarityTile · RarityStars</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Tile background keyed to rarity 1–5; count band at the foot</span>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <sc-for list="{{ rarities }}" as="r" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+            <div style="position: relative; width: 60px; height: 60px; box-sizing: border-box; border-radius: 8px; background: {{ r.bg }}; border: 1px solid {{ r.border }}; display: flex; align-items: center; justify-content: center; overflow: hidden">
+              <svg aria-hidden="true" style="margin-top: -8px" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF1CF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 7-7 11-7-11zM5 10h14M9.5 10L12 21l2.5-11"></path></svg>
+              <span style="position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 0; background: rgba(6, 16, 13, 0.75); font-size: 11px; font-weight: 600; text-align: center">{{ r.count }}</span>
+            </div>
+            <span role="img" aria-label="{{ r.label }}" style="display: flex; gap: 1px">
+              <sc-for list="{{ r.stars }}" as="s" hint-placeholder-count="3">
+                <svg aria-hidden="true" width="10" height="10" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+              </sc-for>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">ElementSigil</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Original geometric glyphs; each color also differs in lightness</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{ elements }}" as="e" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+            <span aria-hidden="true" style="width: 38px; height: 38px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid {{ e.color }}; background: rgba(6, 16, 13, 0.6); box-shadow: 0 0 12px {{ e.halo }}; display: flex; align-items: center; justify-content: center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ e.color }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ e.glyph }}"></path></svg>
+            </span>
+            <span style="font-size: 11px; color: {{ e.color }}">{{ e.name }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">AscensionPips · TalentBadge · GoldProgress</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Filled = done, outlined gold = target, dim = beyond target</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span style="width: 86px; font-size: 12px; color: #A8B5AB">A4 → A6</span>
+          <span role="img" aria-label="Ascension 4 of 6, target 6" style="display: flex; gap: 6px">
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); background: #D7A75E; border: 1px solid #D7A75E; box-shadow: 0 0 6px rgba(215, 167, 94, 0.6)"></span>
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); background: #D7A75E; border: 1px solid #D7A75E; box-shadow: 0 0 6px rgba(215, 167, 94, 0.6)"></span>
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); background: #D7A75E; border: 1px solid #D7A75E; box-shadow: 0 0 6px rgba(215, 167, 94, 0.6)"></span>
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); background: #D7A75E; border: 1px solid #D7A75E; box-shadow: 0 0 6px rgba(215, 167, 94, 0.6)"></span>
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); border: 1px solid #D7A75E"></span>
+            <span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; transform: rotate(45deg); border: 1px solid #D7A75E"></span>
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span style="width: 86px; font-size: 12px; color: #A8B5AB">Talents</span>
+          <span style="display: flex; align-items: center; gap: 8px">
+            <span style="width: 30px; height: 30px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D7A75E; background: #0F1F1A; display: flex; align-items: center; justify-content: center; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">6</span>
+            <span style="width: 30px; height: 30px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D7A75E; background: #0F1F1A; display: flex; align-items: center; justify-content: center; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">6</span>
+            <span style="width: 30px; height: 30px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D7A75E; background: #0F1F1A; display: flex; align-items: center; justify-content: center; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700">6</span>
+            <span style="font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; color: #F2D69C">→ 9 · 9 · 9</span>
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span style="width: 86px; font-size: 12px; color: #A8B5AB">In hand</span>
+          <div style="flex: 1; height: 8px; box-sizing: border-box; border: 1px solid #3A3222; background: #08120F; border-radius: 999px; overflow: hidden">
+            <div style="width: 58%; height: 100%; background: linear-gradient(90deg, #B07E40, #F2D69C); box-shadow: 0 0 8px rgba(242, 214, 156, 0.6)"></div>
+          </div>
+          <span style="font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700; color: #F2D69C">58%</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">PortraitCard · MaterialTile</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Placeholder silhouette until catalog art; missing badge in amber</span>
+      </div>
+      <div style="display: flex; align-items: flex-end; gap: 18px">
+        <div role="img" aria-label="5-star Pyro character, placeholder art" style="position: relative; width: 86px; height: 116px; box-sizing: border-box; border-radius: 4px; background: linear-gradient(170deg, #9A6A34 0%, #5A3A1E 55%, #2C1C12 100%); border: 1px solid #C08A4A; overflow: hidden">
+          <svg aria-hidden="true" width="84" height="114" viewBox="0 0 84 114" style="position: absolute; top: 0; left: 0"><circle cx="42" cy="44" r="17" fill="#FFF1CF" opacity="0.22"></circle><path d="M9 114c0-24 14-40 33-40s33 16 33 40z" fill="#FFF1CF" opacity="0.22"></path></svg>
+          <span aria-hidden="true" style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #F08A5D; background: rgba(6, 16, 13, 0.7); display: flex; align-items: center; justify-content: center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F08A5D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2.5-5 .3 1.6 1.2 2.6 2.3 3-.8-2.6-.4-5.5.2-8z"></path></svg>
+          </span>
+          <span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background: linear-gradient(0deg, rgba(6, 16, 13, 0.9), rgba(6, 16, 13, 0)); display: flex; align-items: center; justify-content: center; gap: 1px">
+            <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" fill="#F2D69C"></path></svg>
+          </span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <div style="position: relative; width: 74px; height: 74px; box-sizing: border-box; border-radius: 8px; background: linear-gradient(160deg, #2E5A45, #1A3127); border: 1px solid #3F7A5E; display: flex; align-items: center; justify-content: center; overflow: hidden">
+            <svg aria-hidden="true" style="margin-top: -10px" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFF1CF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9a3 3 0 0 1 3 3v13H9a3 3 0 0 1-3-3zM6 17a3 3 0 0 1 3-3h9"></path></svg>
+            <span style="position: absolute; top: 4px; right: 4px; min-width: 22px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 999px; background: #E9B872; color: #1A140B; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">−9</span>
+            <span style="position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 0; background: rgba(6, 16, 13, 0.75); font-size: 11px; font-weight: 600; text-align: center">15/24</span>
+          </div>
+          <span style="font-size: 11px; font-weight: 600">Dawn books II</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #A8B5AB; line-height: 1.5">
+          <span>Portrait 86 × 116, tile 74 × 74 (52 in lists).</span>
+          <span>Rarity sets the fill; the element sets the sigil ring.</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">ResinOrb · CondensedSlots</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Fill height = resin / cap; wave via a looping AnimationController</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px">
+        <svg aria-hidden="true" width="96" height="96" viewBox="0 0 56 56">
+          <defs>
+            <clipPath id="kitOrb"><circle cx="28" cy="28" r="22"></circle></clipPath>
+            <linearGradient id="kitLiquid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2D69C"></stop><stop offset="1" stop-color="#A9783C"></stop></linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="27" fill="none" stroke="#7A5E36"></circle>
+          <circle cx="28" cy="28" r="22" fill="#0D1B17" stroke="#3A3222"></circle>
+          <g clip-path="url(#kitOrb)"><g transform="translate(0 18.5)"><path d="M0 0 Q 10 -3 20 0 T 40 0 T 60 0 T 80 0 T 100 0 T 120 0 T 140 0 T 160 0 V 60 H 0 Z" fill="url(#kitLiquid)" style="animation: drift 6s linear infinite"></path></g></g>
+          <ellipse cx="21" cy="19" rx="8" ry="4" fill="#FFFFFF" opacity="0.1" transform="rotate(-30 21 19)"></ellipse>
+        </svg>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-family: Cinzel, Georgia, serif; font-size: 26px; font-weight: 700; color: #F2D69C">143 <span style="font-size: 14px; color: #A8B5AB">/ 200</span></span>
+          <svg role="img" aria-label="Condensed Resin 2 of 5" width="76" height="16" viewBox="0 0 66 14">
+            <path d="M5 0L10 7L5 14L0 7Z" fill="#D7A75E"></path>
+            <path d="M19 0L24 7L19 14L14 7Z" fill="#D7A75E"></path>
+            <path d="M33 0.8L37.5 7L33 13.2L28.5 7Z" fill="none" stroke="#7A5E36"></path>
+            <path d="M47 0.8L51.5 7L47 13.2L42.5 7Z" fill="none" stroke="#7A5E36"></path>
+            <path d="M61 0.8L65.5 7L61 13.2L56.5 7Z" fill="none" stroke="#7A5E36"></path>
+          </svg>
+          <span style="font-size: 12px; color: #A8B5AB">Condensed 2 of 5</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">DayDial · WeekStrip</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Arc = time since the 04:00 server reset; gems = tracked domains open</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 18px">
+        <svg aria-hidden="true" width="96" height="96" viewBox="0 0 132 132">
+          <circle cx="66" cy="66" r="62" fill="none" stroke="#7A5E36" stroke-width="1"></circle>
+          <circle cx="66" cy="66" r="57" fill="none" stroke="#D7A75E" stroke-width="4" stroke-dasharray="1 13.92" opacity="0.7" style="transform-origin: 66px 66px; animation: spin 120s linear infinite"></circle>
+          <circle cx="66" cy="66" r="50" fill="#0D1B17" stroke="#3A3222" stroke-width="1"></circle>
+          <circle cx="66" cy="66" r="44" fill="none" stroke="#2A2418" stroke-width="3"></circle>
+          <path d="M66 22 A44 44 0 0 1 106.65 49.16" fill="none" stroke="#F2D69C" stroke-width="3" stroke-linecap="round"></path>
+          <line x1="66" y1="66" x2="102.03" y2="51.07" stroke="#D7A75E" stroke-width="1.5" stroke-linecap="round"></line>
+          <rect x="62" y="18" width="8" height="8" fill="#D7A75E" transform="rotate(45 66 22)"></rect>
+          <circle cx="106.65" cy="49.16" r="5" fill="#F2D69C" stroke="#0D1B17" stroke-width="2"></circle>
+          <circle cx="66" cy="66" r="7" fill="#D7A75E"></circle>
+        </svg>
+        <div aria-hidden="true" style="flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+          <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 7px 0 8px; border-radius: 4px; background: {{ d.bg }}; border: 1px solid {{ d.border }}">
+              <span style="font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700; color: {{ d.color }}">{{ d.l }}</span>
+              <div style="display: flex; gap: 3px; height: 6px; align-items: center">
+                <sc-for list="{{ d.dots }}" as="dot" hint-placeholder-count="1">
+                  <span style="width: 5px; height: 5px; transform: rotate(45deg); background: {{ d.dotColor }}"></span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">DiamondCheck · CrestSwitch · GemChip</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Real checkbox, switch and toggle semantics; 44 px touch targets</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 22px; flex-wrap: wrap">
+        <span style="display: flex; align-items: center; gap: 10px">
+          <span aria-hidden="true" style="width: 18px; height: 18px; box-sizing: border-box; transform: rotate(45deg); border: 1.5px solid #7A5E36"></span>
+          <span aria-hidden="true" style="width: 18px; height: 18px; box-sizing: border-box; transform: rotate(45deg); border: 1.5px solid #F2D69C; background: #D7A75E; box-shadow: 0 0 10px rgba(215, 167, 94, 0.6); display: flex; align-items: center; justify-content: center">
+            <svg style="transform: rotate(-45deg)" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A140B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>
+          </span>
+        </span>
+        <span style="display: flex; align-items: center; gap: 10px">
+          <span aria-hidden="true" style="position: relative; display: block; width: 46px; height: 24px; box-sizing: border-box; border-radius: 999px; border: 1px solid #3A3222; background: #08120F"><span style="position: absolute; top: 5px; left: 6px; width: 12px; height: 12px; transform: rotate(45deg); background: #7A5E36"></span></span>
+          <span aria-hidden="true" style="position: relative; display: block; width: 46px; height: 24px; box-sizing: border-box; border-radius: 999px; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.2); box-shadow: 0 0 12px rgba(215, 167, 94, 0.3)"><span style="position: absolute; top: 5px; left: 26px; width: 12px; height: 12px; transform: rotate(45deg); background: #F2D69C; box-shadow: 0 0 8px rgba(242, 214, 156, 0.9)"></span></span>
+        </span>
+        <span aria-hidden="true" style="height: 40px; padding: 0 16px 0 12px; box-sizing: border-box; border-radius: 999px; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.16); box-shadow: 0 0 14px rgba(215, 167, 94, 0.3); font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px">
+          <span style="width: 10px; height: 10px; box-sizing: border-box; transform: rotate(45deg); border: 1.5px solid #D7A75E; background: #F2D69C"></span>160
+        </span>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">CrestTabBar</h2>
+        <span style="font-size: 12px; color: #A8B5AB">Active tab sits in a glowing diamond crest; gem on the top rule</span>
+      </div>
+      <div aria-hidden="true" style="position: relative; height: 76px; box-sizing: border-box; padding: 10px 12px; border-radius: 4px; background: linear-gradient(180deg, #0E1D18, #07110E); border-top: 1px solid #7A5E36; display: flex; gap: 6px">
+        <span style="position: absolute; top: -5px; left: 50%; margin-left: -4px; width: 8px; height: 8px; background: #D7A75E; transform: rotate(45deg); box-shadow: 0 0 8px rgba(215, 167, 94, 0.7)"></span>
+        <span style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em">
+          <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center"><span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.16); transform: rotate(45deg); box-shadow: 0 0 14px rgba(215, 167, 94, 0.5)"></span><svg style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg></span>TODAY
+        </span>
+        <span style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em">
+          <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center"><span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span><svg style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg></span>RESIN
+        </span>
+        <span style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em">
+          <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center"><span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span><svg style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle></svg></span>PLANNER
+        </span>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">Tokens · AppTheme</h2>
+        <span style="font-size: 12px; color: #A8B5AB">ThemeExtension with these values; Cinzel display, Inter for data</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="10">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span aria-hidden="true" style="height: 30px; border-radius: 4px; background: {{ s.hex }}; border: 1px solid #3A3222"></span>
+            <span style="font-size: 11px; font-weight: 600">{{ s.name }}</span>
+            <span style="font-size: 11px; color: #A8B5AB; font-variant-numeric: tabular-nums">{{ s.hex }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 16px">
+        <span style="font-family: Cinzel, Georgia, serif; font-size: 26px; font-weight: 700; color: #F2D69C">Friday 143</span>
+        <span style="font-size: 14px">Inter 14 · Dawn books, 9 still missing</span>
+      </div>
+    </section>
+
+    <section style="position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">Rules that keep it usable</h2>
+      <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.45">
+        <li>Ornament on frames, headers and tabs only. Numbers and labels stay plain.</li>
+        <li>One glowing element per view: the primary action or the current state.</li>
+        <li>All motion loops are decorative and stop under reduce-motion.</li>
+        <li>Gold on dark for emphasis; body text stays ivory at 4.5:1 or better.</li>
+        <li>Element colors always come with a glyph, never color alone.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":880,"height":1580}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const starsFor = (n) => {
+      const out = [];
+      for (let i = 0; i < n; i++) out.push({ i: i });
+      return out;
+    };
+    const rarities = [
+      { n: 1, bg: 'linear-gradient(160deg, #4A5250, #262B2A)', border: '#6B7472', count: '×99' },
+      { n: 2, bg: 'linear-gradient(160deg, #2E5A45, #1A3127)', border: '#3F7A5E', count: '15/24' },
+      { n: 3, bg: 'linear-gradient(160deg, #2D4E73, #192B40)', border: '#46709E', count: '3/9' },
+      { n: 4, bg: 'linear-gradient(160deg, #55407A, #2A2040)', border: '#7A5FA8', count: '40/46' },
+      { n: 5, bg: 'linear-gradient(160deg, #8A5A2B, #43281A)', border: '#C08A4A', count: '1/6' }
+    ].map((r) => Object.assign({}, r, { stars: starsFor(r.n), label: r.n + '-star rarity' }));
+    const elements = [
+      { name: 'Pyro', color: '#F08A5D', halo: 'rgba(240, 138, 93, 0.35)', glyph: 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2.5-5 .3 1.6 1.2 2.6 2.3 3-.8-2.6-.4-5.5.2-8z' },
+      { name: 'Hydro', color: '#62B6EA', halo: 'rgba(98, 182, 234, 0.35)', glyph: 'M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z' },
+      { name: 'Anemo', color: '#6FD6B5', halo: 'rgba(111, 214, 181, 0.35)', glyph: 'M4 10c3-4 10-4 12 0 1.5 3-1.5 6-4 4.5M6 15c3 2 8 2 11-1M3 6c3-2 7-2 9 0' },
+      { name: 'Electro', color: '#B794EC', halo: 'rgba(183, 148, 236, 0.35)', glyph: 'M13 3L6 13h5l-1 8 7-10h-5l1-8z' },
+      { name: 'Dendro', color: '#A7CF5A', halo: 'rgba(167, 207, 90, 0.35)', glyph: 'M5 19c0-8 6-14 14-14 0 8-6 14-14 14zM5 19l8-8' },
+      { name: 'Cryo', color: '#A6E3EE', halo: 'rgba(166, 227, 238, 0.35)', glyph: 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9' },
+      { name: 'Geo', color: '#E9BE58', halo: 'rgba(233, 190, 88, 0.35)', glyph: 'M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9zM12 8l4 4-4 4-4-4z' }
+    ];
+    const week = [['M', 0], ['T', 2], ['W', 1], ['T', 0], ['F', 2, true], ['S', 1], ['S', 3]].map((d) => {
+      const today = !!d[2];
+      const dots = [];
+      for (let k = 0; k < d[1]; k++) dots.push({ k: k });
+      return {
+        l: d[0], dots: dots,
+        bg: today ? 'rgba(215, 167, 94, 0.16)' : 'transparent',
+        border: today ? '#D7A75E' : '#233B33',
+        color: today ? '#F2D69C' : '#A8B5AB',
+        dotColor: today ? '#F2D69C' : '#D7A75E'
+      };
+    });
+    const swatches = [
+      { name: 'Ground', hex: '#0B1714' },
+      { name: 'Panel', hex: '#12241F' },
+      { name: 'Raised', hex: '#183029' },
+      { name: 'Gold dim', hex: '#7A5E36' },
+      { name: 'Gold', hex: '#D7A75E' },
+      { name: 'Gold high', hex: '#F2D69C' },
+      { name: 'Ivory', hex: '#F4ECDC' },
+      { name: 'Muted', hex: '#A8B5AB' },
+      { name: 'Open', hex: '#8FD1AE' },
+      { name: 'Missing', hex: '#E9B872' }
+    ];
+    return { rarities: rarities, elements: elements, week: week, swatches: swatches };
+  }
+}
+</script>
+</body>
+</html>

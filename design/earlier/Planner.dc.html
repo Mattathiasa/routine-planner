@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Target planner</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#0B1814}
+a{color:#E3A46F}a:hover{color:#F0C29A}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 980px; box-sizing: border-box; padding-bottom: 96px; background: #0F1F1A; color: #F3EBDD; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px 0 20px; flex-shrink: 0">
+    <span style="font-family: Fraunces, Georgia, serif; font-size: 17px; font-weight: 600">Routine Planner</span>
+    <a href="Settings.dc.html" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #A9B8AE">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+    </a>
+  </header>
+
+  <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 20px; flex-shrink: 0">
+    <h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-size: 32px; font-weight: 600">Planner</h1>
+    <span style="font-size: 13px; color: #A9B8AE">4 targets · 5 materials still short</span>
+  </div>
+
+  <div role="group" aria-label="Planner view" style="margin: 0 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: #16302A; border: 1px solid #2C4F45; flex-shrink: 0">
+    <sc-for list="{{ segs }}" as="seg" hint-placeholder-count="2">
+      <button type="button" aria-pressed="{{ seg.pressed }}" onClick="{{ seg.pick }}" style="height: 44px; border-radius: 10px; border: none; background: {{ seg.bg }}; color: {{ seg.fg }}; font-family: inherit; font-size: 14px; font-weight: 600">{{ seg.label }}</button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ showTargets }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 20px; flex-shrink: 0">
+      <button type="button" style="height: 52px; border-radius: 14px; border: none; background: #D9935A; color: #10201B; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        Add target
+      </button>
+      <sc-for list="{{ targets }}" as="t" hint-placeholder-count="4">
+        <article style="display: flex; align-items: center; gap: 10px; padding: 14px 4px 14px 2px; border-radius: 18px; background: #16302A; border: 1px solid #2C4F45">
+          <button type="button" aria-label="{{ t.reorderLabel }}" style="width: 32px; height: 44px; border: none; background: transparent; color: #5E7D72; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+          </button>
+          <div aria-hidden="true" style="width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D9935A; background: #1C3A33; display: flex; align-items: center; justify-content: center; font-family: Fraunces, Georgia, serif; font-size: 20px; font-weight: 600; color: #E3A46F; flex-shrink: 0">{{ t.initial }}</div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="margin: 0; font-family: Fraunces, Georgia, serif; font-size: 18px; font-weight: 600">{{ t.name }}</h2>
+              <span style="font-size: 12px; color: #A9B8AE">{{ t.kind }}</span>
+            </div>
+            <span style="font-size: 13px">{{ t.level }}</span>
+            <span style="font-size: 12px; color: #A9B8AE">{{ t.talents }}</span>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px">
+              <div style="flex: 1; height: 6px; border-radius: 3px; background: #0F1F1A; overflow: hidden"><div style="width: {{ t.pct }}%; height: 100%; background: #D9935A"></div></div>
+              <span style="font-size: 12px; color: #A9B8AE; white-space: nowrap">{{ t.pctText }}</span>
+            </div>
+          </div>
+          <button type="button" aria-label="{{ t.openLabel }}" style="width: 44px; height: 44px; border: none; background: transparent; color: #A9B8AE; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+        </article>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showMaterials }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 20px; flex-shrink: 0">
+      <p style="margin: 0; font-size: 13px; color: #A9B8AE">Needed across all targets, most missing first.</p>
+      <ul style="list-style: none; margin: 0; padding: 0; border-radius: 18px; background: #16302A; border: 1px solid #2C4F45; overflow: hidden">
+        <sc-for list="{{ materials }}" as="m" hint-placeholder-count="5">
+          <li style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: {{ m.border }}">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 15px; font-weight: 600">{{ m.name }}</span>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+                <span style="font-size: 12px; color: #A9B8AE">{{ m.have }}</span>
+                <span style="font-size: 11px; font-weight: 600; color: {{ m.whenColor }}; border: 1px solid {{ m.whenBorder }}; border-radius: 999px; padding: 2px 8px">{{ m.when }}</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0">
+              <span style="font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 600; color: #E3A46F">{{ m.missing }}</span>
+              <span style="font-size: 11px; color: #A9B8AE">missing</span>
+            </div>
+          </li>
+        </sc-for>
+      </ul>
+    </div>
+  </sc-if>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; box-sizing: border-box; padding: 8px 16px 16px; background: #0B1814; border-top: 1px solid #2C4F45; display: flex; gap: 8px">
+    <a href="Main.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; color: #A9B8AE; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      <span>Today</span>
+    </a>
+    <a href="Resin.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; color: #A9B8AE; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg>
+      <span>Resin</span>
+    </a>
+    <a href="Planner.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 14px; background: #1C3A33; color: #E3A46F; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.6"></circle></svg>
+      <span>Planner</span>
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const tab = st.tab || 'targets';
+    const seg = (id, label) => {
+      const on = tab === id;
+      return {
+        id: id, label: label, pressed: on ? 'true' : 'false',
+        bg: on ? '#D9935A' : 'transparent', fg: on ? '#10201B' : '#F3EBDD',
+        pick: () => this.setState({ tab: id })
+      };
+    };
+    const targets = [
+      { id: 'aster', name: 'Aster', kind: 'Character', level: 'Lv 70 · A4 → Lv 90 · A6', talents: 'Talents 6/6/6 → 9/9/9', pct: 58 },
+      { id: 'wren', name: 'Wren', kind: 'Character', level: 'Lv 80 · A5 → Lv 90 · A6', talents: 'Talents 8/8/8 → 10/10/10', pct: 71 },
+      { id: 'larkspur', name: 'Larkspur Spear', kind: 'Weapon', level: 'Lv 60 · A3 → Lv 90 · A6', talents: 'Equipped on Aster', pct: 47 },
+      { id: 'corvin', name: 'Corvin', kind: 'Character', level: 'Lv 90 · A6 · level done', talents: 'Talents 4/6/6 → 8/8/8', pct: 34 }
+    ].map((t) => Object.assign({}, t, {
+      initial: t.name.charAt(0),
+      pctText: t.pct + '% in hand',
+      reorderLabel: 'Reorder ' + t.name,
+      openLabel: 'Open ' + t.name
+    }));
+    const open = { color: '#8DBF9B', border: '#3E6B5A' };
+    const closed = { color: '#A9B8AE', border: '#2C4F45' };
+    const materials = [
+      { id: 'm1', name: 'Dawn books · tier 2', have: 'Have 15 of 24', missing: '9', when: 'Open today', tone: open },
+      { id: 'm2', name: 'Ember core', have: 'Have 40 of 46', missing: '6', when: 'Any day', tone: open },
+      { id: 'm3', name: 'Tidal relics · tier 3', have: 'Have 3 of 9', missing: '6', when: 'Open today', tone: open },
+      { id: 'm4', name: 'Silt shards · tier 4', have: 'Have 1 of 6', missing: '5', when: 'Wed · Sat · Sun', tone: closed },
+      { id: 'm5', name: 'Dawn books · tier 3', have: 'Have 8 of 12', missing: '4', when: 'Open today', tone: open }
+    ].map((m, i) => Object.assign({}, m, {
+      whenColor: m.tone.color,
+      whenBorder: m.tone.border,
+      border: i > 0 ? '1px solid #2C4F45' : 'none'
+    }));
+    return {
+      segs: [seg('targets', 'Targets'), seg('materials', 'All materials')],
+      showTargets: tab === 'targets',
+      showMaterials: tab === 'materials',
+      targets: targets,
+      materials: materials
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resin — v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#06100D}
+a{color:#F2D69C}a:hover{color:#FFF1CF}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #F2D69C;outline-offset:2px}
+.cn{position:absolute;width:7px;height:7px;background:#D7A75E;transform:rotate(45deg);box-shadow:0 0 6px rgba(215,167,94,.6);pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{to{transform:translateX(-80px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+@keyframes shimmer{0%{transform:translateX(-120%)}55%,100%{transform:translateX(320%)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="position: relative; isolation: isolate; width: 390px; height: 1520px; box-sizing: border-box; padding-bottom: 104px; background: #0B1714; color: #F4ECDC; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 18px; overflow: hidden">
+
+  <svg aria-hidden="true" width="390" height="520" viewBox="0 0 390 520" style="position: absolute; top: 0; left: 0; z-index: -1">
+    <defs>
+      <radialGradient id="skyGlow" cx="50%" cy="38%" r="55%"><stop offset="0" stop-color="#2E4C40" stop-opacity="0.95"></stop><stop offset="1" stop-color="#0B1714" stop-opacity="0"></stop></radialGradient>
+    </defs>
+    <rect width="390" height="520" fill="url(#skyGlow)"></rect>
+    <circle cx="40" cy="120" r="1.2" fill="#F2D69C" style="animation: twinkle 3.2s ease-in-out infinite"></circle>
+    <circle cx="350" cy="90" r="1" fill="#F2D69C" style="animation: twinkle 4s ease-in-out infinite 1.2s"></circle>
+    <circle cx="70" cy="330" r="0.9" fill="#F4ECDC" opacity="0.4"></circle>
+    <circle cx="330" cy="300" r="1.1" fill="#F2D69C" style="animation: twinkle 2.8s ease-in-out infinite 0.6s"></circle>
+    <circle cx="190" cy="40" r="0.8" fill="#F4ECDC" opacity="0.5"></circle>
+  </svg>
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px 0 18px; flex-shrink: 0">
+    <span style="display: flex; align-items: center; gap: 10px">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D7A75E" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"></path><path d="M12 7l1 4 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#D7A75E"></path></svg>
+      <span style="font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 0.08em">Routine Planner</span>
+    </span>
+    <a href="SettingsV2.dc.html" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #D7A75E">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; border: 1px solid #7A5E36; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+      </span>
+    </a>
+  </header>
+
+  <div style="display: flex; align-items: center; gap: 8px; padding: 0 16px; flex-shrink: 0">
+    <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+    <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+    <h1 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #F2D69C">Original Resin</h1>
+    <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+    <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(270deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+  </div>
+
+  <section aria-label="Resin level" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0">
+    <div style="position: relative; width: 248px; height: 248px">
+      <svg aria-hidden="true" width="248" height="248" viewBox="0 0 248 248">
+        <defs>
+          <radialGradient id="orbHalo" cx="50%" cy="50%" r="50%"><stop offset="0.55" stop-color="#D7A75E" stop-opacity="0.18"></stop><stop offset="1" stop-color="#D7A75E" stop-opacity="0"></stop></radialGradient>
+          <radialGradient id="orbGlass" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#2C4C43"></stop><stop offset="1" stop-color="#0A1512"></stop></radialGradient>
+          <linearGradient id="orbLiquid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE3B0"></stop><stop offset="0.35" stop-color="#D7A75E"></stop><stop offset="1" stop-color="#8A5A2B"></stop></linearGradient>
+          <linearGradient id="arcGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE3B0"></stop><stop offset="1" stop-color="#B98644"></stop></linearGradient>
+          <clipPath id="orbClip"><circle cx="124" cy="124" r="84"></circle></clipPath>
+        </defs>
+        <circle cx="124" cy="124" r="123" fill="url(#orbHalo)"></circle>
+        <circle cx="124" cy="124" r="118" fill="none" stroke="#7A5E36" stroke-width="1"></circle>
+        <circle cx="124" cy="124" r="110" fill="none" stroke="#D7A75E" stroke-width="3" stroke-dasharray="1 16.28" opacity="0.5" style="transform-origin: 124px 124px; animation: spin 160s linear infinite"></circle>
+        <rect x="121" y="3" width="6" height="6" fill="#D7A75E" transform="rotate(45 124 6)"></rect>
+        <rect x="239" y="121" width="6" height="6" fill="#D7A75E" transform="rotate(45 242 124)"></rect>
+        <rect x="121" y="239" width="6" height="6" fill="#D7A75E" transform="rotate(45 124 242)"></rect>
+        <rect x="3" y="121" width="6" height="6" fill="#D7A75E" transform="rotate(45 6 124)"></rect>
+        <circle cx="207.4" cy="40.6" r="2" fill="#7A5E36"></circle>
+        <circle cx="207.4" cy="207.4" r="2" fill="#7A5E36"></circle>
+        <circle cx="40.6" cy="207.4" r="2" fill="#7A5E36"></circle>
+        <circle cx="40.6" cy="40.6" r="2" fill="#7A5E36"></circle>
+        <circle cx="124" cy="124" r="100" fill="none" stroke="#2A2418" stroke-width="6"></circle>
+        <circle cx="124" cy="124" r="100" fill="none" stroke="url(#arcGold)" stroke-width="6" stroke-linecap="round" stroke-dasharray="{{ ringDash }}" transform="rotate(-90 124 124)"></circle>
+        <rect x="25.4" y="89.6" width="7" height="7" fill="#F4ECDC" stroke="#0B1714" stroke-width="1.5" transform="rotate(45 28.9 93.1)"></rect>
+        <circle cx="124" cy="124" r="84" fill="url(#orbGlass)" stroke="#7A5E36" stroke-width="1.5"></circle>
+        <g clip-path="url(#orbClip)">
+          <g transform="translate(-20 {{ liquidBackY }})">
+            <path d="M0 0 Q 10 -5 20 0 T 40 0 T 60 0 T 80 0 T 100 0 T 120 0 T 140 0 T 160 0 T 180 0 T 200 0 T 220 0 T 240 0 T 260 0 T 280 0 T 300 0 T 320 0 T 340 0 T 360 0 V 260 H 0 Z" fill="#D7A75E" opacity="0.35" style="animation: drift 9s linear infinite reverse"></path>
+          </g>
+          <g transform="translate(0 {{ liquidY }})">
+            <path d="M0 0 Q 10 -6 20 0 T 40 0 T 60 0 T 80 0 T 100 0 T 120 0 T 140 0 T 160 0 T 180 0 T 200 0 T 220 0 T 240 0 T 260 0 T 280 0 T 300 0 T 320 0 T 340 0 T 360 0 V 260 H 0 Z" fill="url(#orbLiquid)" opacity="0.92" style="animation: drift 5.5s linear infinite"></path>
+          </g>
+          <circle cx="96" cy="176" r="2" fill="#FFF1CF" style="animation: twinkle 2.6s ease-in-out infinite"></circle>
+          <circle cx="150" cy="190" r="1.5" fill="#FFF1CF" style="animation: twinkle 3.4s ease-in-out infinite 0.8s"></circle>
+          <circle cx="128" cy="160" r="1.2" fill="#FFF1CF" style="animation: twinkle 2.2s ease-in-out infinite 1.5s"></circle>
+        </g>
+        <ellipse cx="98" cy="86" rx="30" ry="13" fill="#FFFFFF" opacity="0.09" transform="rotate(-28 98 86)"></ellipse>
+      </svg>
+      <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center">
+        <span style="font-family: Cinzel, Georgia, serif; font-size: 58px; font-weight: 700; line-height: 1; color: #FFF6E2; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 0 2px rgba(0, 0, 0, 0.9)">{{ v }}</span>
+        <span style="margin-top: 4px; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: #FFF6E2; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9)">OF 200</span>
+      </div>
+    </div>
+    <span role="status" style="font-size: 13px; font-weight: 600; color: #F2D69C">{{ nextTick }}</span>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 16px; flex-shrink: 0">
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span>
+      <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #A8B5AB">Reaches 160</span>
+      <span style="font-family: Cinzel, Georgia, serif; font-size: 22px; font-weight: 700">{{ at160 }}</span>
+    </div>
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span>
+      <span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #A8B5AB">Full at 200</span>
+      <span style="font-family: Cinzel, Georgia, serif; font-size: 22px; font-weight: 700; color: #F2D69C">{{ at200 }}</span>
+    </div>
+  </div>
+
+  <section aria-labelledby="alert-heading" style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 id="alert-heading" style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Alert me at</h2>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="2">
+        <button type="button" aria-pressed="{{ chip.pressed }}" onClick="{{ chip.toggle }}" style="height: 44px; padding: 0 16px 0 12px; border-radius: 999px; border: 1px solid {{ chip.border }}; background: {{ chip.bg }}; box-shadow: {{ chip.glow }}; color: #F4ECDC; font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: center; gap: 10px">
+          <span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; transform: rotate(45deg); border: 1.5px solid #D7A75E; background: {{ chip.gem }}"></span>
+          {{ chip.label }}
+        </button>
+      </sc-for>
+      <button type="button" style="height: 44px; padding: 0 16px; border-radius: 999px; border: 1px dashed #7A5E36; background: transparent; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700">+ Custom</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="stock-heading" style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 id="stock-heading" style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">In your satchel</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{ stock }}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <div style="position: relative; width: 84px; height: 84px; box-sizing: border-box; border-radius: 8px; background: {{ s.bg }}; border: 1px solid {{ s.border }}; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.04), 0 6px 16px rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; overflow: hidden">
+            <svg aria-hidden="true" style="margin-top: -12px" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFF1CF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.glyph }}"></path></svg>
+            <span style="position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 0; background: rgba(6, 16, 13, 0.75); font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; text-align: center">{{ s.count }}</span>
+          </div>
+          <span style="font-size: 13px; font-weight: 600">{{ s.name }}</span>
+          <span style="font-size: 11px; color: {{ s.subColor }}; text-align: center">{{ s.sub }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-label="Actions" style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <button type="button" style="position: relative; overflow: hidden; height: 54px; border-radius: 999px; border: 1px solid #FBE3B0; background: linear-gradient(180deg, #F6DDA6, #D7A75E 55%, #B07E40); box-shadow: 0 0 0 3px rgba(215, 167, 94, 0.18), 0 8px 20px rgba(0, 0, 0, 0.45); color: #1A140B; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center; gap: 10px">
+      <span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: 0; width: 34%; background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)); animation: shimmer 4s ease-in-out infinite"></span>
+      <svg aria-hidden="true" style="position: relative" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"></path><path d="M4 4v4h4"></path><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"></path><path d="M20 20v-4h-4"></path></svg>
+      <span style="position: relative">Sync with game</span>
+    </button>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{ actions }}" as="act" hint-placeholder-count="6">
+        <button type="button" onClick="{{ act.run }}" disabled="{{ act.disabled }}" style="position: relative; min-height: 62px; padding: 8px 10px; border-radius: 4px; border: 1px solid #7A5E36; background: linear-gradient(180deg, #1A3530, #12241F); box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #2A2418; color: #F4ECDC; font-family: inherit; text-align: left; display: flex; align-items: center; gap: 10px; opacity: {{ act.opacity }}">
+          <span aria-hidden="true" style="width: 26px; height: 26px; margin: 5px; box-sizing: border-box; border: 1px solid #D7A75E; background: #0F1F1A; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <svg style="transform: rotate(-45deg)" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F2D69C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ act.glyph }}"></path></svg>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-size: 14px; font-weight: 600">{{ act.label }}</span>
+            <span style="font-size: 11px; color: #A8B5AB">{{ act.sub }}</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="log-heading" style="display: flex; flex-direction: column; gap: 6px; padding: 0 16px; flex-shrink: 0">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h2 id="log-heading" style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Chronicle</h2>
+      <button type="button" onClick="{{ undo }}" disabled="{{ undoDisabled }}" style="height: 44px; padding: 0 10px; border: none; background: transparent; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; opacity: {{ undoOpacity }}">Undo last</button>
+    </div>
+    <div style="position: relative">
+      <div aria-hidden="true" style="position: absolute; left: 9px; top: 14px; bottom: 14px; width: 1px; background: linear-gradient(180deg, #D7A75E, #3A3222)"></div>
+      <ol style="position: relative; list-style: none; margin: 0; padding: 0">
+        <sc-for list="{{ log }}" as="row" hint-placeholder-count="3">
+          <li style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+            <span aria-hidden="true" style="width: 9px; height: 9px; margin-left: 5px; box-sizing: border-box; transform: rotate(45deg); background: {{ row.gem }}; border: 1px solid #D7A75E; box-shadow: {{ row.glow }}; flex-shrink: 0"></span>
+            <span style="width: 40px; font-size: 12px; color: #A8B5AB; font-variant-numeric: tabular-nums">{{ row.t }}</span>
+            <span style="flex: 1; font-size: 14px">{{ row.what }}</span>
+            <span style="font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; color: #F2D69C">{{ row.after }}</span>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 86px; box-sizing: border-box; padding: 12px 12px 16px; background: linear-gradient(180deg, #0E1D18, #07110E); border-top: 1px solid #7A5E36; display: flex; gap: 6px">
+    <span aria-hidden="true" style="position: absolute; top: -5px; left: 50%; margin-left: -4px; width: 8px; height: 8px; background: #D7A75E; transform: rotate(45deg); box-shadow: 0 0 8px rgba(215, 167, 94, 0.7)"></span>
+    <a href="TodayV2.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </span>
+      <span>Today</span>
+    </a>
+    <a href="ResinV2.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.16); transform: rotate(45deg); box-shadow: 0 0 14px rgba(215, 167, 94, 0.5)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg>
+      </span>
+      <span>Resin</span>
+    </a>
+    <a href="PlannerV2.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #A8B5AB; font-family: Cinzel, Georgia, serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+      <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #3A3222; transform: rotate(45deg)"></span>
+        <svg aria-hidden="true" style="position: relative" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.6"></circle></svg>
+      </span>
+      <span>Planner</span>
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1520}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const cap = 200;
+    const v = st.v != null ? st.v : 143;
+    const condensed = st.condensed != null ? st.condensed : 2;
+    const fragile = st.fragile != null ? st.fragile : 3;
+    const transient = st.transient != null ? st.transient : 1;
+    const restarted = !!st.restarted;
+    const th = st.th || { t160: true, t200: true };
+    const log = st.log || [
+      { t: '10:24', what: 'Synced with game', after: '143' },
+      { t: '08:02', what: 'Spent 40 · Ember core', after: '127' },
+      { t: '07:40', what: 'Used Fragile Resin', after: '164' }
+    ];
+    const G = {
+      drop: 'M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z',
+      core: 'M4 12a8 8 0 1 0 16 0a8 8 0 1 0-16 0zM8.5 12a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0z',
+      crystal: 'M12 2l5 6-5 14-5-14zM7 8h10M12 2v20',
+      shard: 'M8 3l9 5-3 13-8-6zM8 3l6 18M17 8l-11 7',
+      hourglass: 'M7 3h10M7 21h10M8 3c0 5 8 7 8 9s-8 4-8 9M16 3c0 5-8 7-8 9s8 4 8 9'
+    };
+    const nowMin = 630;
+    const first = restarted ? 8 : 5.2;
+    const clock = (m) => {
+      const total = Math.round(m);
+      const day = Math.floor(total / 1440);
+      const mm = total % 1440;
+      const h = Math.floor(mm / 60);
+      const mi = mm % 60;
+      return (h < 10 ? '0' : '') + h + ':' + (mi < 10 ? '0' : '') + mi + (day > 0 ? ' tmrw' : '');
+    };
+    const timeTo = (T) => (v >= T ? 'Reached' : clock(nowMin + first + (T - v - 1) * 8));
+    const f = Math.min(v, cap) / cap;
+    const C = 2 * Math.PI * 100;
+    const snap = { v: v, condensed: condensed, fragile: fragile, transient: transient, restarted: restarted, log: log };
+    const apply = (patch, what, nv) => {
+      const next = Object.assign({ prev: snap }, patch);
+      next.log = [{ t: 'Now', what: what, after: String(nv) }].concat(log).slice(0, 6);
+      this.setState(next);
+    };
+    const spend = (cost, what) => () => {
+      if (v < cost) return;
+      const nv = v - cost;
+      apply({ v: nv, restarted: restarted || (v >= cap && nv < cap) }, what, nv);
+    };
+    const actions = [
+      { key: 's20', label: 'Spend 20', sub: 'Domain run', glyph: G.drop, ok: v >= 20, run: spend(20, 'Spent 20') },
+      { key: 's40', label: 'Spend 40', sub: 'Boss run', glyph: G.core, ok: v >= 40, run: spend(40, 'Spent 40') },
+      { key: 'craft', label: 'Craft Condensed', sub: 'Uses 40 Original', glyph: G.crystal, ok: v >= 40 && condensed < 5,
+        run: () => {
+          if (v < 40 || condensed >= 5) return;
+          const nv = v - 40;
+          apply({ v: nv, condensed: condensed + 1, restarted: restarted || (v >= cap && nv < cap) }, 'Crafted Condensed', nv);
+        } },
+      { key: 'cond', label: 'Use Condensed', sub: 'Double rewards', glyph: G.crystal, ok: condensed > 0,
+        run: () => {
+          if (condensed < 1) return;
+          apply({ condensed: condensed - 1 }, 'Used Condensed', v);
+        } },
+      { key: 'frag', label: 'Use Fragile', sub: '+60, can pass cap', glyph: G.shard, ok: fragile > 0,
+        run: () => {
+          if (fragile < 1) return;
+          apply({ v: v + 60, fragile: fragile - 1 }, 'Used Fragile Resin', v + 60);
+        } },
+      { key: 'trans', label: 'Use Transient', sub: '+60, expires first', glyph: G.hourglass, ok: transient > 0,
+        run: () => {
+          if (transient < 1) return;
+          apply({ v: v + 60, transient: transient - 1 }, 'Used Transient Resin', v + 60);
+        } }
+    ].map((a) => Object.assign({}, a, { disabled: !a.ok, opacity: a.ok ? 1 : 0.45 }));
+    const chip = (key, label) => {
+      const on = !!th[key];
+      return {
+        key: key, label: label, pressed: on ? 'true' : 'false',
+        bg: on ? 'rgba(215, 167, 94, 0.16)' : 'transparent',
+        border: on ? '#D7A75E' : '#3A3222',
+        glow: on ? '0 0 14px rgba(215, 167, 94, 0.3)' : 'none',
+        gem: on ? '#F2D69C' : 'transparent',
+        toggle: () => this.setState({ th: Object.assign({}, th, { [key]: !on }) })
+      };
+    };
+    const stock = [
+      { key: 'cond', name: 'Condensed', count: condensed + ' / 5', sub: 'Holds 40 each', glyph: G.crystal, bg: 'linear-gradient(160deg, #55407A, #2A2040)', border: '#7A5FA8', subColor: '#A8B5AB' },
+      { key: 'frag', name: 'Fragile', count: '× ' + fragile, sub: '+60 each', glyph: G.shard, bg: 'linear-gradient(160deg, #8A5A2B, #43281A)', border: '#C08A4A', subColor: '#A8B5AB' },
+      { key: 'trans', name: 'Transient', count: '× ' + transient, sub: transient > 0 ? 'Expires in 4 d' : 'None held', glyph: G.hourglass, bg: 'linear-gradient(160deg, #2D4E73, #192B40)', border: '#46709E', subColor: transient > 0 ? '#E9B872' : '#A8B5AB' }
+    ];
+    const undo = () => {
+      if (!st.prev) return;
+      this.setState(Object.assign({}, st.prev, { prev: null }));
+    };
+    return {
+      v: v,
+      ringDash: (f * C).toFixed(1) + ' ' + C.toFixed(1),
+      liquidY: (208 - 168 * f).toFixed(1),
+      liquidBackY: (211 - 168 * f).toFixed(1),
+      nextTick: v >= cap ? 'At cap · regeneration paused' : 'Next +1 in ' + (restarted ? '08:00' : '05:12'),
+      at160: timeTo(160),
+      at200: timeTo(200),
+      chips: [chip('t160', '160'), chip('t200', '200 · cap')],
+      stock: stock,
+      actions: actions,
+      log: log.map((r, i) => Object.assign({}, r, {
+        gem: i === 0 ? '#F2D69C' : '#0F1F1A',
+        glow: i === 0 ? '0 0 8px rgba(215, 167, 94, 0.7)' : 'none'
+      })),
+      undo: undo,
+      undoDisabled: !st.prev,
+      undoOpacity: st.prev ? 1 : 0.45
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#06100D}
+a{color:#F2D69C}a:hover{color:#FFF1CF}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #F2D69C;outline-offset:2px}
+.cn{position:absolute;width:7px;height:7px;background:#D7A75E;transform:rotate(45deg);box-shadow:0 0 6px rgba(215,167,94,.6);pointer-events:none}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</helmet>
+<div style="position: relative; isolation: isolate; width: 390px; height: 1300px; box-sizing: border-box; padding-bottom: 32px; background: #0B1714; color: #F4ECDC; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 20px; overflow: hidden">
+
+  <svg aria-hidden="true" width="390" height="360" viewBox="0 0 390 360" style="position: absolute; top: 0; left: 0; z-index: -1">
+    <defs><radialGradient id="skyGlow" cx="80%" cy="0%" r="70%"><stop offset="0" stop-color="#2A4A3E" stop-opacity="0.85"></stop><stop offset="1" stop-color="#0B1714" stop-opacity="0"></stop></radialGradient></defs>
+    <rect width="390" height="360" fill="url(#skyGlow)"></rect>
+  </svg>
+
+  <header style="display: flex; align-items: center; height: 56px; padding: 0 16px 0 4px; flex-shrink: 0">
+    <a href="TodayV2.dc.html" style="height: 44px; padding: 0 12px 0 6px; display: flex; align-items: center; gap: 4px; color: #F2D69C; text-decoration: none; font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700; letter-spacing: 0.08em">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+      Today
+    </a>
+  </header>
+
+  <div style="display: flex; align-items: center; gap: 8px; padding: 0 16px; flex-shrink: 0">
+    <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+    <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+    <h1 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #F2D69C">Settings</h1>
+    <span aria-hidden="true" style="width: 6px; height: 6px; background: #D7A75E; transform: rotate(45deg)"></span>
+    <span aria-hidden="true" style="flex: 1; height: 1px; background: linear-gradient(270deg, rgba(215, 167, 94, 0), #D7A75E)"></span>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 id="server-heading" style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Game server</h2>
+    <div role="radiogroup" aria-labelledby="server-heading" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{ servers }}" as="s" hint-placeholder-count="4">
+        <button type="button" role="radio" aria-checked="{{ s.checked }}" onClick="{{ s.pick }}" style="position: relative; min-height: 60px; padding: 10px 12px; box-sizing: border-box; border-radius: 4px; border: 1px solid {{ s.border }}; background: {{ s.bg }}; box-shadow: {{ s.shadow }}; color: #F4ECDC; font-family: inherit; text-align: left; display: flex; align-items: center; gap: 12px">
+          <span aria-hidden="true" style="width: 14px; height: 14px; margin: 3px; box-sizing: border-box; transform: rotate(45deg); border: 1.5px solid #D7A75E; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <span style="width: 6px; height: 6px; background: {{ s.dot }}; box-shadow: {{ s.dotGlow }}"></span>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-family: Cinzel, Georgia, serif; font-size: 14px; font-weight: 700">{{ s.name }}</span>
+            <span style="font-size: 12px; color: #A8B5AB">{{ s.offset }}</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; background: rgba(215, 167, 94, 0.07); border: 1px dashed #7A5E36">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D7A75E" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      <span style="font-size: 13px">Your daily reset: <strong style="font-family: Cinzel, Georgia, serif; color: #F2D69C; font-weight: 700">{{ resetLocal }}</strong> <span style="color: #A8B5AB">Addis time</span></span>
+    </div>
+  </section>
+
+  <section aria-label="World Level" style="position: relative; margin: 0 16px; display: flex; align-items: center; gap: 12px; padding: 14px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222, 0 10px 28px rgba(0, 0, 0, 0.4); flex-shrink: 0">
+    <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700">World Level</span>
+      <span style="font-size: 12px; color: #A8B5AB">Sets run estimates in v2</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0">
+      <button type="button" aria-label="Lower World Level" onClick="{{ wlDown }}" style="width: 44px; height: 44px; padding: 0; border: none; background: transparent; display: flex; align-items: center; justify-content: center">
+        <span aria-hidden="true" style="width: 26px; height: 26px; box-sizing: border-box; border: 1px solid #D7A75E; background: #0F1F1A; transform: rotate(45deg); display: flex; align-items: center; justify-content: center">
+          <svg style="transform: rotate(-45deg)" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F2D69C" stroke-width="3" stroke-linecap="round"><path d="M5 12h14"></path></svg>
+        </span>
+      </button>
+      <output aria-live="polite" style="width: 40px; text-align: center; font-family: Cinzel, Georgia, serif; font-size: 26px; font-weight: 700; color: #F2D69C; text-shadow: 0 0 14px rgba(215, 167, 94, 0.4)">{{ wl }}</output>
+      <button type="button" aria-label="Raise World Level" onClick="{{ wlUp }}" style="width: 44px; height: 44px; padding: 0; border: none; background: transparent; display: flex; align-items: center; justify-content: center">
+        <span aria-hidden="true" style="width: 26px; height: 26px; box-sizing: border-box; border: 1px solid #D7A75E; background: #0F1F1A; transform: rotate(45deg); display: flex; align-items: center; justify-content: center">
+          <svg style="transform: rotate(-45deg)" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F2D69C" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Notifications</h2>
+    <div style="position: relative; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222, 0 10px 28px rgba(0, 0, 0, 0.4)">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 8px 6px 8px 14px; box-sizing: border-box; border-top: {{ r.border }}">
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span id="{{ r.labelId }}" style="font-size: 15px; font-weight: 600">{{ r.label }}</span>
+            <span style="font-size: 12px; color: #A8B5AB">{{ r.desc }}</span>
+          </span>
+          <button type="button" role="switch" aria-checked="{{ r.checked }}" aria-labelledby="{{ r.labelId }}" onClick="{{ r.toggle }}" style="width: 60px; height: 44px; padding: 0; border: none; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <span style="position: relative; display: block; width: 46px; height: 24px; box-sizing: border-box; border-radius: 999px; border: 1px solid {{ r.trackBorder }}; background: {{ r.trackBg }}; box-shadow: {{ r.trackGlow }}">
+              <span style="position: absolute; top: 5px; left: {{ r.knobLeft }}; width: 12px; height: 12px; transform: rotate(45deg); background: {{ r.knob }}; box-shadow: {{ r.knobGlow }}; transition: left 0.2s ease"></span>
+            </span>
+          </button>
+        </div>
+      </sc-for>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-top: 1px solid #233B33">
+        <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #8FD1AE; box-shadow: 0 0 8px #8FD1AE; animation: glow 2.4s ease-in-out infinite; flex-shrink: 0"></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; font-weight: 600; color: #8FD1AE">Exact alarms allowed</span>
+          <span style="font-size: 12px; color: #A8B5AB">Alerts fire on time, even with the app closed</span>
+        </span>
+      </div>
+    </div>
+    <button type="button" style="height: 48px; border-radius: 4px; border: 1px dashed #7A5E36; background: transparent; color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">+ Add resin threshold</button>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Planner</h2>
+    <div style="position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 6px 12px 14px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <span id="totals-label" style="font-size: 15px; font-weight: 600">Totals-only mode</span>
+        <span style="font-size: 12px; color: #A8B5AB">Skip inventory. The planner shows full totals instead of what is missing.</span>
+      </span>
+      <button type="button" role="switch" aria-checked="{{ totals.checked }}" aria-labelledby="totals-label" onClick="{{ totals.toggle }}" style="width: 60px; height: 44px; padding: 0; border: none; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <span style="position: relative; display: block; width: 46px; height: 24px; box-sizing: border-box; border-radius: 999px; border: 1px solid {{ totals.trackBorder }}; background: {{ totals.trackBg }}; box-shadow: {{ totals.trackGlow }}">
+          <span style="position: absolute; top: 5px; left: {{ totals.knobLeft }}; width: 12px; height: 12px; transform: rotate(45deg); background: {{ totals.knob }}; box-shadow: {{ totals.knobGlow }}; transition: left 0.2s ease"></span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px; flex-shrink: 0">
+    <h2 style="margin: 0; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #A8B5AB">Game data and backup</h2>
+    <div style="position: relative; display: flex; flex-direction: column; gap: 12px; padding: 14px; background: #12241F; border: 1px solid #7A5E36; border-radius: 4px; box-shadow: inset 0 0 0 3px #12241F, inset 0 0 0 4px #3A3222, 0 10px 28px rgba(0, 0, 0, 0.4)">
+      <span class="cn" style="top: -4px; left: -4px"></span><span class="cn" style="top: -4px; right: -4px"></span><span class="cn" style="bottom: -4px; left: -4px"></span><span class="cn" style="bottom: -4px; right: -4px"></span>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span aria-hidden="true" style="width: 40px; height: 40px; box-sizing: border-box; border-radius: 6px; background: linear-gradient(160deg, #2D4E73, #192B40); border: 1px solid #46709E; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF1CF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9a3 3 0 0 1 3 3v13H9a3 3 0 0 1-3-3zM6 17a3 3 0 0 1 3-3h9"></path></svg>
+        </span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700">Catalog · game 7.2</span>
+          <span style="font-size: 12px; color: #A8B5AB">Bundle 7.2.0 · works offline</span>
+        </span>
+        <button type="button" style="height: 44px; padding: 0 12px; border-radius: 4px; border: 1px solid #D7A75E; background: rgba(215, 167, 94, 0.08); color: #F2D69C; font-family: Cinzel, Georgia, serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; flex-shrink: 0">Check</button>
+      </div>
+      <div aria-hidden="true" style="display: flex; align-items: center; gap: 6px">
+        <span style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215, 167, 94, 0), #3A3222)"></span>
+        <span style="width: 5px; height: 5px; background: #7A5E36; transform: rotate(45deg)"></span>
+        <span style="flex: 1; height: 1px; background: linear-gradient(270deg, rgba(215, 167, 94, 0), #3A3222)"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <button type="button" style="height: 48px; border-radius: 4px; border: 1px solid #7A5E36; background: linear-gradient(180deg, #1A3530, #12241F); color: #F4ECDC; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em">Export JSON</button>
+        <button type="button" style="height: 48px; border-radius: 4px; border: 1px solid #7A5E36; background: linear-gradient(180deg, #1A3530, #12241F); color: #F4ECDC; font-family: Cinzel, Georgia, serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em">Import JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="About" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 28px 0; text-align: center; flex-shrink: 0">
+    <svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D7A75E" stroke-width="1.2" stroke-linejoin="round"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"></path><path d="M12 7l1 4 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#D7A75E"></path></svg>
+    <span style="font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 0.08em">Routine Planner · 0.1.0</span>
+    <p style="margin: 0; font-size: 12px; line-height: 1.55; color: #A8B5AB">Unofficial fan-made companion. Not affiliated with or endorsed by HoYoverse. Game names and data belong to their owners.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const server = st.server || 'europe';
+    const wl = st.wl != null ? st.wl : 8;
+    const notif = st.notif || { n160: true, n200: true, transient: true };
+    const totalsOnly = !!st.totalsOnly;
+    const list = [
+      { id: 'asia', name: 'Asia', offset: 'UTC+8', reset: '23:00, day before' },
+      { id: 'europe', name: 'Europe', offset: 'UTC+1', reset: '06:00' },
+      { id: 'america', name: 'America', offset: 'UTC−5', reset: '12:00' },
+      { id: 'tw', name: 'TW · HK · MO', offset: 'UTC+8', reset: '23:00, day before' }
+    ];
+    const servers = list.map((s) => {
+      const on = s.id === server;
+      return {
+        id: s.id, name: s.name, offset: s.offset,
+        checked: on ? 'true' : 'false',
+        border: on ? '#D7A75E' : '#3A3222',
+        bg: on ? 'linear-gradient(180deg, rgba(215, 167, 94, 0.16), rgba(215, 167, 94, 0.04))' : '#12241F',
+        shadow: on ? '0 0 16px rgba(215, 167, 94, 0.25), inset 0 0 0 3px #12241F, inset 0 0 0 4px rgba(215, 167, 94, 0.25)' : 'none',
+        dot: on ? '#F2D69C' : 'transparent',
+        dotGlow: on ? '0 0 6px rgba(242, 214, 156, 0.9)' : 'none',
+        pick: () => this.setState({ server: s.id })
+      };
+    });
+    const cur = list.filter((s) => s.id === server)[0];
+    const sw = (on) => ({
+      checked: on ? 'true' : 'false',
+      trackBorder: on ? '#D7A75E' : '#3A3222',
+      trackBg: on ? 'rgba(215, 167, 94, 0.2)' : '#08120F',
+      trackGlow: on ? '0 0 12px rgba(215, 167, 94, 0.3)' : 'none',
+      knob: on ? '#F2D69C' : '#7A5E36',
+      knobGlow: on ? '0 0 8px rgba(242, 214, 156, 0.9)' : 'none',
+      knobLeft: on ? '26px' : '6px'
+    });
+    const rules = [
+      { id: 'n160', label: 'Resin reaches 160', desc: '5 h 20 min before it caps' },
+      { id: 'n200', label: 'Resin reaches 200', desc: 'At cap, regeneration stops' },
+      { id: 'transient', label: 'Transient Resin expiring', desc: '24 h before a stack expires' }
+    ].map((r, i) => Object.assign({}, r, sw(!!notif[r.id]), {
+      labelId: 'rule-' + r.id,
+      border: i > 0 ? '1px solid #233B33' : 'none',
+      toggle: () => this.setState({ notif: Object.assign({}, notif, { [r.id]: !notif[r.id] }) })
+    }));
+    return {
+      servers: servers,
+      resetLocal: cur.reset,
+      wl: wl,
+      wlDown: () => this.setState({ wl: Math.max(0, wl - 1) }),
+      wlUp: () => this.setState({ wl: Math.min(9, wl + 1) }),
+      rules: rules,
+      totals: Object.assign({}, sw(totalsOnly), { toggle: () => this.setState({ totalsOnly: !totalsOnly }) })
+    };
+  }
+}
+</script>
+</body>
+</html>

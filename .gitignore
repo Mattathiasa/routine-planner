@@ -1,0 +1,7 @@
+.dart_tool/
+build/
+.flutter-plugins*
+*.g.dart
+*.freezed.dart
+.idea/
+.DS_Store

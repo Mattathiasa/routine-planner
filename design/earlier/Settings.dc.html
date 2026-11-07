@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#0B1814}
+a{color:#E3A46F}a:hover{color:#F0C29A}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 1320px; box-sizing: border-box; padding-bottom: 32px; background: #0F1F1A; color: #F3EBDD; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; gap: 20px; overflow: hidden">
+
+  <header style="display: flex; align-items: center; height: 56px; padding: 0 20px 0 4px; flex-shrink: 0">
+    <a href="Main.dc.html" style="height: 44px; padding: 0 12px 0 4px; display: flex; align-items: center; gap: 2px; border-radius: 12px; color: #E3A46F; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+      Today
+    </a>
+  </header>
+
+  <h1 style="margin: 0; padding: 0 20px; font-family: Fraunces, Georgia, serif; font-size: 32px; font-weight: 600; flex-shrink: 0">Settings</h1>
+
+  <fieldset style="margin: 0 20px; padding: 0; border: none; min-width: 0; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0">
+    <legend style="padding: 0; margin-bottom: 10px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Game server</legend>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{ servers }}" as="s" hint-placeholder-count="4">
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 56px; box-sizing: border-box; padding: 10px 12px; border-radius: 14px; border: 1px solid {{ s.border }}; background: {{ s.bg }}">
+          <input type="radio" name="server" value="{{ s.id }}" checked="{{ s.on }}" onChange="{{ s.pick }}" style="width: 20px; height: 20px; margin: 0; accent-color: #D9935A; flex-shrink: 0">
+          <span style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 14px; font-weight: 600">{{ s.name }}</span>
+            <span style="font-size: 12px; color: #A9B8AE">{{ s.offset }}</span>
+          </span>
+        </label>
+      </sc-for>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #A9B8AE">Daily reset for you: <strong style="color: #F3EBDD; font-weight: 600">{{ resetLocal }}</strong> Addis Ababa time (04:00 server time)</p>
+  </fieldset>
+
+  <section aria-label="World Level" style="margin: 0 20px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #16302A; border: 1px solid #2C4F45; flex-shrink: 0">
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 15px; font-weight: 600">World Level</span>
+      <span style="font-size: 12px; color: #A9B8AE">Used for run estimates in v2</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0">
+      <button type="button" aria-label="Lower World Level" onClick="{{ wlDown }}" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #3E6B5A; background: transparent; color: #F3EBDD; font-family: inherit; font-size: 20px; font-weight: 600">−</button>
+      <output aria-live="polite" style="width: 36px; text-align: center; font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 600">{{ wl }}</output>
+      <button type="button" aria-label="Raise World Level" onClick="{{ wlUp }}" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #3E6B5A; background: transparent; color: #F3EBDD; font-family: inherit; font-size: 20px; font-weight: 600">+</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="notif-heading" style="margin: 0 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0">
+    <h2 id="notif-heading" style="margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Notifications</h2>
+    <div style="border-radius: 18px; background: #16302A; border: 1px solid #2C4F45; overflow: hidden">
+      <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 64px; box-sizing: border-box; border-top: {{ r.border }}">
+          <label for="{{ r.inputId }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 600">{{ r.label }}</span>
+            <span style="font-size: 12px; color: #A9B8AE">{{ r.desc }}</span>
+          </label>
+          <input type="checkbox" role="switch" id="{{ r.inputId }}" checked="{{ r.on }}" onChange="{{ r.toggle }}" style="width: 24px; height: 24px; margin: 0; accent-color: #D9935A; flex-shrink: 0">
+        </div>
+      </sc-for>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid #2C4F45">
+        <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #8DBF9B; flex-shrink: 0"></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; font-weight: 600; color: #8DBF9B">Exact alarms allowed</span>
+          <span style="font-size: 12px; color: #A9B8AE">Alerts fire on time, even when the app is closed</span>
+        </span>
+      </div>
+    </div>
+    <button type="button" style="height: 48px; border-radius: 14px; border: 1px dashed #3E6B5A; background: transparent; color: #E3A46F; font-family: inherit; font-size: 14px; font-weight: 600">+ Add resin threshold</button>
+  </section>
+
+  <section aria-labelledby="planner-heading" style="margin: 0 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0">
+    <h2 id="planner-heading" style="margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Planner</h2>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #16302A; border: 1px solid #2C4F45">
+      <label for="totals-only" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 15px; font-weight: 600">Totals-only mode</span>
+        <span style="font-size: 12px; color: #A9B8AE">Skip inventory. The planner shows full material totals instead of what is missing.</span>
+      </label>
+      <input type="checkbox" role="switch" id="totals-only" checked="{{ totalsOnly }}" onChange="{{ toggleTotals }}" style="width: 24px; height: 24px; margin: 0; accent-color: #D9935A; flex-shrink: 0">
+    </div>
+  </section>
+
+  <section aria-labelledby="data-heading" style="margin: 0 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0">
+    <h2 id="data-heading" style="margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A9B8AE; font-weight: 600">Game data and backup</h2>
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #16302A; border: 1px solid #2C4F45">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px; font-weight: 600">Catalog for game 7.2</span>
+          <span style="font-size: 12px; color: #A9B8AE">Bundle 7.2.0 · works offline</span>
+        </span>
+        <button type="button" style="height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #D9935A; background: transparent; color: #E3A46F; font-family: inherit; font-size: 14px; font-weight: 600">Check update</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <button type="button" style="height: 48px; border-radius: 12px; border: 1px solid #3E6B5A; background: #1C3A33; color: #F3EBDD; font-family: inherit; font-size: 14px; font-weight: 600">Export JSON</button>
+        <button type="button" style="height: 48px; border-radius: 12px; border: 1px solid #3E6B5A; background: #1C3A33; color: #F3EBDD; font-family: inherit; font-size: 14px; font-weight: 600">Import JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="About" style="margin: 0 20px; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; flex-shrink: 0">
+    <span style="font-family: Fraunces, Georgia, serif; font-size: 16px; font-weight: 600">Routine Planner · 0.1.0</span>
+    <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #A9B8AE">Unofficial fan-made companion. Not affiliated with or endorsed by HoYoverse. Game names and data belong to their owners.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1320}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const server = st.server || 'europe';
+    const wl = st.wl != null ? st.wl : 8;
+    const notif = st.notif || { n160: true, n200: true, transient: true };
+    const totalsOnly = !!st.totalsOnly;
+    const list = [
+      { id: 'asia', name: 'Asia', offset: 'UTC+8', reset: '23:00 the evening before' },
+      { id: 'europe', name: 'Europe', offset: 'UTC+1', reset: '06:00' },
+      { id: 'america', name: 'America', offset: 'UTC−5', reset: '12:00' },
+      { id: 'tw', name: 'TW · HK · MO', offset: 'UTC+8', reset: '23:00 the evening before' }
+    ];
+    const servers = list.map((s) => ({
+      id: s.id, name: s.name, offset: s.offset,
+      on: s.id === server,
+      border: s.id === server ? '#D9935A' : '#2C4F45',
+      bg: s.id === server ? '#1C3A33' : '#16302A',
+      pick: () => this.setState({ server: s.id })
+    }));
+    const cur = list.filter((s) => s.id === server)[0];
+    const rules = [
+      { id: 'n160', label: 'Resin reaches 160', desc: '5 h 20 min before it caps' },
+      { id: 'n200', label: 'Resin reaches 200', desc: 'At cap, regeneration stops' },
+      { id: 'transient', label: 'Transient Resin expiring', desc: '24 h before a stack expires' }
+    ].map((r, i) => Object.assign({}, r, {
+      on: !!notif[r.id],
+      inputId: 'rule-' + r.id,
+      border: i > 0 ? '1px solid #2C4F45' : 'none',
+      toggle: () => this.setState({ notif: Object.assign({}, notif, { [r.id]: !notif[r.id] }) })
+    }));
+    return {
+      servers: servers,
+      resetLocal: cur.reset,
+      wl: wl,
+      wlDown: () => this.setState({ wl: Math.max(0, wl - 1) }),
+      wlUp: () => this.setState({ wl: Math.min(9, wl + 1) }),
+      rules: rules,
+      totalsOnly: totalsOnly,
+      toggleTotals: () => this.setState({ totalsOnly: !totalsOnly })
+    };
+  }
+}
+</script>
+</body>
+</html>
