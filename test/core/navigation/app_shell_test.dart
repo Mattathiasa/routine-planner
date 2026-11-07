@@ -46,7 +46,8 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
-    expect(find.text('Settings — coming soon'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Game server', skipOffstage: false), findsOneWidget);
 
     await tester.tap(find.text('Today')); // the "‹ Today" back-link
     await tester.pumpAndSettle();

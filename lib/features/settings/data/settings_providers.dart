@@ -19,3 +19,8 @@ Future<SettingsSnapshot> settingsSnapshot(Ref ref) async {
     transientExpiryAlertEnabled: settings.transientExpiryAlertEnabled,
   );
 }
+
+@riverpod
+Future<String> catalogVersion(Ref ref) {
+  return ref.watch(catalogRepositoryProvider).catalogVersion();
+}
