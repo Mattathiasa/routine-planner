@@ -11,6 +11,7 @@ import 'package:routine_planner/core/providers/current_profile_provider.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/repository_providers.dart';
 import 'package:routine_planner/features/planner/application/planner_controller.dart';
+import 'package:routine_planner/features/settings/data/settings_providers.dart';
 
 void main() {
   // Same fixture as today_controller_test.dart: 2026-11-03 is a Tuesday,
@@ -197,5 +198,43 @@ void main() {
     final updated = await container.read(plannerControllerProvider.future);
     expect(updated.targets.length, 1);
     expect(updated.targets.single.name, 'Corvin');
+  });
+
+  test('totals-only mode ignores inventory entirely, even when rows exist', () async {
+    final container = await buildContainer();
+    final planner = container.read(plannerRepositoryProvider);
+    final profileId = (await container.read(currentProfileProvider.future)).id;
+
+    await planner.upsertTarget(
+      PlannerTargetsCompanion.insert(
+        id: newId(),
+        profileId: profileId,
+        entityKind: 'weapon',
+        entityId: 'larkspur_spear',
+        currentLevel: 90,
+        goalLevel: 90,
+        currentAscension: 3,
+        goalAscension: 6,
+        updatedAt: DateTime.now().toUtc(),
+      ),
+    );
+    // Exactly covers the A3->A6 need (tidal_relics_t3:3, silt_shards:2).
+    await planner.setInventoryCount(profileId, 'tidal_relics_t3', 3);
+    await planner.setInventoryCount(profileId, 'silt_shards', 2);
+
+    final withInventory = await container.read(plannerControllerProvider.future);
+    expect(withInventory.targets.single.percentInHand, 100);
+    expect(withInventory.mostNeeded, isEmpty);
+
+    await container.read(settingsRepositoryProvider).updateTotalsOnlyMode(profileId, true);
+    container.invalidate(settingsSnapshotProvider);
+
+    final totalsOnly = await container.read(plannerControllerProvider.future);
+    expect(totalsOnly.targets.single.percentInHand, 0);
+    expect(totalsOnly.mostNeeded.map((r) => r.materialId).toSet(), {
+      'tidal_relics_t3',
+      'silt_shards',
+    });
+    expect(totalsOnly.mostNeeded.firstWhere((r) => r.materialId == 'tidal_relics_t3').missing, 3);
   });
 }

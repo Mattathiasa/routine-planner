@@ -28,8 +28,9 @@ class ResinHeroCard extends ConsumerWidget {
     return resinAsync.when(
       data: (state) {
         final v = _engine.v(state, now);
-        final nextTick = state.n;
-        final fullAt = _engine.timeToThreshold(state, state.cap);
+        final timers = resinCapTimers(engine: _engine, state: state, now: now);
+        final nextTick = timers.nextTick;
+        final fullAt = timers.fullAt;
 
         return InkWell(
           borderRadius: AppRadius.cardRadius,

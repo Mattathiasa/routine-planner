@@ -9,6 +9,7 @@ import '../../../core/database/user_database.dart';
 import '../../../core/providers/clock_providers.dart';
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/repository_providers.dart';
+import '../../settings/data/settings_providers.dart';
 import '../domain/material_aggregation.dart';
 import 'planner_view_models.dart';
 
@@ -31,8 +32,14 @@ class PlannerController extends _$PlannerController {
     final now = ref.watch(clockProvider).nowUtc();
     final serverDate = serverClock.serverDateFor(now);
 
+    final settings = await ref.watch(settingsSnapshotProvider.future);
     final targets = await planner.targetsForProfile(profileId);
-    final inventory = await planner.inventoryForProfile(profileId);
+    // Totals-only mode skips inventory entirely and shows full material
+    // totals — the pure aggregation functions already treat a missing key
+    // as zero have, so an empty map is all that's needed here.
+    final inventory = settings.totalsOnlyMode
+        ? <String, int>{}
+        : await planner.inventoryForProfile(profileId);
 
     final currencyMaterials = await catalog.materialsByCategory('currency');
     final currencyMaterialId = currencyMaterials.isEmpty ? null : currencyMaterials.first.id;

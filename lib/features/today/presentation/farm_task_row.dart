@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/circle_icon_button.dart';
+import '../../resin/domain/resin_engine.dart';
 import '../application/today_controller.dart';
 import '../application/today_view_models.dart';
 
@@ -53,7 +54,14 @@ class FarmTaskRow extends ConsumerWidget {
             icon: Icons.add,
             size: 36,
             semanticLabel: 'Log a run: ${row.label}',
-            onPressed: () => controller.logRun(taskId: row.taskId, costResin: costResin),
+            onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                await controller.logRun(taskId: row.taskId, costResin: costResin);
+              } on InsufficientResinException catch (e) {
+                messenger.showSnackBar(SnackBar(content: Text(e.message)));
+              }
+            },
           ),
         ],
       ),
