@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import 'add_target_screen.dart';
+import 'inventory_screen.dart';
 
 class PlannerHeader extends StatelessWidget {
   const PlannerHeader({super.key, required this.targetCount, required this.materialsShortCount});
@@ -27,6 +28,19 @@ class PlannerHeader extends StatelessWidget {
               Text(
                 '$targetCount targets · $materialsShortCount materials short',
                 style: textTheme.bodyLarge,
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const InventoryScreen())),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  alignment: Alignment.centerLeft,
+                ),
+                child: const Text('Edit inventory', style: TextStyle(fontSize: 13)),
               ),
             ],
           ),

@@ -259,4 +259,66 @@ void main() {
     expect(glowY, lessThan(stormY));
     expect(stormY, lessThan(mistY));
   });
+
+  testWidgets('editing inventory from Planner updates the target percent and Most needed list', (
+    tester,
+  ) async {
+    await setViewportTallEnough(tester);
+
+    final catalogDb = await openSeedCatalogDatabaseInMemory();
+    final userDb = UserDatabase(NativeDatabase.memory());
+    addTearDown(catalogDb.close);
+    addTearDown(userDb.close);
+
+    // Larkspur Spear's A3->A6 need is tidal_relics_t3:3, silt_shards:2 —
+    // see material_aggregation_test.dart's own hand-verified numbers.
+    await _seedTargets(userDb, catalogDb, (profileId) {
+      return [
+        PlannerTargetsCompanion.insert(
+          id: newId(),
+          profileId: profileId,
+          entityKind: 'weapon',
+          entityId: 'larkspur_spear',
+          currentLevel: 90,
+          goalLevel: 90,
+          currentAscension: 3,
+          goalAscension: 6,
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      ];
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          catalogDatabaseProvider.overrideWithValue(catalogDb),
+          userDatabaseProvider.overrideWithValue(userDb),
+          clockProvider.overrideWithValue(FakeClock(DateTime.utc(2026, 11, 3, 12))),
+        ],
+        child: MaterialApp(theme: AppTheme.light(), home: const PlannerScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('0%', skipOffstage: false), findsOneWidget);
+    expect(find.text('Tidal relics · tier 3', skipOffstage: false), findsOneWidget);
+    expect(find.text('Silt shards · tier 4', skipOffstage: false), findsOneWidget);
+
+    await tester.tap(find.text('Edit inventory'));
+    await tester.pumpAndSettle();
+
+    for (final entry in {'Tidal relics · tier 3': '3', 'Silt shards · tier 4': '2'}.entries) {
+      final row = find.ancestor(of: find.text(entry.key), matching: find.byType(Row)).first;
+      final field = find.descendant(of: row, matching: find.byType(TextField));
+      await tester.enterText(field, entry.value);
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+    }
+
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('100%', skipOffstage: false), findsOneWidget);
+    expect(find.text('Nothing missing — fully stocked.', skipOffstage: false), findsOneWidget);
+  });
 }
