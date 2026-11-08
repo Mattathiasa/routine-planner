@@ -10,7 +10,7 @@ This file keeps the load-bearing decisions. If they conflict, fix the doc and th
 - User tables: UUID text keys, `updated_at`, `deleted_at` on every row (sync-ready, but no sync in v1). JSON export/import in Settings.
 - Android first, iOS after v1. Free, no ads, labelled unofficial. Avoid the game's name in the public app name.
 - One game account in the v1 UI; `profiles` table exists anyway.
-- No third-party API at runtime. Game data comes only from the bundle.
+- No third-party API at runtime for game *data* — that still comes only from the bundle. One user-opt-in exception: Settings can connect a HoYoLab account (session cookie, stored in secure storage, never in `user.db`) to auto-fetch the player's live resin value, replacing the manual Sync dialog's text entry. This talks to HoYoLab's unofficial, reverse-engineered `dailyNote` endpoint (not a sanctioned API — HoYoverse's ToS broadly prohibits third-party account-data collection, with a real if small risk of account action), gated behind an explicit in-app disclaimer the user must acknowledge before connecting. No API, official or unofficial, exposes material/item inventory, so this doesn't touch the Inventory screen or Planner's aggregation at all — see `lib/core/hoyolab/`.
 - Run estimates y(WL) deferred to v2 (no clean public drop-rate source). v1 shows missing material counts and logs runs done. Totals-only mode treats inventory as 0.
 - Level farm calc stops at 90 (100 uses a non-farmable item).
 

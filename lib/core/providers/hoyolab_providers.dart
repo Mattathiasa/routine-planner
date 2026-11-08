@@ -9,7 +9,7 @@ part 'hoyolab_providers.g.dart';
 HoyolabClient hoyolabClient(Ref ref) => HoyolabClient();
 
 @Riverpod(keepAlive: true)
-HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) => HoyolabCredentialsStore();
+HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) => SecureHoyolabCredentialsStore();
 
 /// Whether a HoYoLab account is connected, and its saved UID — manually
 /// invalidated after `save`/`clear`, same convention as every other

@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import 'data_section.dart';
 import 'game_server_section.dart';
+import 'hoyolab_account_section.dart';
 import 'notifications_section.dart';
 import 'planner_settings_section.dart';
 
@@ -38,6 +39,8 @@ class SettingsScreen extends StatelessWidget {
             const PlannerSettingsSection(),
             const SizedBox(height: AppSpacing.xl),
             const NotificationsSection(),
+            const SizedBox(height: AppSpacing.xl),
+            const HoyolabAccountSection(),
             const SizedBox(height: AppSpacing.xl),
             const DataSection(),
             const SizedBox(height: AppSpacing.xxl),

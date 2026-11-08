@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/clock/game_server.dart';
+import '../../../core/hoyolab/data/hoyolab_client.dart';
+import '../../../core/providers/current_profile_provider.dart';
+import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
@@ -14,8 +18,8 @@ import 'sync_dialog.dart';
 /// so "Use Condensed"/"Use Fragile"/"Use Transient" *will* throw until the
 /// player has inventory — every mutating button here goes through
 /// [_runMutation], which catches [InsufficientResinException]/
-/// [InvalidTransientBatchException] and shows a `SnackBar` instead of
-/// crashing.
+/// [InvalidTransientBatchException]/[HoyolabException] and shows a
+/// `SnackBar` instead of crashing.
 class ResinActionsSection extends ConsumerWidget {
   const ResinActionsSection({super.key});
 
@@ -27,7 +31,27 @@ class ResinActionsSection extends ConsumerWidget {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
     } on InvalidTransientBatchException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } on HoyolabException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
     }
+  }
+
+  /// Fetches a live resin reading from HoYoLab's unofficial, reverse-
+  /// engineered API and feeds it through the exact same `sync()` mutation
+  /// the manual Sync dialog already uses — no new resin math needed.
+  Future<void> _syncFromHoyolab(WidgetRef ref) async {
+    final credentials = await ref.read(hoyolabCredentialsProvider.future);
+    if (credentials == null) return;
+
+    final profile = await ref.read(currentProfileProvider.future);
+    final region = GameServer.values.byName(profile.server).hoyolabRegion;
+    final notes = await ref
+        .read(hoyolabClientProvider)
+        .fetchNotes(cookie: credentials.cookie, uid: credentials.uid, region: region);
+
+    await ref
+        .read(resinControllerProvider.notifier)
+        .sync(notes.currentResin, fullIn: Duration(seconds: notes.secondsUntilFull));
   }
 
   @override
@@ -35,6 +59,7 @@ class ResinActionsSection extends ConsumerWidget {
     final resinState = ref.watch(resinControllerProvider).value;
     final controller = ref.read(resinControllerProvider.notifier);
     final soonestTransient = _soonestExpiring(resinState?.transient);
+    final hoyolabConnected = ref.watch(hoyolabCredentialsProvider).value != null;
 
     return Column(
       children: [
@@ -57,6 +82,23 @@ class ResinActionsSection extends ConsumerWidget {
             ),
           ),
         ),
+        if (hoyolabConnected) ...[
+          const SizedBox(height: AppSpacing.smd),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: () => _runMutation(context, () => _syncFromHoyolab(ref)),
+              icon: const Icon(Icons.cloud_sync_outlined),
+              label: const Text('Sync from HoYoLab'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: AppSpacing.smd),
         GridView.count(
           crossAxisCount: 2,
