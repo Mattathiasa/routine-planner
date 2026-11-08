@@ -170,4 +170,18 @@ void main() {
       expect(walkThenSumMissing, lessThan(7)); // confirms it undercounts
     });
   });
+
+  group('materialDisplayLabel', () {
+    test('a tiered material reads "<title-cased group> · tier <N>"', () {
+      expect(
+        materialDisplayLabel(name: 'Dawn Tier 3 Book', tierGroup: 'dawn_books', tier: 3),
+        'Dawn books · tier 3',
+      );
+    });
+
+    test('a material with no tier group falls back to its catalog name', () {
+      expect(materialDisplayLabel(name: 'Ember core', tierGroup: null, tier: null), 'Ember core');
+      expect(materialDisplayLabel(name: 'Gleam', tierGroup: null, tier: null), 'Gleam');
+    });
+  });
 }

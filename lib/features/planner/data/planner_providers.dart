@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/repository_providers.dart';
+import '../domain/material_aggregation.dart';
 
 part 'planner_providers.g.dart';
 
@@ -23,5 +25,25 @@ Future<List<WeaponOption>> allWeaponOptions(Ref ref) async {
   final weapons = await ref.watch(catalogRepositoryProvider).allWeapons();
   return [
     for (final w in weapons) (id: w.id, name: w.name, rarity: w.rarity, weaponType: w.weaponType),
+  ];
+}
+
+typedef InventoryRow = ({String materialId, String label, int count});
+
+@riverpod
+Future<List<InventoryRow>> inventoryRows(Ref ref) async {
+  final profileId = (await ref.watch(currentProfileProvider.future)).id;
+  final catalog = ref.watch(catalogRepositoryProvider);
+  final planner = ref.watch(plannerRepositoryProvider);
+
+  final materials = await catalog.allMaterials();
+  final counts = await planner.inventoryForProfile(profileId);
+  return [
+    for (final m in materials)
+      (
+        materialId: m.id,
+        label: materialDisplayLabel(name: m.name, tierGroup: m.tierGroup, tier: m.tier),
+        count: counts[m.id] ?? 0,
+      ),
   ];
 }

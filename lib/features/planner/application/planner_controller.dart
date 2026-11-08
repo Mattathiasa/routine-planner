@@ -307,9 +307,11 @@ Future<MostNeededRowData> _toMostNeededRow(
   DateTime serverDate,
 ) async {
   final material = (await catalog.materialById(row.materialId))!;
-  final label = material.tierGroup != null
-      ? '${_titleCase(material.tierGroup!)} · tier ${material.tier}'
-      : material.name;
+  final label = materialDisplayLabel(
+    name: material.name,
+    tierGroup: material.tierGroup,
+    tier: material.tier,
+  );
 
   var highlightAvailability = false;
   var availabilityLabel = '';

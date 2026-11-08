@@ -49,6 +49,18 @@ Map<String, int> allocateExpBooks(
   return counts;
 }
 
+/// The display label for a material — `"Dawn books · tier 3"` for a
+/// tiered material, or just its catalog [name] when it has no tier group
+/// (boss/EXP-book/currency materials). Shared between the "Most needed"
+/// list and the inventory-editing screen so the same material always
+/// reads identically on both.
+String materialDisplayLabel({required String name, String? tierGroup, int? tier}) {
+  if (tierGroup == null) return name;
+  final spaced = tierGroup.replaceAll('_', ' ');
+  final titled = spaced.isEmpty ? spaced : spaced[0].toUpperCase() + spaced.substring(1);
+  return '$titled · tier $tier';
+}
+
 /// Walks one tier-group's materials low-to-high, carrying surplus `have`
 /// upward at a 3:1 ratio (3 units of a lower tier's surplus convert to 1
 /// unit of the next tier's effective stock).

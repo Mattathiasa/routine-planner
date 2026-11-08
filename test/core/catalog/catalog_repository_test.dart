@@ -53,6 +53,24 @@ void main() {
     expect(weapons.map((w) => w.id), ['larkspur_spear']);
   });
 
+  test('allMaterials returns every seeded material, ordered by id', () async {
+    final materials = await repository.allMaterials();
+    expect(materials.map((m) => m.id).toSet(), {
+      'dawn_books_t2',
+      'dawn_books_t3',
+      'tidal_relics_t3',
+      'silt_shards',
+      'ember_core',
+      'stormglass_shard',
+      'insight_primer',
+      'insight_tome',
+      'gleam',
+    });
+    final ids = materials.map((m) => m.id).toList();
+    final sortedIds = [...ids]..sort();
+    expect(ids, sortedIds);
+  });
+
   test('materialsByCategory filters correctly', () async {
     final currency = await repository.materialsByCategory('currency');
     expect(currency.map((m) => m.id), ['gleam']);

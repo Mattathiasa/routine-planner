@@ -35,6 +35,13 @@ class CatalogRepository {
 
   Future<List<Domain>> allDomains() => _db.select(_db.domains).get();
 
+  /// Every material in the catalog, ordered by id for deterministic
+  /// results — used by the inventory-editing screen, which needs the full
+  /// set regardless of category.
+  Future<List<Material>> allMaterials() {
+    return (_db.select(_db.materials)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+  }
+
   Future<List<Character>> allCharacters() {
     return (_db.select(_db.characters)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
   }
