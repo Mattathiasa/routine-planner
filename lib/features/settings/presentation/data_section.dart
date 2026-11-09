@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/database_providers.dart';
@@ -12,8 +9,7 @@ import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../data/backup_service.dart';
 import '../data/settings_providers.dart';
-
-const _backupFileName = 'routine_planner_backup.json';
+import 'backup_file_storage.dart';
 
 class DataSection extends ConsumerWidget {
   const DataSection({super.key});
@@ -83,10 +79,8 @@ class DataSection extends ConsumerWidget {
       final json = await BackupService(
         ref.read(userDatabaseProvider),
       ).exportBackupJson(profileId);
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/$_backupFileName');
-      await file.writeAsString(json);
-      messenger.showSnackBar(SnackBar(content: Text('Exported to ${file.path}')));
+      final path = await exportBackupFile(json);
+      messenger.showSnackBar(SnackBar(content: Text('Exported to $path')));
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text('Export failed: $error')));
     }
@@ -114,9 +108,7 @@ class DataSection extends ConsumerWidget {
 
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/$_backupFileName');
-      final json = await file.readAsString();
+      final json = await importBackupFile();
       await BackupService(ref.read(userDatabaseProvider)).importBackupJson(json);
       messenger.showSnackBar(const SnackBar(content: Text('Imported. Please relaunch the app.')));
     } catch (error) {

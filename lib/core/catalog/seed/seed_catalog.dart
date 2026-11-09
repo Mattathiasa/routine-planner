@@ -1,6 +1,7 @@
-import 'package:drift/native.dart';
+import 'package:drift/drift.dart';
 
 import '../catalog_database.dart';
+import 'open_catalog_executor.dart';
 import 'seed_catalog_data.dart';
 
 /// Populates an already-opened [CatalogDatabase] with the tiny seed
@@ -27,7 +28,10 @@ Future<void> seedCatalog(CatalogDatabase db) {
 /// Opens a fresh in-memory [CatalogDatabase] and seeds it — the standard
 /// entry point for tests and (until the real bundle exists) dev runs.
 Future<CatalogDatabase> openSeedCatalogDatabaseInMemory() async {
-  final db = CatalogDatabase(NativeDatabase.memory());
-  await seedCatalog(db);
+  final db = CatalogDatabase(createSeedCatalogExecutor());
+  final count = await (db.selectOnly(db.catalogMetadata)..addColumns([db.catalogMetadata.version])).get();
+  if (count.isEmpty) {
+    await seedCatalog(db);
+  }
   return db;
 }

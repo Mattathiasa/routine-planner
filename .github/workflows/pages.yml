@@ -1,0 +1,50 @@
+name: Build & Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Flutter web
+        run: flutter build web --release --base-href "/routine-planner/app/"
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Update docs/app with new web build
+        run: |
+          rm -rf docs/app
+          mkdir -p docs/app
+          cp -r build/web/. docs/app/
+
+      - name: Update docs/releases with new APK
+        run: |
+          mkdir -p docs/releases
+          cp build/app/outputs/flutter-apk/app-release.apk docs/releases/routine-planner-v0.1.0.apk
+
+      - name: Commit and push updated docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --staged --quiet || git commit -m "deploy: update gh-pages build [skip ci]"
+          git push

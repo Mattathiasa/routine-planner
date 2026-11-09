@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Routine Planner for Genshin — Precision Resin &amp; Farming Companion</title>
+  <meta name="description" content="Offline-first, ad-free companion app for Genshin Impact players. Calculate exact resin thresholds, track daily domain farming across all game servers, and optimize material ascension with 3:1 tier aggregation.">
+  <meta name="theme-color" content="#3B4FE0">
+
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Routine Planner for Genshin — Precision Resin &amp; Farming Companion">
+  <meta property="og:description" content="Master your daily routine. Real-time resin forecasting, server reset clocks, weekly domain schedules, and target material aggregation. 100% ad-free &amp; offline-first.">
+  <meta property="og:image" content="./preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google Fonts: Manrope (Headings & Numbers) + Inter (Body Text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233B4FE0'%3E%3Cpath d='M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+  <!-- Accessible Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Site Navigation Header -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="#hero" class="brand-link" aria-label="Routine Planner Home">
+        <span class="brand-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path>
+          </svg>
+        </span>
+        <div class="brand-title-wrap">
+          <span class="brand-title">Routine Planner</span>
+          <span class="brand-badge">FOR GENSHIN</span>
+        </div>
+      </a>
+
+      <!-- Primary Navigation with Modern Scrollspy -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#deep-dive">How It Works</a></li>
+          <li><a href="#calculator">Live Calculator</a></li>
+          <li><a href="#schedule">Domain Schedule</a></li>
+          <li><a href="#screens">Screens</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Theme Toggle Button -->
+        <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Switch theme">
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <a href="#download" class="cta-header-btn">
+          <span>Get App</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Landmark -->
+  <main id="main-content" tabindex="-1">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <span class="pill-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Offline-First · 100% Ad-Free · No Cloud Login Required
+          </span>
+
+          <h1 class="hero-headline">
+            Master your routine.<br>
+            <span class="gradient-text">Never waste resin.</span>
+          </h1>
+
+          <p class="hero-subhead">
+            The precision companion for Genshin Impact. Mathematical resin forecasting, daily domain farming synced to your server reset clock, and smart 3:1 material aggregation — built for speed, privacy, and zero battery drain.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#calculator" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              Try Live Calculator
+            </a>
+            <a href="#features" class="btn-secondary">
+              Explore Features
+            </a>
+          </div>
+
+          <ul class="hero-trust-list" aria-label="Key highlights">
+            <li class="hero-trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Exact 160 &amp; 200 Cap Alarms</span>
+            </li>
+            <li class="hero-trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>All 4 Server Reset Clocks</span>
+            </li>
+            <li class="hero-trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Dual Local SQLite Database</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Interactive Phone Frame Mockup -->
+        <div class="phone-mockup-wrapper">
+          <div class="phone-glow" aria-hidden="true"></div>
+          
+          <div class="phone-frame">
+            <div class="phone-screen">
+              
+              <!-- Mock Screen Status Topbar -->
+              <div class="screen-topbar">
+                <span>9:41</span>
+                <span>Europe · UTC+1</span>
+              </div>
+
+              <!-- Mock Screen Tab Selector -->
+              <div class="mock-tab-controls" role="tablist" aria-label="Interactive App Screen Mockup">
+                <button type="button" class="mock-tab-btn active" role="tab" aria-selected="true" data-view="today">Today</button>
+                <button type="button" class="mock-tab-btn" role="tab" aria-selected="false" data-view="resin">Resin</button>
+                <button type="button" class="mock-tab-btn" role="tab" aria-selected="false" data-view="planner">Planner</button>
+              </div>
+
+              <!-- Mockup Scrollable Screen Body -->
+              <div class="mockup-body">
+
+                <!-- 1. TODAY SCREEN VIEW -->
+                <div id="mock-view-today" class="mockup-view active">
+                  
+                  <!-- Today Week Strip -->
+                  <div class="mock-week-strip" aria-label="Week Days">
+                    <div class="mock-day-col"><span>Mon</span><span class="mock-day-num">2</span><span class="mock-day-dots"></span></div>
+                    <div class="mock-day-col"><span>Tue</span><span class="mock-day-num">3</span><span class="mock-day-dots"><span class="mock-day-dot"></span><span class="mock-day-dot"></span></span></div>
+                    <div class="mock-day-col"><span>Wed</span><span class="mock-day-num">4</span><span class="mock-day-dots"><span class="mock-day-dot"></span></span></div>
+                    <div class="mock-day-col"><span>Thu</span><span class="mock-day-num">5</span><span class="mock-day-dots"></span></div>
+                    <div class="mock-day-col current"><span>Fri</span><span class="mock-day-num">6</span><span class="mock-day-dots"><span class="mock-day-dot"></span><span class="mock-day-dot"></span></span></div>
+                    <div class="mock-day-col"><span>Sat</span><span class="mock-day-num">7</span><span class="mock-day-dots"><span class="mock-day-dot"></span></span></div>
+                    <div class="mock-day-col"><span>Sun</span><span class="mock-day-num">8</span><span class="mock-day-dots"><span class="mock-day-dot"></span><span class="mock-day-dot"></span><span class="mock-day-dot"></span></span></div>
+                  </div>
+
+                  <!-- Resin Hero Card -->
+                  <div class="mock-resin-hero">
+                    <div class="mock-resin-hero-top">
+                      <span class="mock-resin-hero-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path></svg>
+                        Original Resin
+                      </span>
+                      <span class="mock-next-timer">+1 in <span class="mock-timer-display">5:12</span></span>
+                    </div>
+                    <div class="mock-resin-val-row">
+                      <span class="mock-resin-big-num mock-resin-val-num">143</span>
+                      <span class="mock-resin-max">/ 200</span>
+                    </div>
+                    <div class="mock-bar-wrap">
+                      <div class="mock-bar-fill" style="width: 71.5%;"></div>
+                      <div class="mock-bar-tick" title="160 alert mark"></div>
+                    </div>
+                    <div class="mock-resin-forecast-text">
+                      <span><strong>160</strong> at 12:43</span>
+                      <span><strong>Full</strong> at 18:03</span>
+                    </div>
+                  </div>
+
+                  <!-- Today's Farm Tasks -->
+                  <div class="mock-task-card">
+                    <div class="mock-task-header">
+                      <div class="mock-task-title-wrap">
+                        <span class="mock-domain-icon">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        </span>
+                        <div>
+                          <div class="mock-task-name">Forsaken Rift · Dawn Books</div>
+                          <span style="font-size: 0.65rem; color: var(--text-muted)">Tue, Fri, Sun</span>
+                        </div>
+                      </div>
+                      <span class="mock-open-tag">Open Today</span>
+                    </div>
+
+                    <div class="mock-task-row">
+                      <div class="mock-checkbox" aria-label="Toggle task">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      </div>
+                      <div class="mock-task-meta">
+                        <span class="mock-task-item-name">Philosophies of Dawn (Tier 3)</span>
+                        <span class="mock-task-item-sub"><strong>9 missing</strong> · Aster, Wren</span>
+                      </div>
+                      <button type="button" class="mock-spend-btn" title="Simulate spending 20 resin">+1 Run (-20)</button>
+                    </div>
+
+                    <div class="mock-task-row">
+                      <div class="mock-checkbox" aria-label="Toggle task">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      </div>
+                      <div class="mock-task-meta">
+                        <span class="mock-task-item-name">Guide to Dawn (Tier 2)</span>
+                        <span class="mock-task-item-sub"><strong>18 missing</strong> · Aster</span>
+                      </div>
+                      <button type="button" class="mock-spend-btn" title="Simulate spending 20 resin">+1 Run (-20)</button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- 2. RESIN SCREEN VIEW -->
+                <div id="mock-view-resin" class="mockup-view">
+                  <div style="background: var(--bg-surface); border-radius: 20px; padding: 18px; text-align: center; border: 1px solid var(--border-subtle)">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">ORIGINAL RESIN GAUGE</div>
+                    <div style="font-family: var(--font-display); font-size: 3.2rem; font-weight: 800; line-height: 1; color: var(--primary);">
+                      <span class="mock-resin-val-num">143</span><span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 600;">/200</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Next regeneration in <strong class="mock-timer-display" style="color: var(--text-main);">5:12</strong></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;">
+                      <div style="background: var(--bg-page); padding: 8px; border-radius: 10px; font-size: 0.72rem;">
+                        <span style="color: var(--text-muted); display: block;">Reach 160</span>
+                        <strong>12:43</strong>
+                      </div>
+                      <div style="background: var(--bg-page); padding: 8px; border-radius: 10px; font-size: 0.72rem;">
+                        <span style="color: var(--text-muted); display: block;">Full at 200</span>
+                        <strong>18:03</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stock Section -->
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                    <div style="background: var(--bg-surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border-subtle); text-align: center;">
+                      <span style="font-size: 0.68rem; color: var(--text-muted); display: block;">Condensed</span>
+                      <strong style="font-size: 1rem;">2 / 5</strong>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border-subtle); text-align: center;">
+                      <span style="font-size: 0.68rem; color: var(--text-muted); display: block;">Fragile</span>
+                      <strong style="font-size: 1rem;">3</strong>
+                    </div>
+                    <div style="background: var(--bg-surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border-subtle); text-align: center;">
+                      <span style="font-size: 0.68rem; color: var(--text-muted); display: block;">Transient</span>
+                      <strong style="font-size: 1rem; color: var(--warning-text);">1 (4d)</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. PLANNER SCREEN VIEW -->
+                <div id="mock-view-planner" class="mockup-view">
+                  <div style="background: var(--bg-surface); border-radius: 16px; padding: 14px; border: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--pyro-bg); color: var(--pyro); display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display);">A</div>
+                    <div style="flex: 1;">
+                      <div style="font-size: 0.85rem; font-weight: 800;">Aster <span style="font-size: 0.68rem; padding: 1px 5px; border-radius: 4px; background: var(--warning-bg); color: var(--warning-text);">5★ Pyro</span></div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted);">Lv 70 → 90 · Talents 6 → 9</div>
+                    </div>
+                    <div style="font-family: var(--font-display); font-weight: 800; color: var(--primary); font-size: 0.9rem;">58%</div>
+                  </div>
+
+                  <div style="background: var(--bg-surface); border-radius: 16px; padding: 14px; border: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--hydro-bg); color: var(--hydro); display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display);">W</div>
+                    <div style="flex: 1;">
+                      <div style="font-size: 0.85rem; font-weight: 800;">Wren <span style="font-size: 0.68rem; padding: 1px 5px; border-radius: 4px; background: var(--electro-bg); color: var(--electro);">4★ Hydro</span></div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted);">Lv 80 → 90 · Talents 8 → 10</div>
+                    </div>
+                    <div style="font-family: var(--font-display); font-weight: 800; color: var(--primary); font-size: 0.9rem;">71%</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Mockup Floating Pill Bottom Nav -->
+              <div class="mock-pill-nav" aria-hidden="true">
+                <span class="mock-nav-item active" data-view="today">Today</span>
+                <span class="mock-nav-item" data-view="resin">Resin</span>
+                <span class="mock-nav-item" data-view="planner">Planner</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Feature Grid Section -->
+    <section id="features" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-eyebrow">Engineered for Daily Play</span>
+          <h2 class="section-title">Everything you need to optimize your daily Genshin routine</h2>
+          <p class="section-desc">No cluttered menus. No bloated ad trackers. Just pure, fast, offline utilities built around the actual rhythms of the game.</p>
+        </header>
+
+        <div class="features-grid">
+          
+          <!-- Card 1 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">Mathematical Resin Anchor</h3>
+            <p class="feature-card-text">
+              Zero battery drain. Never runs background loops or ticking services. Uses the exact 8-minute game regeneration formula projected from an immutable anchor timestamp.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Exact 160 (Condensed) &amp; 200 (Cap) forecasts
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Tracks Condensed, Fragile &amp; Transient stacks
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">Multi-Server Reset Clocks</h3>
+            <p class="feature-card-text">
+              Daily reset in Genshin occurs at 04:00 server time. Routine Planner maps Europe (UTC+1), America (UTC-5), Asia (UTC+8), and TW/HK/MO into your exact local time zone.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Interactive 7-day schedule strip
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Automatic domain open/close detection
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">3:1 Tier Material Aggregation</h3>
+            <p class="feature-card-text">
+              Stop guessing how many green drops convert to purple books. Our tiered alchemy calculator carries surplus upwards with the game's 3:1 ratio and factors in your active inventory.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Ascension 1 → 6 and Talents 1 → 10
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                "Most Needed Materials" aggregated view
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">Reliable Local Notifications</h3>
+            <p class="feature-card-text">
+              Never cap your resin during a busy day. Native Android exact alarms trigger at your chosen thresholds (e.g. 160 or 200) and alert you 24 hours before Transient Resin expires.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Works offline without internet connection
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Graceful fallback for inexact battery modes
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">Dual SQLite Architecture</h3>
+            <p class="feature-card-text">
+              Built on Drift and SQLite. The catalog database is verified by SHA-256 for integrity, while your personal plan stays in your private user database. Export anytime to clean JSON.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Full JSON backup &amp; restore support
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Zero third-party analytics or surveillance
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="feature-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <h3 class="feature-card-title">Optional HoYoLab Live Sync</h3>
+            <p class="feature-card-text">
+              Prefer automatic updates over manual sync? Connect your HoYoLab account with a single tap. Session cookies are kept in Android EncryptedSharedPreferences, never sent to external servers.
+            </p>
+            <ul class="feature-card-list">
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                100% optional, manual entry always supported
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Strict on-device hardware security
+              </li>
+            </ul>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep Dive Rows Section -->
+    <section id="deep-dive" class="section">
+      <div class="container">
+        
+        <!-- Deep Dive 1: Resin -->
+        <div class="deep-dive-row">
+          <div class="deep-dive-content">
+            <span class="deep-dive-badge">Precision Resin Science</span>
+            <h2 class="deep-dive-title">Never lose an hour of passive regeneration again.</h2>
+            <p class="deep-dive-text">
+              Original Resin caps at 200. At 8 minutes per point, hitting cap means wasted stamina. Routine Planner calculates when you reach safe thresholds — like 160 (time to craft condensed resin) and 200 (hard cap) — so you can time your gaming sessions effortlessly.
+            </p>
+            <ul class="feature-points-list">
+              <li class="feature-point">
+                <span class="point-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="point-text"><strong>Timeline forecast view:</strong> Visual timeline of today's resin progression from current time until full.</span>
+              </li>
+              <li class="feature-point">
+                <span class="point-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="point-text"><strong>One-tap spend actions:</strong> Log domain runs (-20), weekly bosses (-30 / -60), or condensed crafting (-40) in a single tap.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div style="background: var(--bg-surface); padding: 32px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md);">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-family: var(--font-display);">Resin Regeneration Milestones</span>
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">+1 every 480s</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 12px; background: var(--bg-page);">
+                  <span>Craft 1 Condensed (40)</span>
+                  <strong>In 5h 20m</strong>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 12px; background: var(--primary-light); color: var(--primary);">
+                  <span>Condensed Cap Alert (160)</span>
+                  <strong>12:43 Today</strong>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 12px; background: var(--bg-page);">
+                  <span>Maximum Hard Cap (200)</span>
+                  <strong>18:03 Today</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deep Dive 2: Server Clocks & Farming -->
+        <div class="deep-dive-row reversed">
+          <div class="deep-dive-content">
+            <span class="deep-dive-badge">Server Synchronization</span>
+            <h2 class="deep-dive-title">Know exactly which domains are open right now.</h2>
+            <p class="deep-dive-text">
+              Genshin servers reset daily at 04:00 AM server time. Depending on whether you play on Europe, America, or Asia, the actual reset can happen at midnight, morning, or midday in your country. Routine Planner handles the math so your daily farm checklist is always 100% accurate.
+            </p>
+            <ul class="feature-points-list">
+              <li class="feature-point">
+                <span class="point-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="point-text"><strong>Server-aware day calculation:</strong> Automatically checks whether serverDate bitmask matches today's domain rotations.</span>
+              </li>
+              <li class="feature-point">
+                <span class="point-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="point-text"><strong>Sunday All-Access:</strong> Seamlessly displays all domain drops when Sunday opens all materials.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div style="background: var(--bg-surface); padding: 32px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md);">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <span style="font-weight: 700; font-family: var(--font-display);">Server Reset Conversion Table</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="padding: 12px; border-radius: 12px; background: var(--bg-page);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Asia Server (UTC+8)</div>
+                  <strong style="font-size: 1rem;">20:00 UTC / 23:00 Local</strong>
+                </div>
+                <div style="padding: 12px; border-radius: 12px; background: var(--bg-page);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Europe Server (UTC+1)</div>
+                  <strong style="font-size: 1rem;">03:00 UTC / 06:00 Local</strong>
+                </div>
+                <div style="padding: 12px; border-radius: 12px; background: var(--bg-page);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">America Server (UTC-5)</div>
+                  <strong style="font-size: 1rem;">09:00 UTC / 12:00 Local</strong>
+                </div>
+                <div style="padding: 12px; border-radius: 12px; background: var(--bg-page);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">TW / HK / MO (UTC+8)</div>
+                  <strong style="font-size: 1rem;">20:00 UTC / 23:00 Local</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Live Resin Calculator Section -->
+    <section id="calculator" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-eyebrow">Interactive Tool</span>
+          <h2 class="section-title">Test the Resin &amp; Reset Engine Live</h2>
+          <p class="section-desc">Move the slider to enter your current in-game resin and select your game server to see exact milestone predictions right here.</p>
+        </header>
+
+        <div class="calc-card">
+          <div class="calc-grid">
+            
+            <!-- Controls Form -->
+            <div class="calc-inputs">
+              <div class="calc-field">
+                <div class="calc-label">
+                  <label for="calc-resin-range">Current Original Resin</label>
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">Max 200</span>
+                </div>
+                <div class="calc-slider-wrap">
+                  <input type="range" id="calc-resin-range" class="calc-range" min="0" max="200" value="143" aria-label="Original resin slider">
+                  <input type="number" id="calc-resin-num" class="calc-num-input" min="0" max="200" value="143" aria-label="Original resin numeric value">
+                </div>
+              </div>
+
+              <div class="calc-field">
+                <label for="calc-server-select" class="calc-label">Your Game Server</label>
+                <select id="calc-server-select" class="calc-select">
+                  <option value="europe" selected>Europe (UTC+1 · Reset 03:00 UTC)</option>
+                  <option value="america">America (UTC-5 · Reset 09:00 UTC)</option>
+                  <option value="asia">Asia (UTC+8 · Reset 20:00 UTC)</option>
+                  <option value="tw">TW / HK / MO (UTC+8 · Reset 20:00 UTC)</option>
+                </select>
+              </div>
+
+              <div style="padding: 14px; border-radius: 12px; background: var(--bg-page); font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Tip:</strong> Setting an alert at 160 resin gives you a 5-hour cushion to craft 4 Condensed Resin before reaching the 200 limit.
+              </div>
+            </div>
+
+            <!-- Visual Ring & Calculated Outputs -->
+            <div class="calc-output-display">
+              
+              <!-- Circular Progress Gauge -->
+              <div class="calc-ring-wrapper">
+                <svg width="170" height="170" viewBox="0 0 170 170" aria-hidden="true">
+                  <circle cx="85" cy="85" r="68" fill="none" stroke="var(--border-color)" stroke-width="12"></circle>
+                  <circle id="calc-ring-progress" cx="85" cy="85" r="68" fill="none" stroke="var(--primary)" stroke-width="12" stroke-linecap="round" stroke-dasharray="427.25" stroke-dashoffset="121.7" transform="rotate(-90 85 85)" style="transition: stroke-dashoffset 0.25s ease;"></circle>
+                </svg>
+                <div class="calc-ring-text">
+                  <span id="calc-ring-val" class="calc-ring-num">143</span>
+                  <span class="calc-ring-sub">of 200 Resin</span>
+                </div>
+              </div>
+
+              <!-- Output Stat Cards -->
+              <div class="calc-results-table">
+                <div class="calc-stat-box">
+                  <span class="calc-stat-label">Reaches 160 At</span>
+                  <span id="calc-time-160" class="calc-stat-val">12:43 (2h 13m)</span>
+                </div>
+                <div class="calc-stat-box">
+                  <span class="calc-stat-label">Full (200) At</span>
+                  <span id="calc-time-200" class="calc-stat-val">18:03 (7h 33m)</span>
+                </div>
+                <div class="calc-stat-box" style="grid-column: span 2;">
+                  <span class="calc-stat-label">Next Daily Server Reset</span>
+                  <span id="calc-server-reset" class="calc-stat-val">06:00 (in 19h 30m)</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Domain Schedule Matrix Section -->
+    <section id="schedule" class="section">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-eyebrow">Weekly Rotation Guide</span>
+          <h2 class="section-title">Domain Drops by Weekday</h2>
+          <p class="section-desc">Select any day of the week to inspect which talent books and weapon materials are currently farmable in Mondstadt, Liyue, Inazuma, Sumeru, and Fontaine.</p>
+        </header>
+
+        <!-- Weekday Buttons -->
+        <div class="schedule-controls" role="group" aria-label="Select day of the week">
+          <button type="button" class="day-filter-btn" data-day="mon">Monday</button>
+          <button type="button" class="day-filter-btn" data-day="tue">Tuesday</button>
+          <button type="button" class="day-filter-btn" data-day="wed">Wednesday</button>
+          <button type="button" class="day-filter-btn" data-day="thu">Thursday</button>
+          <button type="button" class="day-filter-btn active" data-day="fri">Friday</button>
+          <button type="button" class="day-filter-btn" data-day="sat">Saturday</button>
+          <button type="button" class="day-filter-btn" data-day="sun">Sunday (All Open)</button>
+        </div>
+
+        <!-- Schedule Cards Grid -->
+        <div class="schedule-cards-grid">
+          
+          <!-- Card: Freedom / Decarabian -->
+          <article class="schedule-card" data-days="mon thu">
+            <div class="schedule-card-header">
+              <h3 style="margin:0; font-size: 1.1rem; font-family: var(--font-display);">Freedom &amp; Prosperity</h3>
+              <span class="domain-tag">Mon / Thu / Sun</span>
+            </div>
+            <div class="schedule-items-list">
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--anemo-bg); color: var(--anemo);">F</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Freedom Talent Books</span>
+                  <span class="schedule-item-type">Forsaken Rift · Klee, Tartaglia, Aloy, Amber</span>
+                </div>
+              </div>
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--geo-bg); color: var(--geo);">P</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Prosperity Talent Books</span>
+                  <span class="schedule-item-type">Taishan Mansion · Keqing, Ningguang, Xiao, Qiqi</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Resistance / Diligence -->
+          <article class="schedule-card" data-days="tue fri">
+            <div class="schedule-card-header">
+              <h3 style="margin:0; font-size: 1.1rem; font-family: var(--font-display);">Resistance &amp; Diligence</h3>
+              <span class="domain-tag">Tue / Fri / Sun</span>
+            </div>
+            <div class="schedule-items-list">
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--cryo-bg); color: var(--cryo);">R</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Resistance Talent Books</span>
+                  <span class="schedule-item-type">Forsaken Rift · Bennett, Jean, Mona, Diluc</span>
+                </div>
+              </div>
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--geo-bg); color: var(--geo);">D</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Diligence Talent Books</span>
+                  <span class="schedule-item-type">Taishan Mansion · Ganyu, Hu Tao, Kazuha, Xiangling</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Ballad / Gold -->
+          <article class="schedule-card" data-days="wed sat">
+            <div class="schedule-card-header">
+              <h3 style="margin:0; font-size: 1.1rem; font-family: var(--font-display);">Ballad &amp; Gold</h3>
+              <span class="domain-tag">Wed / Sat / Sun</span>
+            </div>
+            <div class="schedule-items-list">
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--anemo-bg); color: var(--anemo);">B</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Ballad Talent Books</span>
+                  <span class="schedule-item-type">Forsaken Rift · Albedo, Fischl, Rosaria, Venti</span>
+                </div>
+              </div>
+              <div class="schedule-item-row">
+                <span class="schedule-item-avatar" style="background: var(--geo-bg); color: var(--geo);">G</span>
+                <div class="schedule-item-info">
+                  <span class="schedule-item-name">Gold Talent Books</span>
+                  <span class="schedule-item-type">Taishan Mansion · Beidou, Xingqiu, Zhongli, Yanfei</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- App Screens Showcase Section -->
+    <section id="screens" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-eyebrow">Visual Tour</span>
+          <h2 class="section-title">Designed with modern clarity</h2>
+          <p class="section-desc">Approved v3 interface architecture featuring clean typography, high contrast, layered depth, and fluid gestures.</p>
+        </header>
+
+        <div class="screens-gallery-grid">
+          
+          <!-- Screen 1: Today -->
+          <div class="screen-card">
+            <div class="screen-preview-box">
+              <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">6 November · Europe Server</div>
+              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px;">Friday</div>
+              <div style="background: var(--primary-gradient); border-radius: 14px; padding: 12px; color: #FFFFFF; margin-bottom: 12px;">
+                <div style="font-size: 0.7rem; opacity: 0.9;">Original Resin</div>
+                <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;">143 <span style="font-size: 0.8rem; opacity: 0.8;">/ 200</span></div>
+              </div>
+              <div style="background: var(--bg-surface); padding: 10px; border-radius: 10px; border: 1px solid var(--border-subtle); font-size: 0.75rem;">
+                <strong>Dawn talent books</strong><br>
+                <span style="color: var(--text-muted);">9 missing · Aster, Wren</span>
+              </div>
+            </div>
+            <div class="screen-card-meta">
+              <h3 class="screen-card-title">Today Dashboard</h3>
+              <p class="screen-card-desc">Daily server reset timer, active week strip, live resin snapshot, and one-tap checklist tasks.</p>
+            </div>
+          </div>
+
+          <!-- Screen 2: Resin -->
+          <div class="screen-card">
+            <div class="screen-preview-box" style="align-items: center; text-align: center; justify-content: center;">
+              <div style="width: 100px; height: 100px; border-radius: 50%; border: 8px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 12px;">
+                <strong style="font-family: var(--font-display); font-size: 1.5rem; line-height: 1;">143</strong>
+                <span style="font-size: 0.65rem; color: var(--text-muted);">of 200</span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Full at <strong>18:03</strong></div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <span style="padding: 4px 8px; border-radius: 6px; background: var(--bg-surface); font-size: 0.65rem; border: 1px solid var(--border-subtle);">2 Condensed</span>
+                <span style="padding: 4px 8px; border-radius: 6px; background: var(--bg-surface); font-size: 0.65rem; border: 1px solid var(--border-subtle);">3 Fragile</span>
+              </div>
+            </div>
+            <div class="screen-card-meta">
+              <h3 class="screen-card-title">Resin Command Center</h3>
+              <p class="screen-card-desc">Circular regeneration dial, forecast schedule with configurable alerts, and stock management.</p>
+            </div>
+          </div>
+
+          <!-- Screen 3: Planner -->
+          <div class="screen-card">
+            <div class="screen-preview-box">
+              <div style="font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; margin-bottom: 12px;">Targets</div>
+              <div style="background: var(--bg-surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border-subtle); margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700;">
+                  <span>Aster</span>
+                  <span style="color: var(--primary);">58%</span>
+                </div>
+                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Lv 70 → 90 · Talents 6 → 9</div>
+              </div>
+              <div style="background: var(--bg-surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700;">
+                  <span>Larkspur Spear</span>
+                  <span style="color: var(--primary);">47%</span>
+                </div>
+                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Lv 60 → 90 · Polearm</div>
+              </div>
+            </div>
+            <div class="screen-card-meta">
+              <h3 class="screen-card-title">Target Planner</h3>
+              <p class="screen-card-desc">Character &amp; weapon progression tracking with 3:1 material conversion and inventory reconciliation.</p>
+            </div>
+          </div>
+
+          <!-- Screen 4: Settings -->
+          <div class="screen-card">
+            <div class="screen-preview-box">
+              <div style="font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; margin-bottom: 12px;">Settings</div>
+              <div style="background: var(--bg-surface); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 6px; font-size: 0.72rem;">
+                <strong>Server:</strong> Europe (UTC+1)
+              </div>
+              <div style="background: var(--bg-surface); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 6px; font-size: 0.72rem;">
+                <strong>Exact alarms:</strong> Allowed
+              </div>
+              <div style="background: var(--bg-surface); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); font-size: 0.72rem;">
+                <strong>Backup:</strong> Export JSON
+              </div>
+            </div>
+            <div class="screen-card-meta">
+              <h3 class="screen-card-title">Settings &amp; Backup</h3>
+              <p class="screen-card-desc">Server configuration, alarm permissions, world level overrides, and portable JSON backup &amp; restore.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion Section -->
+    <section id="faq" class="section">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-eyebrow">Common Questions</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-desc">Got questions about safety, accuracy, or features? Here are all the answers.</p>
+        </header>
+
+        <div class="faq-wrap">
+          
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span>Is Routine Planner safe to use with my Genshin account?</span>
+              <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              Yes, 100%. Routine Planner is an independent companion app. It does not inject code into the game, does not read game memory or files, and does not require third-party cloud access. You can use it completely manually without entering any credentials whatsoever.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span>Will this drain my phone's battery?</span>
+              <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              Not at all! Unlike poorly optimized trackers that keep background services ticking every second, Routine Planner stores a single timestamp anchor (when your resin was recorded) and calculates current resin dynamically using pure mathematics whenever you open the app. Notification alerts use native system alarms.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span>How does HoYoLab auto-sync work?</span>
+              <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              HoYoLab sync is an optional convenience feature in Settings. It queries the public dailyNote endpoint to fetch your current resin count so you don't have to enter it manually. The login session cookie is stored exclusively in your device's encrypted hardware keystore and is never shared with any developer or cloud server.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span>Does it work completely offline?</span>
+              <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              Yes! All domain drop calendars, talent books, weapon ascension tables, and calculations are stored inside an embedded local SQLite database. You can plan your builds and check your resin even when traveling or without internet connectivity.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section id="download" class="container">
+      <div class="cta-banner">
+        <div class="cta-banner-content">
+          <h2 class="cta-banner-title">Take control of your daily routine</h2>
+          <p class="cta-banner-desc">
+            Free, open-source, and privacy-respecting companion app for every Traveler. Download the Android APK, try the web app, or build from source today.
+          </p>
+          <div class="cta-btn-group" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px;">
+            <a href="./releases/routine-planner-v0.1.0.apk" class="btn-primary" download>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download APK (Android)</span>
+            </a>
+            <a href="./app/" class="btn-secondary" target="_blank" rel="noopener noreferrer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>Try Web App</span>
+            </a>
+            <a href="https://github.com/Mattathiasa/routine-planner" class="btn-ghost" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font-weight:600;font-size:0.95rem;text-decoration:none;border:1.5px solid var(--border);color:var(--text-secondary);transition:all 0.2s;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+              <span>View Source on GitHub</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <div class="footer-brand">
+          <a href="#hero" class="brand-link">
+            <span class="brand-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"></path>
+              </svg>
+            </span>
+            <span class="brand-title">Routine Planner</span>
+          </a>
+          <p class="footer-desc">
+            Precision daily companion and resin calculator for Genshin Impact players. Clean, fast, and 100% offline-first.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#deep-dive">How It Works</a></li>
+            <li><a href="#calculator">Live Calculator</a></li>
+            <li><a href="#schedule">Domain Rotation</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#screens">Approved Screens</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="https://github.com/Mattathiasa/routine-planner" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+            <li><a href="./releases/routine-planner-v0.1.0.apk" download>Download APK</a></li>
+            <li><a href="./app/" target="_blank" rel="noopener noreferrer">Web App</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Privacy &amp; Data</h4>
+          <p class="footer-desc">
+            Routine Planner collects no personal information, analytics, or telemetry. All character targets and resin logs reside solely on your device.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-legal-disclaimer">
+          <strong>Disclaimer:</strong> Routine Planner is an unofficial fan-made companion app and is not affiliated with, endorsed, sponsored, or specifically approved by HoYoverse or COGNOSPHERE PTE. LTD. Genshin Impact™ and all associated assets, character names, and domain icons are trademarks or registered trademarks of COGNOSPHERE PTE. LTD.
+        </p>
+        <div>
+          &copy; Routine Planner Project. Free, open source, and built for players.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+
