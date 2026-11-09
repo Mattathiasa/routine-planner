@@ -114,4 +114,42 @@ void main() {
       throwsFormatException,
     );
   });
+
+  test('importing profile A leaves profile B completely untouched', () async {
+    final profileRepo = ProfileRepository(db);
+    final profileB = await profileRepo.createProfile(displayName: 'Alt', server: 'europe');
+    final settingsRepo = SettingsRepository(db);
+    await settingsRepo.getOrCreateSettings(profileB.id);
+    await settingsRepo.updateWorldLevel(profileB.id, 3);
+    final plannerRepo = PlannerRepository(db);
+    await plannerRepo.setInventoryCount(profileB.id, 'ember_core', 42);
+
+    final exportedA = await backup.exportBackupJson(profileId);
+
+    // Mutate both profiles further before importing A's backup.
+    await settingsRepo.updateWorldLevel(profileId, 9);
+    await settingsRepo.updateWorldLevel(profileB.id, 7);
+    await plannerRepo.setInventoryCount(profileB.id, 'ember_core', 999);
+
+    final importedId = await backup.importBackupJson(exportedA);
+    expect(importedId, profileId);
+
+    final profiles = await db.select(db.profiles).get();
+    expect(profiles.map((p) => p.id).toSet(), {profileId, profileB.id});
+
+    final settingsB = await (db.select(
+      db.settings,
+    )..where((t) => t.profileId.equals(profileB.id))).getSingle();
+    expect(settingsB.worldLevel, 7);
+
+    final inventoryB = await (db.select(
+      db.materialInventory,
+    )..where((t) => t.profileId.equals(profileB.id) & t.materialId.equals('ember_core'))).getSingle();
+    expect(inventoryB.count, 999);
+
+    final settingsA = await (db.select(
+      db.settings,
+    )..where((t) => t.profileId.equals(profileId))).getSingle();
+    expect(settingsA.worldLevel, 5);
+  });
 }

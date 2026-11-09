@@ -67,13 +67,12 @@ class BackupService {
     return jsonEncode(payload);
   }
 
-  /// Full replace, not a merge: every live row in the 7 exported tables is
-  /// deleted first, then the backup's rows are inserted. A merge would
-  /// risk two live `Profiles` rows if the backup's profile id differs from
-  /// the current install's — `ProfileRepository.getOrCreateDefaultProfile`
-  /// assumes exactly one live profile and throws otherwise. Full replace
-  /// is also simply the right behavior for a v1 single-profile app.
-  Future<void> importBackupJson(String jsonString) async {
+  /// Full replace, not a merge, but scoped to the imported profile's own
+  /// `profileId` — every live row belonging to that profile across the 7
+  /// exported tables is deleted first, then the backup's rows are
+  /// inserted. Other profiles are untouched. Returns the imported
+  /// profile's id so the caller can select it.
+  Future<String> importBackupJson(String jsonString) async {
     final data = jsonDecode(jsonString) as Map<String, dynamic>;
     final version = data['formatVersion'];
     if (version != formatVersion) {
@@ -85,14 +84,34 @@ class BackupService {
       return (tables[key] as List).cast<Map<String, dynamic>>();
     }
 
+    final profileId = rowsOf('profiles').single['id'] as String;
+
     await _db.transaction(() async {
-      await _db.delete(_db.transientResinBatches).go();
-      await _db.delete(_db.resinStateTable).go();
-      await _db.delete(_db.resinAlertThresholds).go();
-      await _db.delete(_db.materialInventory).go();
-      await _db.delete(_db.plannerTargets).go();
-      await _db.delete(_db.settings).go();
-      await _db.delete(_db.profiles).go();
+      final resinStateIds = await (_db.selectOnly(_db.resinStateTable)
+            ..addColumns([_db.resinStateTable.id])
+            ..where(_db.resinStateTable.profileId.equals(profileId)))
+          .map((row) => row.read(_db.resinStateTable.id)!)
+          .get();
+
+      if (resinStateIds.isNotEmpty) {
+        await (_db.delete(
+          _db.transientResinBatches,
+        )..where((t) => t.resinStateId.isIn(resinStateIds))).go();
+      }
+      await (_db.delete(
+        _db.resinStateTable,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.resinAlertThresholds,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.materialInventory,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.plannerTargets,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(_db.settings)..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(_db.profiles)..where((t) => t.id.equals(profileId))).go();
 
       for (final json in rowsOf('profiles')) {
         await _db
@@ -130,5 +149,7 @@ class BackupService {
             .insertOnConflictUpdate(MaterialInventoryData.fromJson(json).toCompanion(false));
       }
     });
+
+    return profileId;
   }
 }

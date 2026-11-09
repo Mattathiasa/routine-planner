@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/database_providers.dart';
+import '../../../core/providers/repository_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
@@ -91,7 +92,7 @@ class DataSection extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Import backup?'),
-        content: const Text('This replaces all current data with the backup. Continue?'),
+        content: const Text("This replaces that account's data with the backup. Continue?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -109,8 +110,12 @@ class DataSection extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final json = await importBackupFile();
-      await BackupService(ref.read(userDatabaseProvider)).importBackupJson(json);
-      messenger.showSnackBar(const SnackBar(content: Text('Imported. Please relaunch the app.')));
+      final importedProfileId = await BackupService(
+        ref.read(userDatabaseProvider),
+      ).importBackupJson(json);
+      await ref.read(profileRepositoryProvider).selectProfile(importedProfileId);
+      ref.invalidate(currentProfileProvider);
+      messenger.showSnackBar(const SnackBar(content: Text('Imported.')));
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text('Import failed: $error')));
     }
