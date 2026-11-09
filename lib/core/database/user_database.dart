@@ -38,7 +38,13 @@ class UserDatabase extends _$UserDatabase {
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
       if (from < 2) {
-        await m.addColumn(profiles, profiles.createdAt);
+        // Not m.addColumn: SQLite's ALTER TABLE ADD COLUMN rejects a
+        // non-constant default like CURRENT_TIMESTAMP outright, even though
+        // the same expression is fine as a CREATE TABLE column default.
+        // alterTable sidesteps that by rebuilding the table (SQLite's own
+        // recommended 12-step procedure) — existing rows get createdAt via
+        // the table's own default during the copy, no transformer needed.
+        await m.alterTable(TableMigration(profiles, newColumns: [profiles.createdAt]));
         await m.createTable(appState);
         // Whichever profile already exists becomes the implicitly selected
         // one, so upgrading users see no change at all. Safe to assume at
