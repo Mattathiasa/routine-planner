@@ -1,764 +1,872 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Routine Planner — Precision Resin &amp; Farming Companion</title>
-  <meta name="description" content="Offline-first, ad-free companion for Genshin players. Mathematical resin forecasting, domain farming schedules, 3:1 material aggregation.">
-  <meta name="theme-color" content="#0a0a12">
+  <title>Routine Planner — Precision Companion for Travelers</title>
+  <meta name="description" content="Offline-first, ad-free companion app for Travelers. Real-time resin forecasting, server reset clocks, weekly domain schedules, and 3:1 material aggregation.">
+  <meta name="theme-color" content="#F8F9FB">
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Routine Planner — Precision Resin &amp; Farming Companion">
-  <meta property="og:description" content="Master your daily routine. Real-time resin forecasting, server reset clocks, weekly domain schedules. 100% ad-free &amp; offline-first.">
+  <meta property="og:title" content="Routine Planner — Precision Companion for Travelers">
+  <meta property="og:description" content="Master your daily routine. Real-time resin forecasting, server reset clocks, weekly domain schedules. 100% ad-free & offline-first.">
   <meta property="og:image" content="./preview.png">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Fonts -->
+  <!-- Google Fonts: Plus Jakarta Sans & Inter (Orbix Typography System) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Three.js r163 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r163/three.min.js"></script>
-  <!-- GSAP 3.12 + ScrollTrigger -->
+  <!-- GSAP & Lenis -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <!-- Lenis smooth scroll -->
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 
   <link rel="stylesheet" href="./styles.css">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236C63FF'%3E%3Cpath d='M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232D47E2'%3E%3Cpath d='M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z'/%3E%3C/svg%3E">
 </head>
-<body>
-
-  <!-- Custom cursor -->
-  <div class="cursor" id="cursor" aria-hidden="true">
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
-  </div>
-
-  <!-- Noise overlay -->
-  <div class="noise-overlay" aria-hidden="true"></div>
+<body class="orbix-theme">
 
   <!-- Skip link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- NAV -->
-  <header class="site-header" id="site-header">
-    <div class="nav-inner">
-      <a href="#hero" class="brand" aria-label="Routine Planner Home">
-        <div class="brand-orb" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <!-- TOP FLOATING NAVBAR (Orbix style) -->
+  <header class="orbix-navbar-wrap">
+    <div class="orbix-navbar">
+      
+      <!-- Brand Logo -->
+      <a href="#hero" class="orbix-brand" aria-label="Routine Planner Home">
+        <div class="orbix-logo-symbol">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/>
           </svg>
         </div>
-        <span class="brand-name">Routine Planner</span>
+        <div class="orbix-brand-text">
+          <span class="brand-title">Routine Planner</span>
+          <span class="brand-tag">v0.1.0</span>
+        </div>
       </a>
 
-      <nav aria-label="Main Navigation" class="main-nav">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#calculator" class="nav-link">Calculator</a>
-        <a href="#schedule" class="nav-link">Schedule</a>
-        <a href="#faq" class="nav-link">FAQ</a>
+      <!-- Center Nav Links -->
+      <nav class="orbix-nav-menu" aria-label="Main Navigation">
+        <a href="#features" class="nav-item">Features</a>
+        <a href="#calculator" class="nav-item">Calculator</a>
+        <a href="#schedule" class="nav-item">Domain Schedule</a>
+        <a href="#screens" class="nav-item">App Tour</a>
+        <a href="#faq" class="nav-item">FAQ</a>
       </nav>
 
-      <div class="nav-actions">
-        <a href="./app/" class="nav-web-btn" target="_blank" rel="noopener noreferrer">Web App</a>
-        <a href="./releases/routine-planner-v0.1.0.apk" class="nav-cta" download>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Action Buttons -->
+      <div class="orbix-nav-actions">
+        <a href="./app/" class="orbix-btn orbix-btn-secondary orbix-nav-btn" target="_blank" rel="noopener noreferrer">
+          <span>Web App</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="./releases/routine-planner-v0.1.0.apk" class="orbix-btn orbix-btn-primary orbix-nav-btn" download>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          Get APK
+          <span>Get APK</span>
         </a>
       </div>
+
     </div>
   </header>
 
-  <!-- HERO -->
-  <section id="hero" class="hero">
-    <!-- Three.js canvas -->
-    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <!-- MAIN -->
+  <main id="main-content">
 
-    <div class="hero-content">
-      <div class="hero-badge" id="hero-badge">
-        <span class="badge-dot"></span>
-        Offline-First · Ad-Free · No Cloud Login
-      </div>
+    <!-- HERO SECTION (Orbix style: Clean Light Canvas + Rotating Banner Slider + Bold Headline) -->
+    <section id="hero" class="orbix-hero-section">
+      <div class="orbix-container">
+        
+        <div class="orbix-hero-content">
 
-      <h1 class="hero-headline" id="hero-headline">
-        <span class="hero-line" aria-label="Master your routine.">
-          <span class="word">Master</span>
-          <span class="word">your</span>
-          <span class="word">routine.</span>
-        </span>
-        <span class="hero-line hero-gradient-line" aria-label="Never waste resin.">
-          <span class="word">Never</span>
-          <span class="word">waste</span>
-          <span class="word gradient-word">resin.</span>
-        </span>
-      </h1>
-
-      <p class="hero-sub" id="hero-sub">
-        Mathematical resin forecasting, server-synced domain schedules, and 3:1 material aggregation — engineered for speed, privacy, and zero battery drain.
-      </p>
-
-      <div class="hero-ctas" id="hero-ctas">
-        <a href="./releases/routine-planner-v0.1.0.apk" class="btn-primary mag-btn" download>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download APK
-        </a>
-        <a href="./app/" class="btn-ghost mag-btn" target="_blank" rel="noopener noreferrer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-          </svg>
-          Try Web App
-        </a>
-      </div>
-
-      <div class="hero-stats" id="hero-stats">
-        <div class="stat-pill">
-          <span class="stat-num" data-count="200">0</span>
-          <span class="stat-label">Resin Cap</span>
-        </div>
-        <div class="stat-divider" aria-hidden="true"></div>
-        <div class="stat-pill">
-          <span class="stat-num" data-count="4">0</span>
-          <span class="stat-label">Game Servers</span>
-        </div>
-        <div class="stat-divider" aria-hidden="true"></div>
-        <div class="stat-pill">
-          <span class="stat-num" data-suffix="mins" data-count="8">0</span>
-          <span class="stat-label">Per Resin Point</span>
-        </div>
-        <div class="stat-divider" aria-hidden="true"></div>
-        <div class="stat-pill">
-          <span class="stat-num" data-suffix="MB" data-count="60">0</span>
-          <span class="stat-label">APK Size</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="scroll-cue" aria-hidden="true">
-      <div class="scroll-line"></div>
-      <span>Scroll</span>
-    </div>
-  </section>
-
-  <main id="main-content" tabindex="-1">
-
-    <!-- FEATURES BENTO -->
-    <section id="features" class="section">
-      <div class="container">
-        <div class="section-label reveal-up">Engineered for Daily Play</div>
-        <h2 class="section-heading reveal-up">Every tool a Traveler needs,<br><span class="text-gradient">zero bloat.</span></h2>
-
-        <div class="bento-grid">
-
-          <!-- Big card: Resin Anchor -->
-          <article class="bento-card bento-large tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-card-glow" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/>
-              </svg>
-            </div>
-            <h3 class="bento-title">Mathematical Resin Anchor</h3>
-            <p class="bento-desc">Zero battery drain. Uses the exact 8-min/point formula with an immutable timestamp — no background loops, no polling. Exact 160 &amp; 200 forecasts with one-tap spend logging.</p>
-            <div class="bento-tag">Core Feature</div>
-            <!-- Mini resin viz -->
-            <div class="bento-resin-viz" aria-hidden="true">
-              <div class="brv-label">143 / 200</div>
-              <div class="brv-bar">
-                <div class="brv-fill" style="width:71.5%">
-                  <div class="brv-tick"></div>
-                </div>
+          <!-- Rotating Banner Badge (Orbix Signature) -->
+          <div class="orbix-pill-slider" id="pill-slider">
+            <div class="pill-slider-track">
+              <div class="pill-slider-item active">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span class="pill-text">100% Offline-First · Zero Background Drain</span>
               </div>
-              <div class="brv-row">
-                <span>160 at <strong>12:43</strong></span>
-                <span>Full at <strong>18:03</strong></span>
+              <div class="pill-slider-item">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span class="pill-text">All 4 Game Server Reset Clocks Synced</span>
               </div>
-            </div>
-          </article>
-
-          <!-- Server Clocks -->
-          <article class="bento-card tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <h3 class="bento-title">Multi-Server Reset Clocks</h3>
-            <p class="bento-desc">Europe, America, Asia &amp; TW — all 4 servers mapped to your exact local timezone. Daily reset at 04:00 server time, translated perfectly.</p>
-            <div class="bento-clock-grid" aria-hidden="true">
-              <div class="bcg-item">
-                <span class="bcg-region">AS</span>
-                <span>20:00 UTC</span>
+              <div class="pill-slider-item">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span class="pill-text">No Cloud Login Required · Private SQLite DB</span>
               </div>
-              <div class="bcg-item">
-                <span class="bcg-region">EU</span>
-                <span>03:00 UTC</span>
-              </div>
-              <div class="bcg-item">
-                <span class="bcg-region">NA</span>
-                <span>09:00 UTC</span>
-              </div>
-              <div class="bcg-item">
-                <span class="bcg-region">TW</span>
-                <span>20:00 UTC</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- 3:1 Aggregation -->
-          <article class="bento-card tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-              </svg>
-            </div>
-            <h3 class="bento-title">3:1 Material Aggregation</h3>
-            <p class="bento-desc">Stop guessing how many green drops convert to purple books. Tiered alchemy with the game's 3:1 ratio, Ascension 1→6, Talents 1→10.</p>
-            <div class="bento-tier-viz" aria-hidden="true">
-              <div class="btv-row"><span class="btv-t1">×3</span><div class="btv-arrow">→</div><span class="btv-t2">×1</span><div class="btv-arrow">→</div><span class="btv-t3">×⅓</span></div>
-              <div class="btv-labels"><span>T1</span><span>T2</span><span>T3</span></div>
-            </div>
-          </article>
-
-          <!-- Notifications -->
-          <article class="bento-card tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </div>
-            <h3 class="bento-title">Native Exact Alarms</h3>
-            <p class="bento-desc">Android exact alarms at 160 &amp; 200 resin, plus 24h Transient Resin expiry warning. Works 100% offline with graceful battery-saver fallback.</p>
-            <div class="bento-tag bento-tag-green">Works Offline</div>
-          </article>
-
-          <!-- Privacy / SQLite -->
-          <article class="bento-card bento-wide tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-card-glow bento-card-glow-purple" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-            <div class="bento-wide-content">
-              <div>
-                <h3 class="bento-title">Dual SQLite Architecture</h3>
-                <p class="bento-desc">Catalog DB (SHA-256 verified) + private user DB via Drift. Full JSON backup &amp; restore. Zero analytics. Zero third-party surveillance. Zero cloud dependency.</p>
-              </div>
-              <div class="bento-privacy-badges" aria-label="Privacy highlights">
-                <span class="pvt-badge">0 Trackers</span>
-                <span class="pvt-badge">On-Device Only</span>
-                <span class="pvt-badge">Export Anytime</span>
-                <span class="pvt-badge">Open Source</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- HoYoLab sync -->
-          <article class="bento-card tilt-card" data-reveal>
-            <div class="bento-card-bg" aria-hidden="true"></div>
-            <div class="bento-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <h3 class="bento-title">Optional Live Sync</h3>
-            <p class="bento-desc">Connect your HoYoLab account for auto-sync. Credentials stored in Android EncryptedSharedPreferences — never sent externally.</p>
-            <div class="bento-tag">100% Optional</div>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- LIVE RESIN CALCULATOR -->
-    <section id="calculator" class="section section-dark">
-      <canvas class="section-canvas" id="calc-canvas" aria-hidden="true"></canvas>
-      <div class="container">
-        <div class="section-label reveal-up">Interactive Tool</div>
-        <h2 class="section-heading reveal-up">Live Resin &amp; Reset<br><span class="text-gradient">Calculator</span></h2>
-        <p class="section-sub reveal-up">Set your current resin and server — see exact milestone forecasts instantly.</p>
-
-        <div class="calc-shell reveal-up">
-          <div class="calc-left">
-            <!-- Ring gauge -->
-            <div class="calc-ring-wrap">
-              <svg class="calc-ring-svg" viewBox="0 0 200 200" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#6C63FF"/>
-                    <stop offset="100%" stop-color="#A78BFA"/>
-                  </linearGradient>
-                </defs>
-                <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14"/>
-                <circle id="calc-ring-progress" cx="100" cy="100" r="80" fill="none"
-                  stroke="url(#ringGrad)" stroke-width="14"
-                  stroke-linecap="round"
-                  stroke-dasharray="502.65"
-                  stroke-dashoffset="144"
-                  transform="rotate(-90 100 100)"
-                  style="transition: stroke-dashoffset 0.3s cubic-bezier(0.4,0,0.2,1);"/>
-              </svg>
-              <div class="calc-ring-center">
-                <span id="calc-ring-val" class="calc-ring-num">143</span>
-                <span class="calc-ring-sub">of 200</span>
-              </div>
-            </div>
-
-            <!-- Slider -->
-            <div class="calc-slider-row">
-              <label for="calc-resin-range" class="sr-only">Current Resin</label>
-              <input type="range" id="calc-resin-range" class="calc-range" min="0" max="200" value="143">
-              <input type="number" id="calc-resin-num" class="calc-num" min="0" max="200" value="143" aria-label="Resin amount">
-            </div>
-
-            <!-- Server -->
-            <div class="calc-server-row">
-              <label for="calc-server-select" class="calc-select-label">Game Server</label>
-              <select id="calc-server-select" class="calc-select">
-                <option value="europe" selected>Europe (UTC+1)</option>
-                <option value="america">America (UTC−5)</option>
-                <option value="asia">Asia (UTC+8)</option>
-                <option value="tw">TW / HK / MO (UTC+8)</option>
-              </select>
             </div>
           </div>
 
-          <div class="calc-right">
-            <div class="calc-result-card" id="cr-160">
-              <div class="crc-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/></svg>
-              </div>
-              <div class="crc-body">
-                <span class="crc-label">Reaches 160 (Condensed Cap)</span>
-                <span id="calc-time-160" class="crc-val">—</span>
-              </div>
+          <!-- Headline -->
+          <h1 class="orbix-hero-headline">
+            Precision Daily Companion<br>
+            <span class="orbix-gradient-text">For Every Traveler.</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="orbix-hero-sub">
+            Mathematical resin forecasting, daily domain farming synced to server reset clocks, and 3:1 material tier aggregation — built for speed, privacy, and zero battery drain.
+          </p>
+
+          <!-- Reviews / Trust Pill (Orbix clutch-style glass button) -->
+          <div class="orbix-trust-pill">
+            <div class="trust-stars" aria-label="5 stars rating">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
             </div>
-            <div class="calc-result-card" id="cr-200">
-              <div class="crc-icon crc-icon-warn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="trust-divider"></div>
+            <span class="trust-text">Dual SQLite Engine · 0 Trackers · 100% Free &amp; Open Source</span>
+          </div>
+
+          <!-- Call to Action Group -->
+          <div class="orbix-hero-actions">
+            <a href="./releases/routine-planner-v0.1.0.apk" class="orbix-btn orbix-btn-primary orbix-btn-lg" download>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download APK</span>
+              <span class="btn-subtext">v0.1.0 · Android (60 MB)</span>
+            </a>
+
+            <a href="./app/" class="orbix-btn orbix-btn-secondary orbix-btn-lg" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              <span>Try Web App</span>
+              <span class="btn-subtext">In-Browser Flutter Build</span>
+            </a>
+
+            <a href="https://github.com/Mattathiasa/routine-planner" class="orbix-btn orbix-btn-ghost orbix-btn-lg" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+              <span>GitHub</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- ORBIX HERO INTERACTIVE TRACK (Floating Dashboard Showcase) -->
+        <div class="orbix-hero-track">
+          
+          <!-- Ambient Glow Backdrop -->
+          <div class="hero-track-glow" aria-hidden="true"></div>
+
+          <!-- Main Interactive Card -->
+          <div class="hero-showcase-card">
+            
+            <!-- Top Card Header -->
+            <div class="showcase-card-header">
+              <div class="showcase-header-left">
+                <span class="status-indicator-dot"></span>
+                <span class="header-status-title">Live Resin Analytics &amp; Server Telemetry</span>
               </div>
-              <div class="crc-body">
-                <span class="crc-label">Full Cap (200) — Waste Zone</span>
-                <span id="calc-time-200" class="crc-val">—</span>
-              </div>
-            </div>
-            <div class="calc-result-card calc-result-card-accent">
-              <div class="crc-icon crc-icon-accent">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
-              <div class="crc-body">
-                <span class="crc-label">Next Daily Server Reset</span>
-                <span id="calc-server-reset" class="crc-val">—</span>
+              <div class="showcase-header-right">
+                <span class="pill-chip">Europe (UTC+1)</span>
+                <span class="pill-chip blue-chip">Reset: 03:00 UTC</span>
               </div>
             </div>
 
-            <div class="calc-tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Setting an alert at 160 resin gives you a 5-hour window to craft 4 Condensed Resin before hitting cap.
+            <!-- Curve Graph Visualization (Orbix signature vector curve with interactive points) -->
+            <div class="showcase-graph-container">
+              <div class="graph-metrics-row">
+                <div class="metric-cell">
+                  <span class="metric-label">CURRENT RESIN</span>
+                  <div class="metric-val-wrap">
+                    <strong class="metric-number" id="hero-resin-val">143</strong>
+                    <span class="metric-max">/ 200</span>
+                  </div>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label">REACHES 160 ALERT</span>
+                  <strong class="metric-highlight">12:43 Today</strong>
+                  <span class="metric-note">40 resin cushion</span>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label">HARD CAP (200)</span>
+                  <strong class="metric-alert">18:03 Today</strong>
+                  <span class="metric-note">Avoid waste</span>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label">NEXT REGEN (+1)</span>
+                  <strong class="metric-timer" id="hero-regen-timer">5:12</strong>
+                  <span class="metric-note">480s anchor</span>
+                </div>
+              </div>
+
+              <!-- Interactive SVG Curve -->
+              <div class="interactive-curve-box">
+                <svg class="curve-svg" viewBox="0 0 800 160" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#2D47E2" stop-opacity="0.25"/>
+                      <stop offset="100%" stop-color="#2D47E2" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Gradient area fill -->
+                  <path d="M 0,140 Q 200,120 400,70 T 800,20 L 800,160 L 0,160 Z" fill="url(#curveGradient)" />
+                  <!-- Curve Stroke -->
+                  <path d="M 0,140 Q 200,120 400,70 T 800,20" fill="none" stroke="#2D47E2" stroke-width="3.5" stroke-linecap="round" />
+                  
+                  <!-- Interactive Anchor Points -->
+                  <circle cx="100" cy="130" r="5" fill="#FFFFFF" stroke="#2D47E2" stroke-width="3" class="curve-pt" data-tip="08:00 — 110 Resin"/>
+                  <circle cx="300" cy="95" r="5" fill="#FFFFFF" stroke="#2D47E2" stroke-width="3" class="curve-pt" data-tip="10:30 — 128 Resin"/>
+                  <circle cx="500" cy="55" r="6" fill="#2D47E2" stroke="#FFFFFF" stroke-width="3" class="curve-pt active-pt" data-tip="12:43 — 160 Alert"/>
+                  <circle cx="750" cy="23" r="6" fill="#F87171" stroke="#FFFFFF" stroke-width="3" class="curve-pt" data-tip="18:03 — 200 Full Cap"/>
+                </svg>
+              </div>
+
             </div>
+
+            <!-- Floating Chips (Orbix signature d4-chips) -->
+            <div class="showcase-chips-bar">
+              <div class="d4-chip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>3:1 Material Conversion</span>
+              </div>
+              <div class="d4-chip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Synced Daily Reset</span>
+              </div>
+              <div class="d4-chip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>100% On-Device Privacy</span>
+              </div>
+              <div class="d4-chip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Zero Battery Drain</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- INFINITE MARQUEE TICKER (Orbix Style) -->
+    <section class="orbix-ticker-section" aria-label="Feature Highlights Ticker">
+      <div class="ticker-track">
+        <div class="ticker-content">
+          <span>EUROPE UTC+1</span>
+          <span class="ticker-dot">✦</span>
+          <span>AMERICA UTC-5</span>
+          <span class="ticker-dot">✦</span>
+          <span>ASIA UTC+8</span>
+          <span class="ticker-dot">✦</span>
+          <span>TW / HK / MO UTC+8</span>
+          <span class="ticker-dot">✦</span>
+          <span>160 CONDENSED CAP ALERT</span>
+          <span class="ticker-dot">✦</span>
+          <span>200 HARD CAP SHIELD</span>
+          <span class="ticker-dot">✦</span>
+          <span>3:1 ALCHEMY AGGREGATION</span>
+          <span class="ticker-dot">✦</span>
+          <span>DUAL DRIFT SQLITE</span>
+          <span class="ticker-dot">✦</span>
+          <span>100% OFFLINE-FIRST</span>
+          <span class="ticker-dot">✦</span>
+        </div>
+        <!-- Duplicate for continuous seamless scroll -->
+        <div class="ticker-content" aria-hidden="true">
+          <span>EUROPE UTC+1</span>
+          <span class="ticker-dot">✦</span>
+          <span>AMERICA UTC-5</span>
+          <span class="ticker-dot">✦</span>
+          <span>ASIA UTC+8</span>
+          <span class="ticker-dot">✦</span>
+          <span>TW / HK / MO UTC+8</span>
+          <span class="ticker-dot">✦</span>
+          <span>160 CONDENSED CAP ALERT</span>
+          <span class="ticker-dot">✦</span>
+          <span>200 HARD CAP SHIELD</span>
+          <span class="ticker-dot">✦</span>
+          <span>3:1 ALCHEMY AGGREGATION</span>
+          <span class="ticker-dot">✦</span>
+          <span>DUAL DRIFT SQLITE</span>
+          <span class="ticker-dot">✦</span>
+          <span>100% OFFLINE-FIRST</span>
+          <span class="ticker-dot">✦</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENTO FEATURES GRID (Orbix Structured Bento System) -->
+    <section id="features" class="orbix-section">
+      <div class="orbix-container">
+        
+        <!-- Section Header -->
+        <div class="orbix-section-header">
+          <span class="orbix-eyebrow">BUILT FOR DAILY FARMING</span>
+          <h2 class="orbix-section-title">Everything you need to optimize your daily routine</h2>
+          <p class="orbix-section-desc">Clean architecture, zero bloatware, zero tracking. Engineered around the game's actual math and server schedules.</p>
+        </div>
+
+        <!-- Bento Grid -->
+        <div class="orbix-bento-grid">
+
+          <!-- Card 1 (Large 8-col): Mathematical Resin Anchor -->
+          <article class="orbix-card bento-col-8">
+            <div class="card-top-meta">
+              <span class="card-num-badge">01</span>
+              <span class="card-category-tag">CORE ENGINE</span>
+            </div>
+            <h3 class="card-heading">Mathematical Resin Anchor</h3>
+            <p class="card-paragraph">
+              Zero battery drain. Never runs background loops or polling workers. Uses the exact 8-minute game regeneration formula projected from an immutable anchor timestamp.
+            </p>
+            
+            <div class="bento-inner-widget">
+              <div class="resin-progress-widget">
+                <div class="rpw-header">
+                  <span>Current Original Resin</span>
+                  <strong>143 / 200</strong>
+                </div>
+                <div class="rpw-bar-wrap">
+                  <div class="rpw-bar-fill" style="width: 71.5%;"></div>
+                  <div class="rpw-bar-mark" title="160 Condensed Alert"></div>
+                </div>
+                <div class="rpw-footer-row">
+                  <span>Reach 160: <strong>12:43 Today</strong></span>
+                  <span>Full 200: <strong>18:03 Today</strong></span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2 (4-col): Server Reset Clocks -->
+          <article class="orbix-card bento-col-4">
+            <div class="card-top-meta">
+              <span class="card-num-badge">02</span>
+              <span class="card-category-tag">TIMEZONES</span>
+            </div>
+            <h3 class="card-heading">Multi-Server Reset Clocks</h3>
+            <p class="card-paragraph">
+              Daily reset occurs at 04:00 server time. Maps Europe, America, Asia, and TW/HK/MO directly into your local clock.
+            </p>
+            <div class="bento-inner-widget">
+              <div class="clock-matrix">
+                <div class="clock-item"><span>Europe (UTC+1)</span><strong>03:00 UTC</strong></div>
+                <div class="clock-item"><span>America (UTC-5)</span><strong>09:00 UTC</strong></div>
+                <div class="clock-item"><span>Asia (UTC+8)</span><strong>20:00 UTC</strong></div>
+                <div class="clock-item"><span>TW/HK/MO</span><strong>20:00 UTC</strong></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3 (4-col): 3:1 Material Aggregation -->
+          <article class="orbix-card bento-col-4">
+            <div class="card-top-meta">
+              <span class="card-num-badge">03</span>
+              <span class="card-category-tag">ALCHEMY</span>
+            </div>
+            <h3 class="card-heading">3:1 Tier Aggregation</h3>
+            <p class="card-paragraph">
+              Stop guessing drop math. Our tiered alchemy calculator carries surplus upwards with the game's 3:1 ratio and factors in active inventory.
+            </p>
+            <div class="bento-inner-widget">
+              <div class="alchemy-ratio-box">
+                <span class="alchemy-pill green-pill">Tier 1 (×3)</span>
+                <span class="alchemy-arrow">→</span>
+                <span class="alchemy-pill blue-pill">Tier 2 (×1)</span>
+                <span class="alchemy-arrow">→</span>
+                <span class="alchemy-pill purple-pill">Tier 3</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 4 (4-col): Reliable Local Alarms -->
+          <article class="orbix-card bento-col-4">
+            <div class="card-top-meta">
+              <span class="card-num-badge">04</span>
+              <span class="card-category-tag">NOTIFICATIONS</span>
+            </div>
+            <h3 class="card-heading">Native Exact Alarms</h3>
+            <p class="card-paragraph">
+              Never cap your stamina. Native exact alarms trigger at 160 or 200 resin and alert you 24 hours before Transient Resin expires.
+            </p>
+            <div class="bento-inner-widget">
+              <div class="badge-status-row">
+                <span class="status-pill status-green">✓ 100% Offline Alarm</span>
+                <span class="status-pill status-blue">✓ Doze Safe</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 5 (4-col): Dual SQLite Storage -->
+          <article class="orbix-card bento-col-4">
+            <div class="card-top-meta">
+              <span class="card-num-badge">05</span>
+              <span class="card-category-tag">DATA INTEGRITY</span>
+            </div>
+            <h3 class="card-heading">Dual SQLite Architecture</h3>
+            <p class="card-paragraph">
+              Built on Drift and SQLite. Seed catalog verified by SHA-256 integrity check. Personal plan stored in your private database.
+            </p>
+            <div class="bento-inner-widget">
+              <div class="storage-tags-row">
+                <span class="storage-tag">Zero Analytics</span>
+                <span class="storage-tag">JSON Backup</span>
+                <span class="storage-tag">Private</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LIVE RESIN & SERVER CALCULATOR (Interactive Tool) -->
+    <section id="calculator" class="orbix-section orbix-calc-section">
+      <div class="orbix-container">
+        
+        <div class="orbix-section-header">
+          <span class="orbix-eyebrow">INTERACTIVE ENGINE</span>
+          <h2 class="orbix-section-title">Test the Resin &amp; Reset Engine Live</h2>
+          <p class="orbix-section-desc">Adjust your current resin and select your server to view exact countdown forecasts.</p>
+        </div>
+
+        <div class="orbix-calc-card">
+          <div class="calc-card-grid">
+            
+            <!-- Left Controls -->
+            <div class="calc-controls-pane">
+              
+              <div class="calc-field">
+                <div class="calc-field-header">
+                  <label for="calc-resin-range" class="calc-label">Current Original Resin</label>
+                  <span class="calc-counter"><strong id="calc-range-text">143</strong> / 200</span>
+                </div>
+                <div class="calc-slider-wrapper">
+                  <input type="range" id="calc-resin-range" class="orbix-slider" min="0" max="200" value="143" aria-label="Original resin slider">
+                  <input type="number" id="calc-resin-num" class="orbix-number-input" min="0" max="200" value="143" aria-label="Original resin number">
+                </div>
+              </div>
+
+              <div class="calc-field">
+                <label for="calc-server-select" class="calc-label">Your Game Server</label>
+                <div class="calc-select-wrap">
+                  <select id="calc-server-select" class="orbix-select">
+                    <option value="europe" selected>Europe (UTC+1 · Reset at 03:00 UTC)</option>
+                    <option value="america">America (UTC-5 · Reset at 09:00 UTC)</option>
+                    <option value="asia">Asia (UTC+8 · Reset at 20:00 UTC)</option>
+                    <option value="tw">TW / HK / MO (UTC+8 · Reset at 20:00 UTC)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="calc-info-note">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>Setting an alert at 160 resin grants a 5-hour window to craft 4 Condensed Resin before reaching the 200 hard cap.</span>
+              </div>
+
+            </div>
+
+            <!-- Right Visual Output Display -->
+            <div class="calc-display-pane">
+              
+              <!-- Circular Progress Gauge -->
+              <div class="calc-dial-wrapper">
+                <svg class="calc-dial-svg" viewBox="0 0 180 180" aria-hidden="true">
+                  <circle cx="90" cy="90" r="74" fill="none" stroke="#E9EBF0" stroke-width="12"/>
+                  <circle id="calc-ring-progress" cx="90" cy="90" r="74" fill="none"
+                    stroke="#2D47E2" stroke-width="12" stroke-linecap="round"
+                    stroke-dasharray="465" stroke-dashoffset="132"
+                    transform="rotate(-90 90 90)"
+                    style="transition: stroke-dashoffset 0.25s cubic-bezier(0.4,0,0.2,1);"/>
+                </svg>
+                <div class="calc-dial-center">
+                  <span id="calc-ring-val" class="dial-number">143</span>
+                  <span class="dial-caption">of 200 Resin</span>
+                </div>
+              </div>
+
+              <!-- Output Stat Tiles -->
+              <div class="calc-results-grid">
+                <div class="result-tile">
+                  <span class="result-label">Reaches 160 At</span>
+                  <span id="calc-time-160" class="result-value">12:43 (in 2h 16m)</span>
+                </div>
+                <div class="result-tile">
+                  <span class="result-label">Full 200 At</span>
+                  <span id="calc-time-200" class="result-value">18:03 (in 7h 36m)</span>
+                </div>
+                <div class="result-tile full-width">
+                  <span class="result-label">Next Daily Server Reset</span>
+                  <span id="calc-server-reset" class="result-value">06:00 (in 10h 25m)</span>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- DOMAIN SCHEDULE -->
-    <section id="schedule" class="section">
-      <div class="container">
-        <div class="section-label reveal-up">Weekly Rotation</div>
-        <h2 class="section-heading reveal-up">Domain Drops<br><span class="text-gradient">by Weekday</span></h2>
-        <p class="section-sub reveal-up">Select a day to see which talent books and weapon materials are farmable.</p>
-
-        <div class="schedule-controls reveal-up" role="group" aria-label="Select day">
-          <button type="button" class="day-btn" data-day="mon">Mon</button>
-          <button type="button" class="day-btn" data-day="tue">Tue</button>
-          <button type="button" class="day-btn" data-day="wed">Wed</button>
-          <button type="button" class="day-btn" data-day="thu">Thu</button>
-          <button type="button" class="day-btn active" data-day="fri">Fri</button>
-          <button type="button" class="day-btn" data-day="sat">Sat</button>
-          <button type="button" class="day-btn" data-day="sun">Sun ✦</button>
+    <!-- WEEKLY DOMAIN SCHEDULE MATRIX -->
+    <section id="schedule" class="orbix-section">
+      <div class="orbix-container">
+        
+        <div class="orbix-section-header">
+          <span class="orbix-eyebrow">DOMAIN FARMING GUIDE</span>
+          <h2 class="orbix-section-title">Weekly Rotation Matrix</h2>
+          <p class="orbix-section-desc">Inspect which talent books and weapon ascension materials are farmable today.</p>
         </div>
 
-        <div class="schedule-grid" id="schedule-grid">
-          <article class="sched-card tilt-card" data-days="mon thu" data-reveal>
-            <div class="sched-card-accent" style="--accent-hue: 150deg"></div>
-            <h3 class="sched-title">Freedom &amp; Prosperity</h3>
-            <div class="sched-day-tag">Mon · Thu · Sun</div>
-            <div class="sched-items">
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(110,231,183,0.15);color:#6EE7B7">F</span>
-                <div>
-                  <div class="sched-name">Freedom Talent Books</div>
-                  <div class="sched-loc">Forsaken Rift · Klee, Tartaglia, Amber</div>
-                </div>
-              </div>
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(252,211,77,0.15);color:#FCD34D">P</span>
-                <div>
-                  <div class="sched-name">Prosperity Talent Books</div>
-                  <div class="sched-loc">Taishan Mansion · Keqing, Xiao, Hu Tao</div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="sched-card tilt-card" data-days="tue fri" data-reveal>
-            <div class="sched-card-accent" style="--accent-hue: 220deg"></div>
-            <h3 class="sched-title">Resistance &amp; Diligence</h3>
-            <div class="sched-day-tag">Tue · Fri · Sun</div>
-            <div class="sched-items">
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(147,197,253,0.15);color:#93C5FD">R</span>
-                <div>
-                  <div class="sched-name">Resistance Talent Books</div>
-                  <div class="sched-loc">Forsaken Rift · Bennett, Jean, Diluc</div>
-                </div>
-              </div>
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(216,180,254,0.15);color:#D8B4FE">D</span>
-                <div>
-                  <div class="sched-name">Diligence Talent Books</div>
-                  <div class="sched-loc">Taishan Mansion · Ganyu, Kazuha, Xiangling</div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="sched-card tilt-card" data-days="wed sat" data-reveal>
-            <div class="sched-card-accent" style="--accent-hue: 300deg"></div>
-            <h3 class="sched-title">Ballad &amp; Gold</h3>
-            <div class="sched-day-tag">Wed · Sat · Sun</div>
-            <div class="sched-items">
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(249,168,212,0.15);color:#F9A8D4">B</span>
-                <div>
-                  <div class="sched-name">Ballad Talent Books</div>
-                  <div class="sched-loc">Forsaken Rift · Albedo, Fischl, Venti</div>
-                </div>
-              </div>
-              <div class="sched-item">
-                <span class="sched-avatar" style="background:rgba(252,211,77,0.15);color:#FCD34D">G</span>
-                <div>
-                  <div class="sched-name">Gold Talent Books</div>
-                  <div class="sched-loc">Taishan Mansion · Beidou, Zhongli, Yanfei</div>
-                </div>
-              </div>
-            </div>
-          </article>
+        <!-- Weekday Pills Bar -->
+        <div class="schedule-pills-bar" role="group" aria-label="Select day of the week">
+          <button type="button" class="day-tab-btn" data-day="mon">Monday</button>
+          <button type="button" class="day-tab-btn" data-day="tue">Tuesday</button>
+          <button type="button" class="day-tab-btn" data-day="wed">Wednesday</button>
+          <button type="button" class="day-tab-btn" data-day="thu">Thursday</button>
+          <button type="button" class="day-tab-btn active" data-day="fri">Friday</button>
+          <button type="button" class="day-tab-btn" data-day="sat">Saturday</button>
+          <button type="button" class="day-tab-btn" data-day="sun">Sunday ✦ All Open</button>
         </div>
+
+        <!-- Schedule Cards Grid -->
+        <div class="schedule-cards-grid">
+          
+          <article class="schedule-card" data-days="mon thu">
+            <div class="sched-card-top">
+              <span class="sched-tag">Mon / Thu / Sun</span>
+              <h3 class="sched-card-heading">Freedom &amp; Prosperity</h3>
+            </div>
+            <div class="sched-card-items">
+              <div class="sched-item-row">
+                <span class="element-badge anemo-badge">F</span>
+                <div class="item-meta">
+                  <strong class="item-name">Freedom Talent Books</strong>
+                  <span class="item-desc">Forsaken Rift · Klee, Tartaglia, Amber, Aloy</span>
+                </div>
+              </div>
+              <div class="sched-item-row">
+                <span class="element-badge geo-badge">P</span>
+                <div class="item-meta">
+                  <strong class="item-name">Prosperity Talent Books</strong>
+                  <span class="item-desc">Taishan Mansion · Keqing, Ningguang, Xiao, Qiqi</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="schedule-card" data-days="tue fri">
+            <div class="sched-card-top">
+              <span class="sched-tag">Tue / Fri / Sun</span>
+              <h3 class="sched-card-heading">Resistance &amp; Diligence</h3>
+            </div>
+            <div class="sched-card-items">
+              <div class="sched-item-row">
+                <span class="element-badge cryo-badge">R</span>
+                <div class="item-meta">
+                  <strong class="item-name">Resistance Talent Books</strong>
+                  <span class="item-desc">Forsaken Rift · Bennett, Jean, Mona, Diluc</span>
+                </div>
+              </div>
+              <div class="sched-item-row">
+                <span class="element-badge geo-badge">D</span>
+                <div class="item-meta">
+                  <strong class="item-name">Diligence Talent Books</strong>
+                  <span class="item-desc">Taishan Mansion · Ganyu, Hu Tao, Kazuha, Xiangling</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="schedule-card" data-days="wed sat">
+            <div class="sched-card-top">
+              <span class="sched-tag">Wed / Sat / Sun</span>
+              <h3 class="sched-card-heading">Ballad &amp; Gold</h3>
+            </div>
+            <div class="sched-card-items">
+              <div class="sched-item-row">
+                <span class="element-badge anemo-badge">B</span>
+                <div class="item-meta">
+                  <strong class="item-name">Ballad Talent Books</strong>
+                  <span class="item-desc">Forsaken Rift · Albedo, Fischl, Rosaria, Venti</span>
+                </div>
+              </div>
+              <div class="sched-item-row">
+                <span class="element-badge geo-badge">G</span>
+                <div class="item-meta">
+                  <strong class="item-name">Gold Talent Books</strong>
+                  <span class="item-desc">Taishan Mansion · Beidou, Xingqiu, Zhongli, Yanfei</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
       </div>
     </section>
 
-    <!-- APP PREVIEW -->
-    <section id="screens" class="section section-dark screens-section">
-      <canvas class="section-canvas" id="screens-canvas" aria-hidden="true"></canvas>
-      <div class="container">
-        <div class="section-label reveal-up">Visual Tour</div>
-        <h2 class="section-heading reveal-up">Precision UI,<br><span class="text-gradient">every pixel intentional.</span></h2>
+    <!-- ORBIX CONTRAST DARK SECTION: INTERACTIVE APP TOUR -->
+    <section id="screens" class="orbix-dark-section">
+      <div class="orbix-container">
+        
+        <div class="dark-section-header">
+          <span class="orbix-eyebrow blue-text">DESIGNED FOR SPEED &amp; PRIVACY</span>
+          <h2 class="dark-section-title">Tested in the Field. Zero Lag.</h2>
+          <p class="dark-section-desc">Experience the native Android UI directly in this interactive emulator.</p>
+        </div>
 
-        <div class="phone-showcase">
-          <!-- Phone frame -->
-          <div class="phone-3d-wrapper" id="phone-wrapper">
-            <div class="phone-glow-outer" aria-hidden="true"></div>
-            <div class="phone-frame-3d">
-              <div class="phone-notch" aria-hidden="true"></div>
-              <div class="phone-screen-area">
+        <div class="phone-experience-container">
+          
+          <!-- Interactive Phone Mockup -->
+          <div class="orbix-phone-frame">
+            <div class="phone-screen-viewport">
+              
+              <!-- Screen Topbar -->
+              <div class="ps-topbar">
+                <span>9:41</span>
+                <span>Europe · UTC+1</span>
+              </div>
 
-                <div class="pscreen-topbar">
-                  <span>9:41</span>
-                  <span>Europe · UTC+1</span>
-                </div>
+              <!-- Screen Tabs Switcher -->
+              <div class="ps-tab-controls" role="tablist">
+                <button type="button" class="ps-tab-btn active" role="tab" aria-selected="true" data-tab="today">Today</button>
+                <button type="button" class="ps-tab-btn" role="tab" aria-selected="false" data-tab="resin">Resin</button>
+                <button type="button" class="ps-tab-btn" role="tab" aria-selected="false" data-tab="planner">Planner</button>
+              </div>
 
-                <div class="pscreen-tabs" role="tablist">
-                  <button class="pstab active" role="tab" aria-selected="true" data-view="today">Today</button>
-                  <button class="pstab" role="tab" aria-selected="false" data-view="resin">Resin</button>
-                  <button class="pstab" role="tab" aria-selected="false" data-view="planner">Planner</button>
-                </div>
+              <!-- Screen Views Area -->
+              <div class="ps-screen-content">
 
-                <div class="pscreen-body">
+                <!-- 1. TODAY TAB -->
+                <div class="ps-view active" id="ps-view-today">
+                  
+                  <!-- Week Strip -->
+                  <div class="ps-week-strip">
+                    <div class="ps-day"><span>M</span><span>2</span></div>
+                    <div class="ps-day"><span>T</span><span>3</span></div>
+                    <div class="ps-day"><span>W</span><span>4</span></div>
+                    <div class="ps-day"><span>T</span><span>5</span></div>
+                    <div class="ps-day current"><span>F</span><span>6</span></div>
+                    <div class="ps-day"><span>S</span><span>7</span></div>
+                    <div class="ps-day"><span>S</span><span>8</span></div>
+                  </div>
 
-                  <!-- TODAY VIEW -->
-                  <div class="pview active" id="pview-today">
-                    <div class="pview-week">
-                      <div class="pday"><span>M</span><span>2</span><span class="pdots"></span></div>
-                      <div class="pday"><span>T</span><span>3</span><span class="pdots"><i></i><i></i></span></div>
-                      <div class="pday"><span>W</span><span>4</span><span class="pdots"><i></i></span></div>
-                      <div class="pday"><span>T</span><span>5</span><span class="pdots"></span></div>
-                      <div class="pday active-day"><span>F</span><span>6</span><span class="pdots"><i></i><i></i></span></div>
-                      <div class="pday"><span>S</span><span>7</span><span class="pdots"><i></i></span></div>
-                      <div class="pday"><span>S</span><span>8</span><span class="pdots"><i></i><i></i><i></i></span></div>
+                  <!-- Resin Hero Box in Mockup -->
+                  <div class="ps-resin-card">
+                    <div class="prc-header">
+                      <span>Original Resin</span>
+                      <span class="prc-timer">+1 in <strong class="mock-timer-display">5:12</strong></span>
                     </div>
-
-                    <div class="pview-resin-card">
-                      <div class="prc-top">
-                        <span class="prc-title">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/></svg>
-                          Original Resin
-                        </span>
-                        <span class="prc-timer">+1 in <span class="mock-timer-display">5:12</span></span>
-                      </div>
-                      <div class="prc-num"><span class="mock-resin-val-num">143</span><span>/200</span></div>
-                      <div class="prc-bar">
-                        <div class="mock-bar-fill" style="width:71.5%"></div>
-                        <div class="prc-tick"></div>
-                      </div>
-                      <div class="prc-forecast">
-                        <span>160 at <strong>12:43</strong></span>
-                        <span>Full at <strong>18:03</strong></span>
-                      </div>
+                    <div class="prc-number-row">
+                      <span class="prc-big-num mock-resin-val-num">143</span>
+                      <span class="prc-max">/ 200</span>
                     </div>
-
-                    <div class="pview-task-card">
-                      <div class="ptc-header">
-                        <span class="ptc-title">Forsaken Rift · Dawn</span>
-                        <span class="ptc-open">Open</span>
-                      </div>
-                      <div class="ptc-row mock-task-row">
-                        <div class="ptc-check mock-checkbox" aria-label="Toggle task">
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </div>
-                        <div class="ptc-meta">
-                          <span>Philosophies of Dawn (T3)</span>
-                          <span class="ptc-sub">9 missing · Aster, Wren</span>
-                        </div>
-                        <button class="ptc-run mock-spend-btn" title="Spend 20 resin">-20</button>
-                      </div>
-                      <div class="ptc-row mock-task-row">
-                        <div class="ptc-check mock-checkbox" aria-label="Toggle task">
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </div>
-                        <div class="ptc-meta">
-                          <span>Guide to Dawn (T2)</span>
-                          <span class="ptc-sub">18 missing · Aster</span>
-                        </div>
-                        <button class="ptc-run mock-spend-btn" title="Spend 20 resin">-20</button>
-                      </div>
+                    <div class="prc-bar">
+                      <div class="prc-bar-fill mock-bar-fill" style="width: 71.5%;"></div>
+                    </div>
+                    <div class="prc-sub-row">
+                      <span>160 at <strong>12:43</strong></span>
+                      <span>Full at <strong>18:03</strong></span>
                     </div>
                   </div>
 
-                  <!-- RESIN VIEW -->
-                  <div class="pview" id="pview-resin">
-                    <div class="pview-resin-gauge">
-                      <svg viewBox="0 0 120 120" aria-hidden="true">
-                        <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-                        <circle class="pview-gauge-arc" cx="60" cy="60" r="50" fill="none"
-                          stroke="url(#ringGrad)" stroke-width="8"
-                          stroke-linecap="round"
-                          stroke-dasharray="314.16"
-                          stroke-dashoffset="90"
-                          transform="rotate(-90 60 60)"/>
-                      </svg>
-                      <div class="pview-gauge-val">
-                        <span class="mock-resin-val-num">143</span>
-                        <span>/200</span>
-                      </div>
+                  <!-- Farm Task in Mockup -->
+                  <div class="ps-task-card">
+                    <div class="ptc-top">
+                      <strong>Forsaken Rift · Dawn Books</strong>
+                      <span class="ptc-open-tag">Open Today</span>
                     </div>
-                    <div class="pview-stock-grid">
-                      <div class="psg-item"><span>Condensed</span><strong>2 / 5</strong></div>
-                      <div class="psg-item"><span>Fragile</span><strong>3</strong></div>
-                      <div class="psg-item" style="color:rgba(252,211,77,0.9)"><span>Transient</span><strong>1 (4d)</strong></div>
-                    </div>
-                  </div>
-
-                  <!-- PLANNER VIEW -->
-                  <div class="pview" id="pview-planner">
-                    <div class="pview-char-row">
-                      <div class="pcr-avatar" style="background:rgba(252,100,100,0.2);color:#FC6464">A</div>
-                      <div class="pcr-info">
-                        <span>Aster <em>5★ Pyro</em></span>
-                        <span class="pcr-sub">Lv 70→90 · Talents 6→9</span>
+                    <div class="ptc-row mock-task-row">
+                      <div class="mock-checkbox" aria-label="Check task">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                       </div>
-                      <div class="pcr-pct">58%</div>
-                    </div>
-                    <div class="pview-char-row">
-                      <div class="pcr-avatar" style="background:rgba(100,180,252,0.2);color:#64B4FC">W</div>
-                      <div class="pcr-info">
-                        <span>Wren <em>4★ Hydro</em></span>
-                        <span class="pcr-sub">Lv 80→90 · Talents 8→10</span>
+                      <div class="ptc-meta">
+                        <span>Philosophies of Dawn (Tier 3)</span>
+                        <span class="ptc-sub">9 missing · Aster, Wren</span>
                       </div>
-                      <div class="pcr-pct">71%</div>
+                      <button type="button" class="mock-spend-btn" title="Log 20 resin run">-20</button>
                     </div>
-                    <div class="pview-char-row">
-                      <div class="pcr-avatar" style="background:rgba(252,211,77,0.2);color:#FCD34D">L</div>
-                      <div class="pcr-info">
-                        <span>Larkspur Spear <em>Polearm</em></span>
-                        <span class="pcr-sub">Lv 60→90</span>
+                    <div class="ptc-row mock-task-row">
+                      <div class="mock-checkbox" aria-label="Check task">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                       </div>
-                      <div class="pcr-pct">47%</div>
+                      <div class="ptc-meta">
+                        <span>Guide to Dawn (Tier 2)</span>
+                        <span class="ptc-sub">18 missing · Aster</span>
+                      </div>
+                      <button type="button" class="mock-spend-btn" title="Log 20 resin run">-20</button>
                     </div>
                   </div>
 
                 </div>
 
-                <!-- Bottom nav -->
-                <div class="pscreen-nav" aria-hidden="true">
-                  <span class="pnav-item active mock-nav-item" data-view="today">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Today
-                  </span>
-                  <span class="pnav-item mock-nav-item" data-view="resin">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/></svg>
-                    Resin
-                  </span>
-                  <span class="pnav-item mock-nav-item" data-view="planner">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                    Planner
-                  </span>
+                <!-- 2. RESIN TAB -->
+                <div class="ps-view" id="ps-view-resin">
+                  <div class="ps-resin-full-view">
+                    <div class="ps-dial-box">
+                      <span class="dial-title">ORIGINAL RESIN GAUGE</span>
+                      <div class="dial-val"><span class="mock-resin-val-num">143</span><span>/200</span></div>
+                      <span class="dial-next">Next in <strong class="mock-timer-display">5:12</strong></span>
+                    </div>
+                    <div class="ps-stock-grid">
+                      <div class="ps-stock-item"><span>Condensed</span><strong>2 / 5</strong></div>
+                      <div class="ps-stock-item"><span>Fragile</span><strong>3</strong></div>
+                      <div class="ps-stock-item"><span>Transient</span><strong style="color:#FBBF24">1 (4d)</strong></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. PLANNER TAB -->
+                <div class="ps-view" id="ps-view-planner">
+                  <div class="ps-planner-full-view">
+                    <div class="ps-char-card">
+                      <div class="char-avatar" style="background: rgba(239,68,68,0.15); color: #EF4444">A</div>
+                      <div class="char-info">
+                        <strong>Aster</strong>
+                        <span>Lv 70 → 90 · Talents 6 → 9</span>
+                      </div>
+                      <div class="char-progress">58%</div>
+                    </div>
+                    <div class="ps-char-card">
+                      <div class="char-avatar" style="background: rgba(59,130,246,0.15); color: #3B82F6">W</div>
+                      <div class="char-info">
+                        <strong>Wren</strong>
+                        <span>Lv 80 → 90 · Talents 8 → 10</span>
+                      </div>
+                      <div class="char-progress">71%</div>
+                    </div>
+                  </div>
                 </div>
 
               </div>
+
+              <!-- Bottom Pill Nav Inside Phone -->
+              <div class="ps-pill-bottom-nav">
+                <span class="ps-bnav-item active mock-nav-tab" data-tab="today">Today</span>
+                <span class="ps-bnav-item mock-nav-tab" data-tab="resin">Resin</span>
+                <span class="ps-bnav-item mock-nav-tab" data-tab="planner">Planner</span>
+              </div>
+
             </div>
           </div>
 
-          <!-- Feature labels -->
-          <div class="phone-labels">
-            <div class="plabel plabel-left" data-reveal>
-              <div class="plabel-line" aria-hidden="true"></div>
-              <div class="plabel-content">
-                <strong>Live Resin Bar</strong>
-                <span>Tick-accurate with 160/200 forecasts</span>
-              </div>
+          <!-- Feature Callout Cards (Orbix Style) -->
+          <div class="dark-feature-callouts">
+            <div class="callout-card">
+              <span class="callout-idx">01</span>
+              <h3 class="callout-title">Interactive Spend Actions</h3>
+              <p class="callout-text">Tap "-20" to immediately simulate or record domain stamina deductions without opening menus.</p>
             </div>
-            <div class="plabel plabel-left" style="top:52%" data-reveal>
-              <div class="plabel-line" aria-hidden="true"></div>
-              <div class="plabel-content">
-                <strong>Smart Task List</strong>
-                <span>One-tap run logging, auto-domain detection</span>
-              </div>
+            <div class="callout-card">
+              <span class="callout-idx">02</span>
+              <h3 class="callout-title">Auto-Reconciling Alarms</h3>
+              <p class="callout-text">System alarms automatically calculate exact firing moments from UTC timestamps for maximum reliability.</p>
             </div>
-            <div class="plabel plabel-right" data-reveal>
-              <div class="plabel-line plabel-line-right" aria-hidden="true"></div>
-              <div class="plabel-content" style="text-align:right">
-                <strong>Server Strip</strong>
-                <span>Week at a glance with dot indicators</span>
-              </div>
-            </div>
-            <div class="plabel plabel-right" style="top:65%" data-reveal>
-              <div class="plabel-line plabel-line-right" aria-hidden="true"></div>
-              <div class="plabel-content" style="text-align:right">
-                <strong>Regen Timer</strong>
-                <span>Live +1 countdown, offline-safe</span>
-              </div>
+            <div class="callout-card">
+              <span class="callout-idx">03</span>
+              <h3 class="callout-title">Zero Cloud Leaks</h3>
+              <p class="callout-text">Your roster, stamina levels, and farm targets never leave your hardware. No tracking tokens.</p>
             </div>
           </div>
+
         </div>
+
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section id="faq" class="section">
-      <div class="container">
-        <div class="section-label reveal-up">Common Questions</div>
-        <h2 class="section-heading reveal-up" style="text-align:center">FAQ</h2>
-
-        <div class="faq-list">
-          <div class="faq-item" data-reveal>
-            <button class="faq-q" aria-expanded="false">
-              <span>Is this app official or affiliated with HoYoverse?</span>
-              <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-a">
-              <p>No. Routine Planner is an independent fan-made tool, not affiliated with or endorsed by HoYoverse. All game content and trademarks belong to their respective owners.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" data-reveal>
-            <button class="faq-q" aria-expanded="false">
-              <span>Does it drain my battery or run background services?</span>
-              <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-a">
-              <p>No background loops. Resin forecasts are computed from an immutable anchor timestamp using the 8 min/point formula — no polling, no wake-locks, zero passive drain.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" data-reveal>
-            <button class="faq-q" aria-expanded="false">
-              <span>What data is stored and where?</span>
-              <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-a">
-              <p>All data stays on your device in a local SQLite database. There are no analytics SDKs, no telemetry, and no cloud uploads. You can export a full JSON backup at any time.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" data-reveal>
-            <button class="faq-q" aria-expanded="false">
-              <span>Is HoYoLab sync required to use the app?</span>
-              <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-a">
-              <p>Completely optional. Manual entry is fully supported and always will be. If you do connect, session tokens are stored in Android EncryptedSharedPreferences and never transmitted externally.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" data-reveal>
-            <button class="faq-q" aria-expanded="false">
-              <span>Can I try it without installing anything?</span>
-              <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-a">
-              <p>Yes — the Flutter web build is hosted at <a href="./app/" target="_blank" rel="noopener noreferrer" class="faq-link">this link</a>. It runs in your browser with full functionality (notifications require the native app).</p>
-            </div>
-          </div>
+    <!-- FREQUENTLY ASKED QUESTIONS (Orbix Clean Accordion) -->
+    <section id="faq" class="orbix-section">
+      <div class="orbix-container">
+        
+        <div class="orbix-section-header">
+          <span class="orbix-eyebrow">COMMON QUESTIONS</span>
+          <h2 class="orbix-section-title">Frequently Asked Questions</h2>
         </div>
+
+        <div class="orbix-accordion">
+          
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" aria-expanded="false">
+              <span class="accordion-title">Is Routine Planner affiliated with HoYoverse?</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-body">
+              <p>No. Routine Planner is an independent, open-source fan application. It is not affiliated with, endorsed by, or sponsored by HoYoverse Co., Ltd. All game assets and trademarks belong to their respective owners.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" aria-expanded="false">
+              <span class="accordion-title">Does the app drain battery in the background?</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-body">
+              <p>No. The app does not run background services or battery-draining polling loops. It records an immutable anchor timestamp and computes future replenishment mathematically based on the fixed 8-minute game rule.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" aria-expanded="false">
+              <span class="accordion-title">Can I use the app completely offline?</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-body">
+              <p>Yes, 100%. The app functions with full database integrity completely offline. All data is saved on your device using Drift and SQLite. Optional HoYoLab sync is available if desired, but completely optional.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" aria-expanded="false">
+              <span class="accordion-title">How do I try the app in my browser before downloading?</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-body">
+              <p>You can access the live Flutter Web release hosted at <a href="./app/" target="_blank" rel="noopener noreferrer" style="color: #2D47E2; font-weight: 600;">this web app link</a> directly. It runs client-side with SQLite WebAssembly storage.</p>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
 
-    <!-- DOWNLOAD CTA -->
-    <section id="download" class="section cta-section">
-      <canvas class="section-canvas" id="cta-canvas" aria-hidden="true"></canvas>
-      <div class="container">
-        <div class="cta-shell" data-reveal>
-          <div class="cta-orb-left" aria-hidden="true"></div>
-          <div class="cta-orb-right" aria-hidden="true"></div>
-          <div class="cta-content">
-            <h2 class="cta-heading">Take control of<br><span class="text-gradient">every daily reset.</span></h2>
-            <p class="cta-sub">Free. Open source. Offline-first. No ads. No login required.</p>
-            <div class="cta-btn-row">
-              <a href="./releases/routine-planner-v0.1.0.apk" class="btn-primary mag-btn" download>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <!-- HIGH-IMPACT FINAL CTA (Orbix Signature High-Contrast Dark Banner) -->
+    <section class="orbix-final-cta-section">
+      <div class="orbix-container">
+        <div class="final-cta-card">
+          <div class="final-cta-glow" aria-hidden="true"></div>
+          <div class="final-cta-content">
+            <span class="cta-mini-pill">READY FOR DAILY FARMING</span>
+            <h2 class="final-cta-headline">Take Control of Every Daily Reset.</h2>
+            <p class="final-cta-desc">Free, open-source, and privacy-first companion app for Travelers. Download the Android APK or try it in your browser today.</p>
+            <div class="final-cta-buttons">
+              <a href="./releases/routine-planner-v0.1.0.apk" class="orbix-btn orbix-btn-primary orbix-btn-lg" download>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                Download APK
-                <span class="btn-sub">v0.1.0 · 60 MB · Android</span>
+                <span>Download APK (Android)</span>
               </a>
-              <a href="./app/" class="btn-ghost mag-btn" target="_blank" rel="noopener noreferrer">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                  <line x1="8" y1="21" x2="16" y2="21"/>
-                  <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                Try Web App
+              <a href="./app/" class="orbix-btn orbix-btn-secondary orbix-btn-lg" target="_blank" rel="noopener noreferrer">
+                <span>Try Web App</span>
               </a>
-              <a href="https://github.com/Mattathiasa/routine-planner" class="btn-outline mag-btn" target="_blank" rel="noopener noreferrer">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                </svg>
-                View Source
+              <a href="https://github.com/Mattathiasa/routine-planner" class="orbix-btn orbix-btn-ghost orbix-btn-lg" target="_blank" rel="noopener noreferrer">
+                <span>View on GitHub</span>
               </a>
             </div>
           </div>
@@ -768,31 +876,49 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="brand-orb brand-orb-sm" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/>
-            </svg>
+  <!-- ORBIX MINIMALIST FOOTER -->
+  <footer class="orbix-footer">
+    <div class="orbix-container">
+      <div class="footer-grid">
+        
+        <div class="footer-col-brand">
+          <div class="orbix-brand">
+            <div class="orbix-logo-symbol">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M12 3.5c3.4 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.1-6 5.5-10z"/>
+              </svg>
+            </div>
+            <span class="brand-title">Routine Planner</span>
           </div>
-          <span class="brand-name">Routine Planner</span>
+          <p class="footer-tagline">Precision daily companion and resin calculator for Travelers. 100% offline-first and open source.</p>
+          <div class="footer-status-pill">
+            <span class="live-dot"></span>
+            <span>Version v0.1.0 Active</span>
+          </div>
         </div>
-        <nav class="footer-nav" aria-label="Footer navigation">
-          <a href="#features">Features</a>
-          <a href="#calculator">Calculator</a>
-          <a href="#schedule">Schedule</a>
-          <a href="./app/" target="_blank" rel="noopener noreferrer">Web App</a>
-          <a href="https://github.com/Mattathiasa/routine-planner" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </nav>
+
+        <div class="footer-col">
+          <span class="footer-col-title">Navigation</span>
+          <a href="#features" class="footer-link">Features</a>
+          <a href="#calculator" class="footer-link">Resin Calculator</a>
+          <a href="#schedule" class="footer-link">Weekly Domain Schedule</a>
+          <a href="#screens" class="footer-link">App Showcase</a>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-col-title">Platforms</span>
+          <a href="./releases/routine-planner-v0.1.0.apk" class="footer-link" download>Android APK (v0.1.0)</a>
+          <a href="./app/" class="footer-link" target="_blank" rel="noopener noreferrer">Flutter Web App</a>
+          <a href="https://github.com/Mattathiasa/routine-planner" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+        </div>
+
       </div>
-      <div class="footer-bottom">
+
+      <div class="footer-bottom-bar">
         <p class="footer-disclaimer">
-          Not affiliated with or endorsed by HoYoverse Co., Ltd. Genshin Impact and all related content are trademarks of HoYoverse. This is an independent fan-made app.
+          Routine Planner is an unofficial fan project and is not affiliated with, endorsed by, or sponsored by HoYoverse Co., Ltd. Genshin Impact™ is a registered trademark of HoYoverse.
         </p>
-        <span class="footer-copy">© 2026 Routine Planner — Open Source</span>
+        <span class="footer-copyright">© 2026 Routine Planner. MIT Licensed.</span>
       </div>
     </div>
   </footer>
