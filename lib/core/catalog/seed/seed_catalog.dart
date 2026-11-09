@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-
 import '../catalog_database.dart';
 import 'open_catalog_executor.dart';
 import 'seed_catalog_data.dart';
