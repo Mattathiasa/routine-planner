@@ -59,7 +59,10 @@ class HoyolabClient {
     try {
       body = jsonDecode(response.body) as Map<String, dynamic>;
     } on FormatException {
-      throw const HoyolabException('HoYoLab returned an unexpected response. Try again later.');
+      throw HoyolabException(
+        'HoYoLab returned a non-JSON response (HTTP ${response.statusCode}): '
+        '${_truncate(response.body)}',
+      );
     }
 
     final retcode = body['retcode'];
@@ -69,14 +72,19 @@ class HoyolabClient {
 
     final data = body['data'];
     if (data is! Map<String, dynamic>) {
-      throw const HoyolabException('HoYoLab returned an unexpected response. Try again later.');
+      throw HoyolabException('HoYoLab returned no usable data (retcode 0, data: $data).');
     }
     try {
       return parseHoyolabNotes(data);
-    } on HoyolabNotesFormatException {
-      throw const HoyolabException('HoYoLab returned an unexpected response. Try again later.');
+    } on HoyolabNotesFormatException catch (e) {
+      throw HoyolabException(
+        'HoYoLab response did not match what this app expects: ${_truncate(e.message)}',
+      );
     }
   }
+
+  String _truncate(String text, {int maxLength = 200}) =>
+      text.length <= maxLength ? text : '${text.substring(0, maxLength)}…';
 
   String _messageFor(Object? retcode, Object? message) {
     if (retcode is int && _geetestRetcodes.contains(retcode)) {
