@@ -9,6 +9,11 @@ import '../../../core/database/user_database.dart';
 /// needed to reconstruct current state) and `DailyTasks` (day-scoped,
 /// regenerates naturally) — a stated scope cut, not an oversight.
 ///
+/// Export is always scoped to one profile at a time — whichever one the
+/// caller passes — with no UI to export every profile at once. A
+/// deliberate v1 limitation, same as the HoYoLab credential being global
+/// rather than per-profile.
+///
 /// Kept free of any `path_provider`/file IO so it's testable under plain
 /// `flutter test` — the presentation layer resolves the file path and
 /// passes a plain JSON string in and out.

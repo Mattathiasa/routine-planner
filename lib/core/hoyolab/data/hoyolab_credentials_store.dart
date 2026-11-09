@@ -3,6 +3,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// The HoYoLab session cookie is a real credential — it stays in
 /// Android-Keystore-backed secure storage, never in the plain, unencrypted
 /// `user.db`, and never leaves the device.
+///
+/// One global credential, not per-profile: connecting a HoYoLab account
+/// affects resin sync under every local profile, not just whichever one
+/// was selected when you connected. A deliberate v1 limitation — proper
+/// multi-login support (one HoYoLab account per profile) is a separate,
+/// larger piece of work, not an oversight here.
 abstract class HoyolabCredentialsStore {
   Future<void> save({required String cookie, required String uid});
   Future<({String cookie, String uid})?> read();

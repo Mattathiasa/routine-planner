@@ -85,4 +85,40 @@ void main() {
 
     expect(fakeScheduler.lastApplied, isEmpty);
   });
+
+  test('switching profiles drops the old profile\'s alarms, not just leaves them unchanged', () async {
+    final catalogDb = await openSeedCatalogDatabaseInMemory();
+    final userDb = UserDatabase(NativeDatabase.memory());
+    final fakeClock = FakeClock(DateTime.utc(2026, 1, 1, 12));
+    final fakeScheduler = FakeNotificationScheduler();
+
+    final container = ProviderContainer(
+      overrides: [
+        catalogDatabaseProvider.overrideWithValue(catalogDb),
+        userDatabaseProvider.overrideWithValue(userDb),
+        clockProvider.overrideWithValue(fakeClock),
+        notificationSchedulerProvider.overrideWithValue(fakeScheduler),
+      ],
+    );
+    addTearDown(container.dispose);
+    addTearDown(catalogDb.close);
+    addTearDown(userDb.close);
+
+    final profileA = (await container.read(currentProfileProvider.future)).id;
+    await container.read(settingsRepositoryProvider).addAlertThreshold(profileA, 160);
+    await container.read(resinControllerProvider.notifier).spend(50);
+    await container.read(notificationReconcileProvider.future);
+    expect(fakeScheduler.lastApplied, hasLength(1));
+
+    final profileRepo = container.read(profileRepositoryProvider);
+    final profileB = await profileRepo.createProfile(server: 'asia');
+    await profileRepo.selectProfile(profileB.id);
+    container.invalidate(currentProfileProvider);
+    await container.read(notificationReconcileProvider.future);
+
+    // Profile B is fresh (full resin, no alert thresholds configured) — a
+    // non-empty result here would mean A's alarm leaked across the switch
+    // instead of being replaced.
+    expect(fakeScheduler.lastApplied, isEmpty);
+  });
 }

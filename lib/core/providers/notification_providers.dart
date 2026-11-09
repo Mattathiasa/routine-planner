@@ -31,6 +31,14 @@ Future<bool> exactAlarmsAllowed(Ref ref) async {
 /// entirely natively by the plugin's own boot receiver once the manifest
 /// is wired; there's no live local time-zone dependency to reconcile on
 /// change, since every scheduled instant here is an absolute UTC moment.
+///
+/// Scoped to whichever profile is currently selected, not every profile —
+/// a deliberate v1 limitation, not an oversight. Switching profiles
+/// correctly drops the old profile's alarms too: `apply()` cancels every
+/// pending notification before rescheduling, so there's no leakage, but a
+/// profile that isn't currently selected will never fire a reminder in the
+/// background, even if it has alerts configured. Scheduling across every
+/// profile simultaneously is a real feature, just not this one.
 @riverpod
 Future<void> notificationReconcile(Ref ref) async {
   final scheduler = ref.watch(notificationSchedulerProvider);
