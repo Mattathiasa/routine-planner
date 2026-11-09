@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/clock/game_server.dart';
 import '../../../core/hoyolab/data/hoyolab_client.dart';
-import '../../../core/providers/current_profile_provider.dart';
+import '../../../core/hoyolab/domain/hoyolab_region.dart';
 import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
@@ -33,6 +32,8 @@ class ResinActionsSection extends ConsumerWidget {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
     } on HoyolabException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } on UnknownHoyolabUidException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -43,8 +44,7 @@ class ResinActionsSection extends ConsumerWidget {
     final credentials = await ref.read(hoyolabCredentialsProvider.future);
     if (credentials == null) return;
 
-    final profile = await ref.read(currentProfileProvider.future);
-    final region = GameServer.values.byName(profile.server).hoyolabRegion;
+    final region = hoyolabRegionForUid(credentials.uid);
     final notes = await ref
         .read(hoyolabClientProvider)
         .fetchNotes(cookie: credentials.cookie, uid: credentials.uid, region: region);

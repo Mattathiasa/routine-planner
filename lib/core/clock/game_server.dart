@@ -22,13 +22,3 @@ extension GameServerDisplay on GameServer {
     GameServer.twHkMo => 'TW, HK, MO',
   };
 }
-
-/// HoYoLab's `region` query parameter values for each server.
-extension GameServerHoyolab on GameServer {
-  String get hoyolabRegion => switch (this) {
-    GameServer.asia => 'os_asia',
-    GameServer.europe => 'os_euro',
-    GameServer.america => 'os_usa',
-    GameServer.twHkMo => 'os_cht',
-  };
-}
