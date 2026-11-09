@@ -15,7 +15,7 @@ void main() {
     setUp(() async {
       db = UserDatabase(NativeDatabase.memory());
       settingsRepository = SettingsRepository(db);
-      profileId = (await ProfileRepository(db).getOrCreateDefaultProfile()).id;
+      profileId = (await ProfileRepository(db).getActiveProfile()).id;
     });
 
     test('getOrCreateSettings creates exactly one row with defaults', () async {
@@ -46,7 +46,7 @@ void main() {
     setUp(() async {
       db = UserDatabase(NativeDatabase.memory());
       settingsRepository = SettingsRepository(db);
-      profileId = (await ProfileRepository(db).getOrCreateDefaultProfile()).id;
+      profileId = (await ProfileRepository(db).getActiveProfile()).id;
     });
 
     test('addAlertThreshold then alertsForProfile returns it ordered', () async {

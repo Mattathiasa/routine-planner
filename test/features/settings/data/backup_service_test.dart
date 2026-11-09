@@ -18,7 +18,7 @@ void main() {
     db = UserDatabase(NativeDatabase.memory());
     backup = BackupService(db);
 
-    final profile = await ProfileRepository(db).getOrCreateDefaultProfile();
+    final profile = await ProfileRepository(db).getActiveProfile();
     profileId = profile.id;
 
     final settingsRepo = SettingsRepository(db);

@@ -13,7 +13,7 @@ void main() {
   setUp(() async {
     db = UserDatabase(NativeDatabase.memory());
     repository = PlannerRepository(db);
-    profileId = (await ProfileRepository(db).getOrCreateDefaultProfile()).id;
+    profileId = (await ProfileRepository(db).getActiveProfile()).id;
   });
 
   tearDown(() => db.close());
