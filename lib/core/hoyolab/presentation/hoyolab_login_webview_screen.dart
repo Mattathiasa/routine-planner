@@ -12,6 +12,14 @@ const _hoyolabHome = 'https://www.hoyolab.com/home';
 /// this sees `HttpOnly` cookies even though in-page JavaScript can't —
 /// `ltoken_v2`/`ltuid_v2` are typically set `HttpOnly` for session-hijack
 /// protection.
+///
+/// We send HoYoLab's *entire* cookie jar for the domain on every request,
+/// not just `ltoken_v2`/`ltuid_v2` — a real browser does the same, and the
+/// API has been observed rejecting requests built from only those two
+/// (likely wanting one of the other login-time cookies too, such as
+/// `account_id_v2`/`cookie_token_v2`). `ltoken_v2`/`ltuid_v2` are still
+/// used as the "login finished" signal, since those are the ones that
+/// only appear once the session actually exists.
 class HoyolabLoginWebviewScreen extends StatefulWidget {
   const HoyolabLoginWebviewScreen({super.key});
 
@@ -38,10 +46,10 @@ class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
     try {
       final cookies = await WebviewCookieManager().getCookies(_hoyolabHome);
       final byName = {for (final cookie in cookies) cookie.name: cookie.value};
-      final ltoken = byName['ltoken_v2'];
-      final ltuid = byName['ltuid_v2'];
-      if (ltoken != null && ltuid != null && mounted) {
-        Navigator.of(context).pop('ltoken_v2=$ltoken; ltuid_v2=$ltuid');
+      final loggedIn = byName['ltoken_v2'] != null && byName['ltuid_v2'] != null;
+      if (loggedIn && mounted) {
+        final cookieHeader = cookies.map((c) => '${c.name}=${c.value}').join('; ');
+        Navigator.of(context).pop(cookieHeader);
       }
     } finally {
       _checkingCookies = false;
