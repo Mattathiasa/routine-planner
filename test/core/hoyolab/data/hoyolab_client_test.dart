@@ -87,5 +87,28 @@ void main() {
         ),
       );
     });
+
+    test('retcode 10102 throws HoyolabException with the Real-Time Notes fix', () async {
+      final client = HoyolabClient(
+        httpClient: MockClient(
+          (request) async => _jsonResponse({
+            'retcode': 10102,
+            'message': 'Data is not public for the user',
+            'data': null,
+          }),
+        ),
+      );
+
+      await expectLater(
+        client.fetchNotes(cookie: 'c', uid: '1', region: 'os_asia'),
+        throwsA(
+          isA<HoyolabException>().having(
+            (e) => e.message,
+            'message',
+            contains('Real-Time Notes'),
+          ),
+        ),
+      );
+    });
   });
 }

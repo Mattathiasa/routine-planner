@@ -11,6 +11,12 @@ import '../domain/hoyolab_signing.dart';
 /// generic failure.
 const _geetestRetcodes = {10035, 5003, 10041, 1034};
 
+/// Returned when the player's Real-Time Notes (the data `dailyNote`
+/// reads) are set to private — an account privacy setting, not a login
+/// problem. Observed as a plain "not public" message with no clearer
+/// hint at the actual fix, so this gets its own actionable message.
+const _notPublicRetcode = 10102;
+
 class HoyolabException implements Exception {
   const HoyolabException(this.message);
   final String message;
@@ -75,6 +81,11 @@ class HoyolabClient {
   String _messageFor(Object? retcode, Object? message) {
     if (retcode is int && _geetestRetcodes.contains(retcode)) {
       return 'HoYoLab needs you to verify in the browser first — log into hoyolab.com, then try again.';
+    }
+    if (retcode == _notPublicRetcode) {
+      return 'Your Real-Time Notes are private. In the HoYoLab app: open your Genshin '
+          'profile → Battle Chronicle → the settings icon on your character card, and '
+          'turn on "Real-Time Notes", then try again.';
     }
     if (message is String && message.isNotEmpty) return message;
     return 'HoYoLab request failed (code $retcode).';
