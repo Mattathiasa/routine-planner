@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import 'accounts_section.dart';
 import 'data_section.dart';
 import 'game_server_section.dart';
 import 'hoyolab_account_section.dart';
@@ -34,6 +35,8 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text('Settings', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.xxl),
+            const AccountsSection(),
+            const SizedBox(height: AppSpacing.xl),
             const GameServerSection(),
             const SizedBox(height: AppSpacing.xl),
             const PlannerSettingsSection(),

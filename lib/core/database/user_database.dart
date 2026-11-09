@@ -28,7 +28,17 @@ part 'user_database.g.dart';
   ],
 )
 class UserDatabase extends _$UserDatabase {
-  UserDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'user'));
+  UserDatabase([QueryExecutor? executor])
+      : super(
+          executor ??
+              driftDatabase(
+                name: 'user',
+                web: DriftWebOptions(
+                  sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                  driftWorker: Uri.parse('drift_worker.js'),
+                ),
+              ),
+        );
 
   @override
   int get schemaVersion => 2;

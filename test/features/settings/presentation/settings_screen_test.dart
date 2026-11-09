@@ -11,6 +11,8 @@ import 'package:routine_planner/core/providers/clock_providers.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
+import 'package:routine_planner/features/settings/presentation/game_server_section.dart';
+import 'package:routine_planner/features/settings/presentation/planner_settings_section.dart';
 import 'package:routine_planner/features/settings/presentation/settings_screen.dart';
 
 void main() {
@@ -20,8 +22,8 @@ void main() {
     WidgetTester tester, {
     FakeNotificationScheduler? scheduler,
   }) async {
-    // Taller than the default test viewport once all 4 sections + footer
-    // are on screen.
+    // Taller than the default test viewport once every section + footer
+    // is on screen.
     tester.view.physicalSize = const Size(1000, 2800);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -54,13 +56,14 @@ void main() {
   testWidgets('all 4 server rows render with their UTC offset label', (tester) async {
     await pumpSettingsScreen(tester);
 
-    expect(find.text('Asia', skipOffstage: false), findsOneWidget);
-    expect(find.text('Europe', skipOffstage: false), findsOneWidget);
-    expect(find.text('America', skipOffstage: false), findsOneWidget);
-    expect(find.text('TW, HK, MO', skipOffstage: false), findsOneWidget);
-    expect(find.textContaining('UTC+8', skipOffstage: false), findsNWidgets(2)); // Asia + TW,HK,MO
-    expect(find.textContaining('UTC+1', skipOffstage: false), findsOneWidget);
-    expect(find.textContaining('UTC-5', skipOffstage: false), findsOneWidget);
+    final serverSection = find.byType(GameServerSection);
+    expect(find.descendant(of: serverSection, matching: find.text('Asia', skipOffstage: false)), findsOneWidget);
+    expect(find.descendant(of: serverSection, matching: find.text('Europe', skipOffstage: false)), findsOneWidget);
+    expect(find.descendant(of: serverSection, matching: find.text('America', skipOffstage: false)), findsOneWidget);
+    expect(find.descendant(of: serverSection, matching: find.text('TW, HK, MO', skipOffstage: false)), findsOneWidget);
+    expect(find.descendant(of: serverSection, matching: find.textContaining('UTC+8', skipOffstage: false)), findsNWidgets(2)); // Asia + TW,HK,MO
+    expect(find.descendant(of: serverSection, matching: find.textContaining('UTC+1', skipOffstage: false)), findsOneWidget);
+    expect(find.descendant(of: serverSection, matching: find.textContaining('UTC-5', skipOffstage: false)), findsOneWidget);
   });
 
   testWidgets('tapping a different server radio flips selection and persists', (tester) async {
@@ -77,13 +80,14 @@ void main() {
   testWidgets('World Level stepper clamps at 0 and 9', (tester) async {
     await pumpSettingsScreen(tester);
 
+    final plannerSection = find.byType(PlannerSettingsSection);
     // Starts at 0 (table default) — "-" is a no-op.
-    await tester.tap(find.byIcon(Icons.remove));
+    await tester.tap(find.descendant(of: plannerSection, matching: find.byIcon(Icons.remove)));
     await tester.pumpAndSettle();
     expect(find.text('0', skipOffstage: false), findsOneWidget);
 
     for (var i = 0; i < 10; i++) {
-      await tester.tap(find.byIcon(Icons.add));
+      await tester.tap(find.descendant(of: plannerSection, matching: find.byIcon(Icons.add)));
       await tester.pumpAndSettle();
     }
     expect(find.text('9', skipOffstage: false), findsOneWidget);

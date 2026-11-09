@@ -48,3 +48,4 @@ jobs:
           git add docs/
           git diff --staged --quiet || git commit -m "deploy: update gh-pages build [skip ci]"
           git push
+

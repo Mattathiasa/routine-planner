@@ -123,41 +123,45 @@ Placed above `GameServerSection`. `RadioGroup<String>` over `profileListProvider
 
 ## PROGRESS LOG
 
-### Commit 1 — AppState table + createdAt + first migration
-- [ ] Dump v1 schema snapshot (`drift_schemas/1.json`)
-- [ ] Add `createdAt` to `profiles_table.dart`
-- [ ] Create `app_state_table.dart`
-- [ ] Add `appStateSingletonId` to `ids.dart`
-- [ ] Register `AppState` + bump schemaVersion to 2 + `onUpgrade` in `user_database.dart`
-- [ ] Dump v2 schema snapshot (`drift_schemas/2.json`)
-- [ ] Generate migration test harness (`test/generated_migrations/`)
-- [ ] Write `user_database_migration_test.dart`
-- [ ] Extend `user_database_test.dart`
-- [ ] `build_runner build`, `flutter analyze` clean, `flutter test` green
-- [ ] Commit
+### Commit 1 — AppState table + createdAt + first migration — DONE
+- [x] Dump v1 schema snapshot (`drift_schemas/drift_schema_v1.json`)
+- [x] Add `createdAt` to `profiles_table.dart`
+- [x] Create `app_state_table.dart`
+- [x] Add `appStateSingletonId` to `ids.dart`
+- [x] Register `AppState` + bump schemaVersion to 2 + `onUpgrade` in `user_database.dart`
+- [x] Dump v2 schema snapshot (`drift_schemas/drift_schema_v2.json`)
+- [x] Generate migration test harness (`test/generated_migrations/`, with `--data-classes --companions`)
+- [x] Write `user_database_migration_test.dart`
+- [x] Extend `user_database_test.dart`
+- [x] `build_runner build`, `flutter analyze` clean, `flutter test` green (194 passing)
+- [x] Commit
 
-### Commit 2 — Multiple live profiles + selection + fallback
-- [ ] Rewrite `profile_repository.dart`
-- [ ] Update `current_profile_provider.dart`
-- [ ] New `profile_providers.dart`
-- [ ] Rename `getOrCreateDefaultProfile` → `getActiveProfile` at all test call sites
-- [ ] Tests written/passing
-- [ ] `flutter analyze` clean, `flutter test` green
-- [ ] Commit
+**Note**: a second Claude Code session sharing this working tree ("fix-dark-mode-colors", building unrelated web/landing-page support) ran a broad `git add` and committed `1989848` before I could commit my own work — it accidentally swept in `app_state_table.dart`, the `profiles_table.dart`/`ids.dart` edits, and `drift_schemas/`, bundled into their unrelated "add github pages" commit (already pushed, did not rewrite history). My actual bug fix (switching `m.addColumn` to `m.alterTable` after the migration test caught a real SQLite "non-constant default" rejection) plus all new test files landed cleanly in my own commit `6ba9edf`. Content is correct either way; just split across two commits instead of one. Also deleted `test/widget_test.dart` (untracked, dead `flutter create` boilerplate referencing a nonexistent `MyApp` — unrelated cleanup, not committed since it was never tracked).
 
-### Commit 3 — Scope backup import to one profile
-- [ ] Fix `backup_service.dart` import scoping
-- [ ] Update `data_section.dart` (copy + auto-select imported profile)
-- [ ] Multi-profile isolation test
-- [ ] `flutter analyze` clean, `flutter test` green
-- [ ] Commit
+**Real bug caught by the migration test itself**: SQLite rejects `ALTER TABLE ADD COLUMN ... DEFAULT (CURRENT_TIMESTAMP)` (non-constant defaults aren't allowed in `ADD COLUMN`, only in `CREATE TABLE`). Fixed via `m.alterTable(TableMigration(profiles, newColumns: [profiles.createdAt]))`, which rebuilds the table instead and sidesteps the restriction — existing rows get `createdAt` via the table's own `CREATE TABLE`-level default during the copy.
 
-### Commit 4 — Document scoping limitations
-- [ ] Doc comments on notification_providers.dart / hoyolab providers
-- [ ] `docs/ARCHITECTURE.md` updated
-- [ ] Two-profile notification test
-- [ ] `flutter analyze` clean, `flutter test` green
-- [ ] Commit
+### Commit 2 — Multiple live profiles + selection + fallback — DONE (`fd238b7`)
+- [x] Rewrite `profile_repository.dart`
+- [x] Update `current_profile_provider.dart`
+- [x] New `profile_providers.dart`
+- [x] Rename `getOrCreateDefaultProfile` → `getActiveProfile` at all test call sites
+- [x] Tests written/passing
+- [x] `flutter analyze` clean, `flutter test` green (204 passing)
+- [x] Commit
+
+### Commit 3 — Scope backup import to one profile — DONE (`043d018`)
+- [x] Fix `backup_service.dart` import scoping (also now returns the imported profileId)
+- [x] Update `data_section.dart` (copy + auto-select imported profile, dropped "please relaunch")
+- [x] Multi-profile isolation test
+- [x] `flutter analyze` clean, `flutter test` green (205 passing)
+- [x] Commit
+
+### Commit 4 — Document scoping limitations — DONE (`758ef34`)
+- [x] Doc comments on notification_providers.dart / hoyolab providers / backup_service.dart
+- [x] `docs/ARCHITECTURE.md` updated
+- [x] Two-profile notification test
+- [x] `flutter analyze` clean, `flutter test` green (206 passing)
+- [x] Commit
 
 ### Commit 5 — Accounts section in Settings
 - [ ] `accounts_section.dart` built

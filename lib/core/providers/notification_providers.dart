@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/resin/application/resin_controller.dart';
 import '../../features/resin/data/resin_providers.dart';
 import '../../features/resin/domain/resin_engine.dart';
 import '../../features/settings/data/settings_providers.dart';
+import '../notifications/data/fake_notification_scheduler.dart';
 import '../notifications/data/notification_scheduler.dart';
 import '../notifications/domain/notification_plan.dart';
 import 'clock_providers.dart';
@@ -13,6 +15,9 @@ part 'notification_providers.g.dart';
 
 @Riverpod(keepAlive: true)
 NotificationScheduler notificationScheduler(Ref ref) {
+  if (kIsWeb) {
+    return FakeNotificationScheduler(exactAlarmsAllowed: false);
+  }
   return FlutterLocalNotificationsScheduler();
 }
 
