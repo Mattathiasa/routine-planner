@@ -59,7 +59,8 @@ class HoyolabAccountSection extends ConsumerWidget {
           'sanctions. Their Terms of Service broadly prohibit third-party tools that collect '
           'account data, and violating it can mean account suspension. That risk is real, even '
           'if small for a read-only resin check, and only you can decide whether to take it. '
-          "Your cookie stays on this device and is sent only to HoYoLab's own servers.",
+          "You'll log in on HoYoLab's own site, shown inside the app — this app never sees "
+          'your password, only the session it creates, which stays on this device.',
         ),
         actions: [
           TextButton(
@@ -75,7 +76,10 @@ class HoyolabAccountSection extends ConsumerWidget {
     );
     if (acknowledged != true || !context.mounted) return;
 
-    await showDialog<void>(context: context, builder: (_) => const _ConnectFormDialog());
+    final cookie = await ref.read(hoyolabWebLoginProvider).captureCookie(context);
+    if (cookie == null || !context.mounted) return;
+
+    await showDialog<void>(context: context, builder: (_) => _ConnectFormDialog(cookie: cookie));
   }
 }
 
@@ -142,8 +146,13 @@ class _ConnectedRow extends StatelessWidget {
   }
 }
 
+/// Shown after [HoyolabWebLogin] has already captured a session cookie —
+/// this just asks for the in-game UID, which identifies which character
+/// to fetch resin for and isn't part of the HoYoLab login session itself.
 class _ConnectFormDialog extends ConsumerStatefulWidget {
-  const _ConnectFormDialog();
+  const _ConnectFormDialog({required this.cookie});
+
+  final String cookie;
 
   @override
   ConsumerState<_ConnectFormDialog> createState() => _ConnectFormDialogState();
@@ -151,22 +160,19 @@ class _ConnectFormDialog extends ConsumerStatefulWidget {
 
 class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
   final _uidController = TextEditingController();
-  final _cookieController = TextEditingController();
 
   @override
   void dispose() {
     _uidController.dispose();
-    _cookieController.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     final uid = _uidController.text.trim();
-    final cookie = _cookieController.text.trim();
-    if (uid.isEmpty || cookie.isEmpty || int.tryParse(uid) == null) return;
+    if (uid.isEmpty || int.tryParse(uid) == null) return;
 
     final navigator = Navigator.of(context);
-    await ref.read(hoyolabCredentialsStoreProvider).save(cookie: cookie, uid: uid);
+    await ref.read(hoyolabCredentialsStoreProvider).save(cookie: widget.cookie, uid: uid);
     ref.invalidate(hoyolabCredentialsProvider);
     if (mounted) navigator.pop();
   }
@@ -179,22 +185,12 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text("You're logged in. Enter your in-game UID to finish connecting."),
+          const SizedBox(height: AppSpacing.md),
           TextField(
             controller: _uidController,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(labelText: 'Game UID'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TextField(
-            controller: _cookieController,
-            maxLines: 4,
-            decoration: const InputDecoration(labelText: 'HoYoLab cookie'),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'From a browser logged into hoyolab.com: DevTools → Application → Cookies, '
-            'copy the full cookie value.',
-            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
