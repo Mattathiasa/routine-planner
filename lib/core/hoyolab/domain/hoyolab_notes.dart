@@ -18,13 +18,24 @@ class HoyolabNotesFormatException implements Exception {
   String toString() => 'HoyolabNotesFormatException: $message';
 }
 
+/// HoYoLab serializes these 3 fields as JSON strings (e.g. `"128"`), not
+/// JSON numbers, even though they're purely numeric — observed on a real
+/// `dailyNote` response. [int]'s own `toString()` and a numeric string's
+/// are identical, so this only showed up once a real response was logged,
+/// not from the field names/shape alone.
+int? _asInt(Object? value) => switch (value) {
+  int v => v,
+  String v => int.tryParse(v),
+  _ => null,
+};
+
 HoyolabNotes parseHoyolabNotes(Map<String, dynamic> json) {
-  final currentResin = json['current_resin'];
-  final maxResin = json['max_resin'];
-  final secondsUntilFull = json['resin_recovery_time'];
-  if (currentResin is! int || maxResin is! int || secondsUntilFull is! int) {
+  final currentResin = _asInt(json['current_resin']);
+  final maxResin = _asInt(json['max_resin']);
+  final secondsUntilFull = _asInt(json['resin_recovery_time']);
+  if (currentResin == null || maxResin == null || secondsUntilFull == null) {
     throw HoyolabNotesFormatException(
-      'Expected int current_resin/max_resin/resin_recovery_time, got: $json',
+      'Expected int (or numeric string) current_resin/max_resin/resin_recovery_time, got: $json',
     );
   }
   return (currentResin: currentResin, maxResin: maxResin, secondsUntilFull: secondsUntilFull);

@@ -26,14 +26,27 @@ void main() {
       expect(notes.secondsUntilFull, 27840);
     });
 
-    test('throws HoyolabNotesFormatException when a needed field is missing or the wrong type', () {
+    test('accepts numeric strings — HoYoLab serializes these 3 fields as strings', () {
+      final notes = parseHoyolabNotes({
+        'current_resin': '128',
+        'max_resin': '200',
+        'resin_recovery_time': '34106',
+        'finished_task_num': 4,
+        'total_task_num': 4,
+      });
+      expect(notes.currentResin, 128);
+      expect(notes.maxResin, 200);
+      expect(notes.secondsUntilFull, 34106);
+    });
+
+    test('throws HoyolabNotesFormatException when a needed field is missing or unparseable', () {
       expect(
         () => parseHoyolabNotes({'max_resin': 200, 'resin_recovery_time': 100}),
         throwsA(isA<HoyolabNotesFormatException>()),
       );
       expect(
         () => parseHoyolabNotes({
-          'current_resin': '142', // wrong type
+          'current_resin': 'not a number',
           'max_resin': 200,
           'resin_recovery_time': 100,
         }),
