@@ -5,15 +5,17 @@ import 'core/catalog/bundled/bundled_catalog.dart';
 import 'core/navigation/app_router.dart';
 import 'core/providers/database_providers.dart';
 import 'core/theme/app_theme.dart';
+import 'demo_seed.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final catalogDb = await openBundledCatalogDatabaseInMemory();
+  final container = ProviderContainer(
+    overrides: [catalogDatabaseProvider.overrideWithValue(catalogDb)],
+  );
+  await maybeApplyDemoSeed(container);
   runApp(
-    ProviderScope(
-      overrides: [catalogDatabaseProvider.overrideWithValue(catalogDb)],
-      child: const MainApp(),
-    ),
+    UncontrolledProviderScope(container: container, child: const MainApp()),
   );
 }
 

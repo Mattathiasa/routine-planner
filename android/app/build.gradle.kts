@@ -32,11 +32,28 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release signing comes from the environment, never from a committed
+    // file: set RP_KEYSTORE_PATH, RP_KEYSTORE_PASSWORD, RP_KEY_ALIAS and
+    // RP_KEY_PASSWORD before `flutter build apk --release`. Without them
+    // the release build falls back to debug signing so local smoke builds
+    // and un-secreted CI keep working (the APK is then NOT distributable).
+    val keystorePath = System.getenv("RP_KEYSTORE_PATH")
+    if (keystorePath != null) {
+        signingConfigs.create("release") {
+            storeFile = file(keystorePath)
+            storePassword = System.getenv("RP_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("RP_KEY_ALIAS")
+            keyPassword = System.getenv("RP_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (keystorePath != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }

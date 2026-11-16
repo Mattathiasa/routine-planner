@@ -1,11 +1,102 @@
 # Routine Planner
 
-Offline-first Flutter companion for a gacha RPG: resin tracker, farming schedule, daily checklist.
-Unofficial, free, no ads. Not affiliated with or endorsed by HoYoverse.
+[![CI](https://github.com/Mattathiasa/routine-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/Mattathiasa/routine-planner/actions/workflows/ci.yml)
 
-Status: design approved (v3, clean modern). Flutter code not started.
+Offline-first Flutter companion for a gacha RPG: resin tracker, farming schedule,
+daily checklist and material planner. Unofficial, free, no ads. **Not affiliated
+with or endorsed by HoYoverse.**
 
-- `design/v3/` approved screens (Today, Resin, Planner, Settings), Claude Design canvas files
-- `design/earlier/` rejected explorations, kept for reference
-- `docs/ARCHITECTURE.md` decisions and formulas
-- `CLAUDE.md` guidance for Claude Code
+| Today | Resin | Planner | Settings |
+| --- | --- | --- | --- |
+| ![Today](docs/screenshots/today.png) | ![Resin](docs/screenshots/resin.png) | ![Planner](docs/screenshots/planner.png) | ![Settings](docs/screenshots/settings.png) |
+
+A dark theme derived from the same design tokens follows the system setting
+([dark screenshots](docs/screenshots/)).
+
+## Features
+
+- **Resin tracker** — anchor-based regen math (never a drifting counter), manual
+  sync or opt-in HoYoLab auto-sync, spend/craft/use actions with undo,
+  threshold alerts as local notifications (exact alarms where permitted, labelled
+  approximate otherwise), animated ring and forecast.
+- **Today** — server-day aware (per-server reset at 04:00 server time, immune to
+  device timezone and DST), open-domain farm checklist with haptic check-off,
+  "+1 run" tied to the resin tracker so the two never disagree.
+- **Planner** — character/weapon targets with ascension + talent tracking,
+  pooled material needs with 3:1 tier-carry aggregation, inventory editing,
+  "Most needed" with farm-day availability.
+- **Multiple accounts** — profile-scoped data, switchable in Settings.
+- **Backup** — JSON export/import of all user data.
+
+## Data & assumptions
+
+Game data ships in a read-only catalog built by `dart run tool/build_catalog.dart`
+from a vendored, MIT-licensed [genshin-db](https://www.npmjs.com/package/genshin-db)
+extract (names, numbers and schedules only — no game art is bundled). The build
+is version-stamped (`build/catalog/manifest.json` + the `catalog_metadata` row)
+and honours `--scope narrow|full`; v1 ships the narrow scope in
+`tool/data/scope_narrow.json`.
+
+**Every catalog value is community-sourced and unverified in-game.** The full
+list of unverified mechanics and data — including the two resin mechanics kept
+behind named constants (`ResinEngine.assumedTimerRestartsFromZeroOnReset`,
+`ResinEngine.assumedNoRegenerationAboveCap`) and the absent level-EXP ladders —
+lives in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md).
+
+Architecture decisions and formulas: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The HoYoLab connection uses an unofficial endpoint behind an explicit in-app
+disclaimer; see the architecture doc before enabling it.
+
+## Getting started
+
+Requires Flutter 3.47 (CI pins 3.47.9).
+
+```sh
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs   # riverpod/freezed/drift codegen
+flutter test                                               # 254 tests, incl. goldens
+flutter analyze
+flutter run                                                # Android device/emulator, or -d chrome
+```
+
+Regenerate the catalog after editing the scope or bumping the dataset:
+
+```sh
+bash tool/fetch_catalog_source.sh        # only when bumping the pinned genshin-db version
+dart run tool/build_catalog.dart --scope narrow
+```
+
+Golden tests render with the deterministic FlutterTest font; after an
+intentional UI change: `flutter test --tags golden --update-goldens`.
+
+The README screenshots come from a demo-seeded web build:
+`flutter build web --release --dart-define=DEMO_SEED=true`.
+
+## Release builds
+
+Release signing is read from the environment and never committed:
+
+```sh
+export RP_KEYSTORE_PATH=~/keystores/routine_planner.jks
+export RP_KEYSTORE_PASSWORD=...
+export RP_KEY_ALIAS=routine_planner
+export RP_KEY_PASSWORD=...
+flutter build apk --release
+```
+
+Without these variables the release build falls back to debug signing (not
+distributable) so local smoke builds keep working. CI builds an APK artifact on
+every push and release-signs it when the `RP_KEYSTORE_BASE64`,
+`RP_KEYSTORE_PASSWORD`, `RP_KEY_ALIAS` and `RP_KEY_PASSWORD` repository secrets
+are configured (`RP_KEYSTORE_BASE64` is the keystore file base64-encoded).
+
+## Repository map
+
+- `lib/features/*` — feature-first; each `domain/` is pure Dart with an
+  injected clock, unit-tested against the formulas in the architecture doc.
+- `lib/core/` — clock/server-day, catalog, user database (drift, tested
+  migrations), notifications, theme tokens (light + derived dark), navigation.
+- `tool/` — catalog pipeline (vendored dataset → generated Dart + sqlite).
+- `design/v3/` — approved screen designs (`design/earlier/` was rejected).
+- `docs/` — architecture, assumptions, GitHub Pages site (landing, web demo,
+  APK downloads).
