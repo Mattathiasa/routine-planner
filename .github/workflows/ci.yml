@@ -30,6 +30,10 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     needs: analyze-and-test
+    env:
+      # Mapped here because the secrets context can't be used in a step's
+      # `if:` directly. Empty on forks and secret-less repos.
+      RP_KEYSTORE_BASE64: ${{ secrets.RP_KEYSTORE_BASE64 }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -55,9 +59,9 @@ jobs:
       # android/app/build.gradle.kts) so forks and secret-less runs stay
       # green. RP_KEYSTORE_BASE64 is `base64 < keystore.jks`.
       - name: Prepare release signing
-        if: ${{ secrets.RP_KEYSTORE_BASE64 != '' }}
+        if: env.RP_KEYSTORE_BASE64 != ''
         run: |
-          echo "${{ secrets.RP_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "$RP_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           {
             echo "RP_KEYSTORE_PATH=$RUNNER_TEMP/release.jks"
             echo "RP_KEYSTORE_PASSWORD=${{ secrets.RP_KEYSTORE_PASSWORD }}"
