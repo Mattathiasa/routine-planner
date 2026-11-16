@@ -35,8 +35,11 @@ class FarmTaskRow extends ConsumerWidget {
         children: [
           Checkbox(
             value: row.checked,
-            onChanged: (value) => controller.toggleTask(row.taskId, value ?? false),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            onChanged: (value) =>
+                controller.toggleTask(row.taskId, value ?? false),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           Expanded(
             child: Column(
@@ -45,7 +48,9 @@ class FarmTaskRow extends ConsumerWidget {
                 Text(row.label, style: textTheme.titleLarge),
                 Text(
                   _subtitle(row),
-                  style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -57,7 +62,10 @@ class FarmTaskRow extends ConsumerWidget {
             onPressed: () async {
               final messenger = ScaffoldMessenger.of(context);
               try {
-                await controller.logRun(taskId: row.taskId, costResin: costResin);
+                await controller.logRun(
+                  taskId: row.taskId,
+                  costResin: costResin,
+                );
               } on InsufficientResinException catch (e) {
                 messenger.showSnackBar(SnackBar(content: Text(e.message)));
               }

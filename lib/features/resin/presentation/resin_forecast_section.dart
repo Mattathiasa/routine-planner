@@ -12,8 +12,14 @@ import '../data/resin_providers.dart';
 import '../domain/resin_engine.dart';
 import 'add_alert_dialog.dart';
 import 'resin_formatting.dart';
+import '../../../core/widgets/app_status_views.dart';
 
-typedef _AlertRowData = ({String id, int threshold, bool enabled, DateTime time});
+typedef _AlertRowData = ({
+  String id,
+  int threshold,
+  bool enabled,
+  DateTime time,
+});
 
 /// "Today's forecast": a static "Now" row, then one row per live resin
 /// alert that hasn't been reached yet (an open set, not fixed 160/200 —
@@ -77,11 +83,13 @@ class ResinForecastSection extends ConsumerWidget {
                 );
               },
               loading: () => const SizedBox(height: 52),
-              error: (error, stack) => Text('Error: $error'),
+              error: (error, stack) => AppErrorView(error: error),
             ),
             TextButton.icon(
-              onPressed: () =>
-                  showDialog<void>(context: context, builder: (_) => const AddAlertDialog()),
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (_) => const AddAlertDialog(),
+              ),
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add an alert'),
               style: TextButton.styleFrom(
@@ -115,7 +123,12 @@ class _NowRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: context.colors.primary,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: context.colors.primaryContainer, spreadRadius: 4)],
+              boxShadow: [
+                BoxShadow(
+                  color: context.colors.primaryContainer,
+                  spreadRadius: 4,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: AppSpacing.mlg),
@@ -123,7 +136,11 @@ class _NowRow extends StatelessWidget {
             width: 44,
             child: Text(
               'Now',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textSecondary,
+              ),
             ),
           ),
           Expanded(
@@ -134,7 +151,10 @@ class _NowRow extends StatelessWidget {
                 Text('$value resin', style: textTheme.titleMedium),
                 Text(
                   '+1 every ${const ResinEngine().regenInterval.inMinutes} minutes',
-                  style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -155,7 +175,9 @@ class _AlertRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final label = row.threshold == cap ? 'Full at ${row.threshold}' : 'Reaches ${row.threshold}';
+    final label = row.threshold == cap
+        ? 'Full at ${row.threshold}'
+        : 'Reaches ${row.threshold}';
 
     return SizedBox(
       height: 56,
@@ -167,7 +189,9 @@ class _AlertRow extends ConsumerWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: context.colors.surface,
-              border: Border.fromBorderSide(BorderSide(color: context.colors.primary, width: 2)),
+              border: Border.fromBorderSide(
+                BorderSide(color: context.colors.primary, width: 2),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.mlg),
@@ -175,7 +199,11 @@ class _AlertRow extends ConsumerWidget {
             width: 44,
             child: Text(
               formatTime(row.time),
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textSecondary,
+              ),
             ),
           ),
           Expanded(
@@ -186,7 +214,10 @@ class _AlertRow extends ConsumerWidget {
                 Text(label, style: textTheme.titleMedium),
                 Text(
                   'Alert · in ${formatCountdown(row.time.difference(now))}',
-                  style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -194,7 +225,9 @@ class _AlertRow extends ConsumerWidget {
           Switch(
             value: row.enabled,
             onChanged: (value) async {
-              await ref.read(settingsRepositoryProvider).setAlertEnabled(row.id, value);
+              await ref
+                  .read(settingsRepositoryProvider)
+                  .setAlertEnabled(row.id, value);
               ref.invalidate(resinAlertsProvider);
             },
           ),

@@ -13,6 +13,7 @@ import '../domain/resin_engine.dart';
 import 'resin_formatting.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/widgets/rolling_number.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 /// The ring gauge + the "Next +1 in" / "Full at" stat tiles, in one 24px
 /// white section — the ring section's own radius (24px) doesn't match
@@ -76,11 +77,8 @@ class ResinRingSection extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox(
-        height: 320,
-        child: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Text('Error: $error'),
+      loading: () => const SizedBox(height: 320, child: AppLoadingView()),
+      error: (error, stack) => AppErrorView(error: error),
     );
   }
 }

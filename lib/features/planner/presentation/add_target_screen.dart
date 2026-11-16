@@ -10,6 +10,7 @@ import '../application/planner_view_models.dart';
 import '../data/planner_providers.dart';
 import 'entity_avatar.dart';
 import 'rarity_chip.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 /// A transient workflow, not a bookmarkable destination — pushed with a
 /// plain `Navigator.push` rather than a new go_router route, consistent
@@ -245,8 +246,8 @@ class _AddTargetScreenState extends ConsumerState<AddTargetScreen> {
                   ],
                   onChanged: (value) => setState(() => _entityId = value),
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Text('Error: $error'),
+                loading: () => const AppLoadingView(),
+                error: (error, stack) => AppErrorView(error: error),
               )
             else
               weaponsAsync.when(
@@ -280,12 +281,12 @@ class _AddTargetScreenState extends ConsumerState<AddTargetScreen> {
                             setState(() => _linkedCharacterId = value),
                       ),
                       loading: () => const SizedBox.shrink(),
-                      error: (error, stack) => Text('Error: $error'),
+                      error: (error, stack) => AppErrorView(error: error),
                     ),
                   ],
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Text('Error: $error'),
+                loading: () => const AppLoadingView(),
+                error: (error, stack) => AppErrorView(error: error),
               ),
             const SizedBox(height: AppSpacing.xl),
             Row(

@@ -27,16 +27,26 @@ class HoyolabAccountSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              boxShadow: AppShadows.card,
+            ),
             // Secure-storage reads resolve near-instantly on a real device,
             // so "not yet known" and "not connected" look the same to the
             // user — deliberately not an indeterminate spinner here, which
             // would animate forever if the read is ever slow to resolve.
             child: credentialsAsync.maybeWhen(
               data: (credentials) => credentials != null
-                  ? _ConnectedRow(uid: credentials.uid, onDisconnect: () => _disconnect(ref))
-                  : _DisconnectedRow(onConnect: () => _startConnectFlow(context, ref)),
-              orElse: () => _DisconnectedRow(onConnect: () => _startConnectFlow(context, ref)),
+                  ? _ConnectedRow(
+                      uid: credentials.uid,
+                      onDisconnect: () => _disconnect(ref),
+                    )
+                  : _DisconnectedRow(
+                      onConnect: () => _startConnectFlow(context, ref),
+                    ),
+              orElse: () => _DisconnectedRow(
+                onConnect: () => _startConnectFlow(context, ref),
+              ),
             ),
           ),
         ),
@@ -76,10 +86,15 @@ class HoyolabAccountSection extends ConsumerWidget {
     );
     if (acknowledged != true || !context.mounted) return;
 
-    final cookie = await ref.read(hoyolabWebLoginProvider).captureCookie(context);
+    final cookie = await ref
+        .read(hoyolabWebLoginProvider)
+        .captureCookie(context);
     if (cookie == null || !context.mounted) return;
 
-    await showDialog<void>(context: context, builder: (_) => _ConnectFormDialog(cookie: cookie));
+    await showDialog<void>(
+      context: context,
+      builder: (_) => _ConnectFormDialog(cookie: cookie),
+    );
   }
 }
 
@@ -102,7 +117,10 @@ class _DisconnectedRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Not connected', style: textTheme.titleMedium),
-                Text('Auto-fill resin from your HoYoLab account', style: textTheme.bodyMedium),
+                Text(
+                  'Auto-fill resin from your HoYoLab account',
+                  style: textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
@@ -172,7 +190,9 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
     if (uid.isEmpty || int.tryParse(uid) == null) return;
 
     final navigator = Navigator.of(context);
-    await ref.read(hoyolabCredentialsStoreProvider).save(cookie: widget.cookie, uid: uid);
+    await ref
+        .read(hoyolabCredentialsStoreProvider)
+        .save(cookie: widget.cookie, uid: uid);
     ref.invalidate(hoyolabCredentialsProvider);
     if (mounted) navigator.pop();
   }
@@ -185,7 +205,9 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("You're logged in. Enter your in-game UID to finish connecting."),
+          const Text(
+            "You're logged in. Enter your in-game UID to finish connecting.",
+          ),
           const SizedBox(height: AppSpacing.md),
           TextField(
             controller: _uidController,
@@ -195,7 +217,10 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
         TextButton(onPressed: _save, child: const Text('Save')),
       ],
     );

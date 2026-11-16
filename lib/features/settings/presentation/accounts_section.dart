@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 class AccountsSection extends ConsumerWidget {
   const AccountsSection({super.key});
@@ -44,7 +45,8 @@ class AccountsSection extends ConsumerWidget {
                   child: Column(
                     children: [
                       for (var i = 0; i < profiles.length; i++) ...[
-                        if (i > 0) Divider(height: 1, color: context.colors.divider),
+                        if (i > 0)
+                          Divider(height: 1, color: context.colors.divider),
                         _ProfileRow(
                           id: profiles[i].id,
                           displayName: profiles[i].displayName,
@@ -53,18 +55,18 @@ class AccountsSection extends ConsumerWidget {
                         ),
                       ],
                       Divider(height: 1, color: context.colors.divider),
-                      _AddProfileRow(server: currentAsync.value?.server ?? 'asia'),
+                      _AddProfileRow(
+                        server: currentAsync.value?.server ?? 'asia',
+                      ),
                     ],
                   ),
                 ),
               ),
             );
           },
-          loading: () => const SizedBox(
-            height: 56,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-          ),
-          error: (error, stack) => Text('Error: $error'),
+          loading: () =>
+              const SizedBox(height: 56, child: AppLoadingView(compact: true)),
+          error: (error, stack) => AppErrorView(error: error),
         ),
       ],
     );
@@ -113,7 +115,10 @@ class _ProfileRow extends ConsumerWidget {
                 _ProfileAction.delete => _delete(context, ref),
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: _ProfileAction.rename, child: Text('Rename')),
+                const PopupMenuItem(
+                  value: _ProfileAction.rename,
+                  child: Text('Rename'),
+                ),
                 PopupMenuItem(
                   value: _ProfileAction.delete,
                   enabled: canDelete,
@@ -131,7 +136,8 @@ class _ProfileRow extends ConsumerWidget {
   Future<void> _rename(BuildContext context, WidgetRef ref) async {
     final newName = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => _RenameProfileDialog(initialName: displayName),
+      builder: (dialogContext) =>
+          _RenameProfileDialog(initialName: displayName),
     );
     if (newName == null || newName.isEmpty) return;
 
@@ -160,10 +166,26 @@ class _ProfileRow extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
+    if (!context.mounted) return;
 
-    await ref.read(profileRepositoryProvider).deleteProfile(id);
+    final messenger = ScaffoldMessenger.of(context);
+    final repository = ref.read(profileRepositoryProvider);
+    await repository.deleteProfile(id);
     ref.invalidate(profileListProvider);
     ref.invalidate(currentProfileProvider);
+    messenger.showSnackBar(
+      SnackBar(
+        content: const Text('Account deleted'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () async {
+            await repository.restoreProfile(id);
+            ref.invalidate(profileListProvider);
+            ref.invalidate(currentProfileProvider);
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -187,9 +209,8 @@ class _AddProfileRow extends ConsumerWidget {
             const SizedBox(width: AppSpacing.sm),
             Text(
               'Add account',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(color: context.colors.primary),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(color: context.colors.primary),
             ),
           ],
         ),
@@ -288,10 +309,7 @@ class _RenameProfileDialogState extends State<_RenameProfileDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Rename account'),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-      ),
+      content: TextField(controller: _controller, autofocus: true),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

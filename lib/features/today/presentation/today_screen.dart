@@ -7,6 +7,7 @@ import 'resin_hero_card.dart';
 import 'today_header.dart';
 import 'todays_farm_section.dart';
 import 'week_strip.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -35,8 +36,8 @@ class TodayScreen extends ConsumerWidget {
               TodaysFarmSection(farmCards: data.farmCards),
             ],
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          loading: () => const AppLoadingView(),
+          error: (error, stack) => Center(child: AppErrorView(error: error)),
         ),
       ),
     );

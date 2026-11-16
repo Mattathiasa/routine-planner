@@ -7,7 +7,11 @@ import 'add_target_screen.dart';
 import 'inventory_screen.dart';
 
 class PlannerHeader extends StatelessWidget {
-  const PlannerHeader({super.key, required this.targetCount, required this.materialsShortCount});
+  const PlannerHeader({
+    super.key,
+    required this.targetCount,
+    required this.materialsShortCount,
+  });
 
   final int targetCount;
   final int materialsShortCount;
@@ -30,9 +34,9 @@ class PlannerHeader extends StatelessWidget {
                 style: textTheme.bodyLarge,
               ),
               TextButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const InventoryScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const InventoryScreen()),
+                ),
                 style: TextButton.styleFrom(
                   foregroundColor: context.colors.primary,
                   padding: EdgeInsets.zero,
@@ -40,7 +44,10 @@ class PlannerHeader extends StatelessWidget {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
                 ),
-                child: const Text('Edit inventory', style: TextStyle(fontSize: 13)),
+                child: const Text(
+                  'Edit inventory',
+                  style: TextStyle(fontSize: 13),
+                ),
               ),
             ],
           ),
@@ -67,8 +74,8 @@ class _AddTargetButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: const BorderRadius.all(Radius.circular(999)),
-          onTap: () =>
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddTargetScreen())),
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const AddTargetScreen())),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
             child: SizedBox(
@@ -76,7 +83,11 @@ class _AddTargetButton extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary, size: 18),
+                  Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: 18,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     'Add target',

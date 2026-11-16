@@ -27,7 +27,11 @@ class TodayController extends _$TodayController {
       final date = weekStart.add(Duration(days: i));
       final openCount = (await catalog.domainsOpenOn(date)).length;
       week.add(
-        WeekDayInfo(date: date, openDomainCount: openCount, isToday: date == serverDate),
+        WeekDayInfo(
+          date: date,
+          openDomainCount: openCount,
+          isToday: date == serverDate,
+        ),
       );
     }
 
@@ -36,7 +40,10 @@ class TodayController extends _$TodayController {
     for (final domain in openDomains) {
       final materials = await catalog.materialsForDomain(domain.id);
       final drops = await catalog.dropsForDomain(domain.id);
-      final combinedMask = drops.fold<int>(0, (mask, drop) => mask | drop.weekdayMask);
+      final combinedMask = drops.fold<int>(
+        0,
+        (mask, drop) => mask | drop.weekdayMask,
+      );
       final alwaysOpen = isAlwaysOpen(combinedMask);
 
       final resetsWeekly = domain.resetCadence == 'weekly';
@@ -66,7 +73,9 @@ class TodayController extends _$TodayController {
         FarmDomainCardData(
           domainId: domain.id,
           name: domain.name,
-          scheduleLabel: alwaysOpen ? 'Open every day' : formatWeekdayMask(combinedMask),
+          scheduleLabel: alwaysOpen
+              ? 'Open every day'
+              : formatWeekdayMask(combinedMask),
           alwaysOpen: alwaysOpen,
           costResin: domain.costResin,
           rows: rows,
@@ -74,7 +83,12 @@ class TodayController extends _$TodayController {
       );
     }
 
-    return TodayViewData(serverDate: serverDate, now: now, week: week, farmCards: farmCards);
+    return TodayViewData(
+      serverDate: serverDate,
+      now: now,
+      week: week,
+      farmCards: farmCards,
+    );
   }
 
   Future<void> toggleTask(String taskId, bool checked) async {

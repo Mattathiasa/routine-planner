@@ -14,7 +14,12 @@ typedef Quantity = ({String materialId, int quantity});
 /// One material's need/have/missing after a tier-walk. `have` is the
 /// *displayed* have (`min(need, rawHave + carryIn)`), so `missing` and
 /// `have` always stay arithmetically consistent with `need` on screen.
-typedef MaterialNeedResult = ({String materialId, int need, int have, int missing});
+typedef MaterialNeedResult = ({
+  String materialId,
+  int need,
+  int have,
+  int missing,
+});
 
 /// Sums [rows] into a single need-per-material map.
 Map<String, int> accumulateNeed(Iterable<Quantity> rows) {
@@ -42,7 +47,9 @@ Map<String, int> allocateExpBooks(
   for (var i = 0; i < booksDescByValue.length; i++) {
     final book = booksDescByValue[i];
     final isSmallest = i == booksDescByValue.length - 1;
-    final count = isSmallest ? (remaining / book.expValue).ceil() : remaining ~/ book.expValue;
+    final count = isSmallest
+        ? (remaining / book.expValue).ceil()
+        : remaining ~/ book.expValue;
     if (count > 0) counts[book.materialId] = count;
     remaining -= count * book.expValue;
   }
@@ -54,10 +61,16 @@ Map<String, int> allocateExpBooks(
 /// (boss/EXP-book/currency materials). Shared between the "Most needed"
 /// list and the inventory-editing screen so the same material always
 /// reads identically on both.
-String materialDisplayLabel({required String name, String? tierGroup, int? tier}) {
+String materialDisplayLabel({
+  required String name,
+  String? tierGroup,
+  int? tier,
+}) {
   if (tierGroup == null) return name;
   final spaced = tierGroup.replaceAll('_', ' ');
-  final titled = spaced.isEmpty ? spaced : spaced[0].toUpperCase() + spaced.substring(1);
+  final titled = spaced.isEmpty
+      ? spaced
+      : spaced[0].toUpperCase() + spaced.substring(1);
   return '$titled · tier $tier';
 }
 

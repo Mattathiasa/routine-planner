@@ -23,29 +23,41 @@ class ResinController extends _$ResinController {
   }
 
   Future<void> sync(int x, {Duration? fullIn}) {
-    return _mutate((state, now) => _engine.sync(state, now, x: x, fullIn: fullIn));
+    return _mutate(
+      (state, now) => _engine.sync(state, now, x: x, fullIn: fullIn),
+    );
   }
 
   Future<void> spend(int cost, {String? label}) {
-    return _mutate((state, now) => _engine.spend(state, now, cost: cost), label: label);
+    return _mutate(
+      (state, now) => _engine.spend(state, now, cost: cost),
+      label: label,
+    );
   }
 
   Future<void> craftCondensed({required int cost, int amount = 1}) {
     return _mutate(
-      (state, now) => _engine.craftCondensed(state, now, cost: cost, amount: amount),
+      (state, now) =>
+          _engine.craftCondensed(state, now, cost: cost, amount: amount),
     );
   }
 
   Future<void> useFragile({int amount = 1}) {
-    return _mutate((state, now) => _engine.useFragile(state, now, amount: amount));
+    return _mutate(
+      (state, now) => _engine.useFragile(state, now, amount: amount),
+    );
   }
 
   Future<void> useCondensed({int amount = 1}) {
-    return _mutate((state, now) => _engine.useCondensed(state, now, amount: amount));
+    return _mutate(
+      (state, now) => _engine.useCondensed(state, now, amount: amount),
+    );
   }
 
   Future<void> useTransient(String batchId) {
-    return _mutate((state, now) => _engine.useTransient(state, now, batchId: batchId));
+    return _mutate(
+      (state, now) => _engine.useTransient(state, now, batchId: batchId),
+    );
   }
 
   /// Reverses the most recent mutation, if it's reversible — see

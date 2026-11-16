@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
 
 const _backupFileName = 'routine_planner_backup.json';
@@ -15,4 +16,3 @@ Future<String> readBackupFile() async {
   final file = File('${dir.path}/$_backupFileName');
   return file.readAsString();
 }
-

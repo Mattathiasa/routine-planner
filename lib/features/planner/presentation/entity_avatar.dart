@@ -21,29 +21,27 @@ class EntityAvatar extends StatelessWidget {
   final String? element;
   final double size;
 
-  static ({Color background, Color text, Color badge, IconData icon})? _elementStyle(
-    AppColorScheme colors,
-    String? element,
-  ) {
+  static ({Color background, Color text, Color badge, IconData icon})?
+  _elementStyle(AppColorScheme colors, String? element) {
     return switch (element) {
       'Pyro' => (
-          background: colors.pyroAvatarBackground,
-          text: colors.pyroAvatarText,
-          badge: colors.pyro,
-          icon: Icons.local_fire_department,
-        ),
+        background: colors.pyroAvatarBackground,
+        text: colors.pyroAvatarText,
+        badge: colors.pyro,
+        icon: Icons.local_fire_department,
+      ),
       'Hydro' => (
-          background: colors.hydroAvatarBackground,
-          text: colors.hydroAvatarText,
-          badge: colors.hydro,
-          icon: Icons.water_drop,
-        ),
+        background: colors.hydroAvatarBackground,
+        text: colors.hydroAvatarText,
+        badge: colors.hydro,
+        icon: Icons.water_drop,
+      ),
       'Electro' => (
-          background: colors.electroAvatarBackground,
-          text: colors.electroAvatarText,
-          badge: colors.electro,
-          icon: Icons.bolt,
-        ),
+        background: colors.electroAvatarBackground,
+        text: colors.electroAvatarText,
+        badge: colors.electro,
+        icon: Icons.bolt,
+      ),
       _ => null,
     };
   }
@@ -58,7 +56,11 @@ class EntityAvatar extends StatelessWidget {
           color: context.colors.weaponTileBackground,
           borderRadius: AppRadius.tileRadius,
         ),
-        child: Icon(Icons.auto_fix_high_outlined, color: context.colors.textPrimary, size: 26),
+        child: Icon(
+          Icons.auto_fix_high_outlined,
+          color: context.colors.textPrimary,
+          size: 26,
+        ),
       );
     }
 
@@ -100,7 +102,11 @@ class EntityAvatar extends StatelessWidget {
                   color: style.badge,
                   border: Border.all(color: context.colors.surface, width: 2),
                 ),
-                child: Icon(style.icon, color: context.colors.surface, size: 12),
+                child: Icon(
+                  style.icon,
+                  color: context.colors.surface,
+                  size: 12,
+                ),
               ),
             ),
         ],

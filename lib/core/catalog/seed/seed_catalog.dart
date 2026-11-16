@@ -27,7 +27,9 @@ Future<void> seedCatalog(CatalogDatabase db) {
 /// entry point for tests and (until the real bundle exists) dev runs.
 Future<CatalogDatabase> openSeedCatalogDatabaseInMemory() async {
   final db = CatalogDatabase(createSeedCatalogExecutor());
-  final count = await (db.selectOnly(db.catalogMetadata)..addColumns([db.catalogMetadata.version])).get();
+  final count = await (db.selectOnly(
+    db.catalogMetadata,
+  )..addColumns([db.catalogMetadata.version])).get();
   if (count.isEmpty) {
     await seedCatalog(db);
   }

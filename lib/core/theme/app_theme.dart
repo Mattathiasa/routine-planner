@@ -17,7 +17,9 @@ abstract final class AppTheme {
   static ThemeData dark() => _build(AppColorScheme.dark, Brightness.dark);
 
   static ThemeData _build(AppColorScheme colors, Brightness brightness) {
-    final onPrimary = brightness == Brightness.light ? Colors.white : const Color(0xFF10142E);
+    final onPrimary = brightness == Brightness.light
+        ? Colors.white
+        : const Color(0xFF10142E);
     final colorScheme = ColorScheme(
       brightness: brightness,
       primary: colors.primary,
@@ -26,8 +28,12 @@ abstract final class AppTheme {
       onPrimaryContainer: colors.primaryHover,
       secondary: colors.primary,
       onSecondary: onPrimary,
-      error: brightness == Brightness.light ? const Color(0xFFBA1A1A) : const Color(0xFFFFB4AB),
-      onError: brightness == Brightness.light ? Colors.white : const Color(0xFF690005),
+      error: brightness == Brightness.light
+          ? const Color(0xFFBA1A1A)
+          : const Color(0xFFFFB4AB),
+      onError: brightness == Brightness.light
+          ? Colors.white
+          : const Color(0xFF690005),
       surface: colors.surface,
       onSurface: colors.textPrimary,
       onSurfaceVariant: colors.textSecondary,
@@ -41,7 +47,11 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: colors.background,
       textTheme: buildAppTextTheme(colors),
       fontFamily: GoogleFonts.inter().fontFamily,
-      dividerTheme: DividerThemeData(color: colors.divider, thickness: 1, space: 1),
+      dividerTheme: DividerThemeData(
+        color: colors.divider,
+        thickness: 1,
+        space: 1,
+      ),
       cardTheme: CardThemeData(
         color: colors.surface,
         elevation: 0,

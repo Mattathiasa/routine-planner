@@ -24,7 +24,8 @@ class HoyolabLoginWebviewScreen extends StatefulWidget {
   const HoyolabLoginWebviewScreen({super.key});
 
   @override
-  State<HoyolabLoginWebviewScreen> createState() => _HoyolabLoginWebviewScreenState();
+  State<HoyolabLoginWebviewScreen> createState() =>
+      _HoyolabLoginWebviewScreenState();
 }
 
 class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
@@ -36,7 +37,9 @@ class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(onPageFinished: (_) => _checkLoggedIn()))
+      ..setNavigationDelegate(
+        NavigationDelegate(onPageFinished: (_) => _checkLoggedIn()),
+      )
       ..loadRequest(Uri.parse(_hoyolabHome));
   }
 
@@ -46,9 +49,12 @@ class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
     try {
       final cookies = await WebviewCookieManager().getCookies(_hoyolabHome);
       final byName = {for (final cookie in cookies) cookie.name: cookie.value};
-      final loggedIn = byName['ltoken_v2'] != null && byName['ltuid_v2'] != null;
+      final loggedIn =
+          byName['ltoken_v2'] != null && byName['ltuid_v2'] != null;
       if (loggedIn && mounted) {
-        final cookieHeader = cookies.map((c) => '${c.name}=${c.value}').join('; ');
+        final cookieHeader = cookies
+            .map((c) => '${c.name}=${c.value}')
+            .join('; ');
         Navigator.of(context).pop(cookieHeader);
       }
     } finally {

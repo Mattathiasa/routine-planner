@@ -42,9 +42,11 @@ class ResinRepository {
   /// repository's concern.
   Future<ResinState> loadResinState(String profileId) async {
     final row = await _getOrCreateStateRow(profileId);
-    final batches = await (_db.select(_db.transientResinBatches)..where(
-      (t) => t.resinStateId.equals(row.id) & t.deletedAt.isNull(),
-    )).get();
+    final batches =
+        await (_db.select(_db.transientResinBatches)..where(
+              (t) => t.resinStateId.equals(row.id) & t.deletedAt.isNull(),
+            ))
+            .get();
 
     return ResinState(
       v: row.v,
@@ -54,26 +56,34 @@ class ResinRepository {
       fragile: row.fragile,
       transient: [
         for (final batch in batches)
-          TransientResinBatch(id: batch.id, count: batch.count, expiresAt: batch.expiresAt),
+          TransientResinBatch(
+            id: batch.id,
+            count: batch.count,
+            expiresAt: batch.expiresAt,
+          ),
       ],
     );
   }
 
   Future<ResinStateTableData> _getOrCreateStateRow(String profileId) async {
-    final existing = await (_db.select(_db.resinStateTable)..where(
-      (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
-    )).getSingleOrNull();
+    final existing =
+        await (_db.select(_db.resinStateTable)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
     if (existing != null) return existing;
 
     final now = DateTime.now().toUtc();
-    await _db.into(_db.resinStateTable).insert(
-      ResinStateTableCompanion.insert(
-        id: newId(),
-        profileId: profileId,
-        v: 200,
-        updatedAt: now,
-      ),
-    );
+    await _db
+        .into(_db.resinStateTable)
+        .insert(
+          ResinStateTableCompanion.insert(
+            id: newId(),
+            profileId: profileId,
+            v: 200,
+            updatedAt: now,
+          ),
+        );
     return _getOrCreateStateRow(profileId);
   }
 
@@ -90,7 +100,9 @@ class ResinRepository {
       final row = await _getOrCreateStateRow(profileId);
       final now = DateTime.now().toUtc();
 
-      await (_db.update(_db.resinStateTable)..where((t) => t.id.equals(row.id))).write(
+      await (_db.update(
+        _db.resinStateTable,
+      )..where((t) => t.id.equals(row.id))).write(
         ResinStateTableCompanion(
           v: Value(newState.v),
           n: Value(newState.n),
@@ -105,28 +117,38 @@ class ResinRepository {
         await (_db.update(
           _db.transientResinBatches,
         )..where((t) => t.id.equals(batchId))).write(
-          TransientResinBatchesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+          TransientResinBatchesCompanion(
+            deletedAt: Value(now),
+            updatedAt: Value(now),
+          ),
         );
       }
 
-      await _db.into(_db.resinEvents).insert(_eventToRow(profileId, event, newState.v, label, now));
+      await _db
+          .into(_db.resinEvents)
+          .insert(_eventToRow(profileId, event, newState.v, label, now));
     });
   }
 
   /// Adds a newly-claimed transient resin batch. There's no `ResinEvent`
   /// variant for "claim a reward," so this isn't routed through the event
   /// log.
-  Future<void> addTransientBatch(String profileId, TransientResinBatch batch) async {
+  Future<void> addTransientBatch(
+    String profileId,
+    TransientResinBatch batch,
+  ) async {
     final row = await _getOrCreateStateRow(profileId);
-    await _db.into(_db.transientResinBatches).insert(
-      TransientResinBatchesCompanion.insert(
-        id: batch.id,
-        resinStateId: row.id,
-        count: batch.count,
-        expiresAt: batch.expiresAt,
-        updatedAt: DateTime.now().toUtc(),
-      ),
-    );
+    await _db
+        .into(_db.transientResinBatches)
+        .insert(
+          TransientResinBatchesCompanion.insert(
+            id: batch.id,
+            resinStateId: row.id,
+            count: batch.count,
+            expiresAt: batch.expiresAt,
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
   }
 
   Future<List<ResinEventRow>> recentEvents(String profileId, {int limit = 20}) {
@@ -144,11 +166,14 @@ class ResinRepository {
   /// `useFragile`/`useCondensed` are reversible; see [UndoNotSupportedException].
   Future<void> undoLastMutation(String profileId) {
     return _db.transaction(() async {
-      final recent = await (_db.select(_db.resinEvents)
-            ..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())
-            ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
-            ..limit(1))
-          .getSingleOrNull();
+      final recent =
+          await (_db.select(_db.resinEvents)
+                ..where(
+                  (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+                )
+                ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
+                ..limit(1))
+              .getSingleOrNull();
 
       if (recent == null || recent.isUndo) {
         throw const NothingToUndoException();
@@ -180,7 +205,9 @@ class ResinRepository {
           ? null
           : now.add(const ResinEngine().regenInterval);
 
-      await (_db.update(_db.resinStateTable)..where((t) => t.id.equals(row.id))).write(
+      await (_db.update(
+        _db.resinStateTable,
+      )..where((t) => t.id.equals(row.id))).write(
         ResinStateTableCompanion(
           v: Value(newV),
           n: Value(newN),
@@ -190,25 +217,27 @@ class ResinRepository {
         ),
       );
 
-      await _db.into(_db.resinEvents).insert(
-        ResinEventsCompanion.insert(
-          id: newId(),
-          profileId: profileId,
-          occurredAt: now,
-          kind: recent.kind,
-          x: Value(recent.x),
-          fullInSeconds: Value(recent.fullInSeconds),
-          cost: Value(recent.cost),
-          amount: Value(recent.amount),
-          batchId: Value(recent.batchId),
-          count: Value(recent.count),
-          label: Value(recent.label),
-          resultingV: newV,
-          isUndo: const Value(true),
-          undoneEventId: Value(recent.id),
-          updatedAt: now,
-        ),
-      );
+      await _db
+          .into(_db.resinEvents)
+          .insert(
+            ResinEventsCompanion.insert(
+              id: newId(),
+              profileId: profileId,
+              occurredAt: now,
+              kind: recent.kind,
+              x: Value(recent.x),
+              fullInSeconds: Value(recent.fullInSeconds),
+              cost: Value(recent.cost),
+              amount: Value(recent.amount),
+              batchId: Value(recent.batchId),
+              count: Value(recent.count),
+              label: Value(recent.label),
+              resultingV: newV,
+              isUndo: const Value(true),
+              undoneEventId: Value(recent.id),
+              updatedAt: now,
+            ),
+          );
     });
   }
 
@@ -219,7 +248,15 @@ class ResinRepository {
     String? label,
     DateTime now,
   ) {
-    final (kind, x, fullInSeconds, cost, amount, batchId, count) = switch (event) {
+    final (
+      kind,
+      x,
+      fullInSeconds,
+      cost,
+      amount,
+      batchId,
+      count,
+    ) = switch (event) {
       ResinEventSync(x: final x, fullIn: final fullIn) => (
         'sync',
         x,
@@ -229,7 +266,15 @@ class ResinRepository {
         null,
         null,
       ),
-      ResinEventSpend(cost: final cost) => ('spend', null, null, cost, null, null, null),
+      ResinEventSpend(cost: final cost) => (
+        'spend',
+        null,
+        null,
+        cost,
+        null,
+        null,
+        null,
+      ),
       ResinEventCraftCondensed(cost: final cost, amount: final amount) => (
         'craftCondensed',
         null,

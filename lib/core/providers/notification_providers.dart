@@ -63,7 +63,8 @@ Future<void> notificationReconcile(Ref ref) async {
       state: resinState,
       now: now,
       alerts: [
-        for (final alert in alerts) (id: alert.id, threshold: alert.threshold, enabled: alert.enabled),
+        for (final alert in alerts)
+          (id: alert.id, threshold: alert.threshold, enabled: alert.enabled),
       ],
     ),
     ...planTransientExpiryNotifications(

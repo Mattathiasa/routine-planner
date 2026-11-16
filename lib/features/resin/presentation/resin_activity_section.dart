@@ -9,11 +9,15 @@ import '../application/resin_controller.dart';
 import '../data/resin_repository.dart';
 import '../data/resin_providers.dart';
 import 'resin_formatting.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 String _describeEvent(ResinActivityEntry event) {
   final description = switch (event.kind) {
     'sync' => 'Synced with game',
-    'spend' => event.label != null ? 'Spent ${event.cost} · ${event.label}' : 'Spent ${event.cost}',
+    'spend' =>
+      event.label != null
+          ? 'Spent ${event.cost} · ${event.label}'
+          : 'Spent ${event.cost}',
     'craftCondensed' => 'Crafted Condensed Resin',
     'useFragile' => 'Used Fragile Resin',
     'useCondensed' => 'Used Condensed Resin',
@@ -62,40 +66,62 @@ class ResinActivitySection extends ConsumerWidget {
               ],
             ),
             eventsAsync.when(
-              data: (events) => Column(
-                children: [
-                  for (final event in events)
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(color: context.colors.divider)),
+              data: (events) => events.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        top: AppSpacing.sm,
+                        bottom: AppSpacing.mlg,
                       ),
-                      child: SizedBox(
-                        height: 48,
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 44,
-                              child: Text(
-                                formatTime(event.occurredAt),
-                                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                      child: Text(
+                        'No activity yet — sync with the game to start tracking.',
+                        style: textTheme.bodyLarge,
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        for (final event in events)
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                top: BorderSide(color: context.colors.divider),
                               ),
                             ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Text(_describeEvent(event), style: textTheme.titleMedium),
+                            child: SizedBox(
+                              height: 48,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 44,
+                                    child: Text(
+                                      formatTime(event.occurredAt),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: context.colors.textSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Expanded(
+                                    child: Text(
+                                      _describeEvent(event),
+                                      style: textTheme.titleMedium,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${event.resultingV}',
+                                    style: textTheme.headlineLarge,
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text('${event.resultingV}', style: textTheme.headlineLarge),
-                          ],
-                        ),
-                      ),
+                          ),
+                      ],
                     ),
-                ],
-              ),
               loading: () => const SizedBox(
                 height: 48,
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                child: AppLoadingView(compact: true),
               ),
-              error: (error, stack) => Text('Error: $error'),
+              error: (error, stack) => AppErrorView(error: error),
             ),
           ],
         ),
@@ -110,7 +136,9 @@ class ResinActivitySection extends ConsumerWidget {
     } on NothingToUndoException {
       messenger.showSnackBar(const SnackBar(content: Text('Nothing to undo.')));
     } on UndoNotSupportedException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text("Can't undo this action (${e.kind}).")));
+      messenger.showSnackBar(
+        SnackBar(content: Text("Can't undo this action (${e.kind}).")),
+      );
     }
   }
 }

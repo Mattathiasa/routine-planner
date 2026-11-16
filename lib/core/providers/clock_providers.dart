@@ -15,5 +15,8 @@ Clock clock(Ref ref) => const SystemClock();
 @Riverpod(keepAlive: true)
 Future<ServerClock> serverClock(Ref ref) async {
   final profile = await ref.watch(currentProfileProvider.future);
-  return ServerClock(ref.watch(clockProvider), GameServer.values.byName(profile.server));
+  return ServerClock(
+    ref.watch(clockProvider),
+    GameServer.values.byName(profile.server),
+  );
 }

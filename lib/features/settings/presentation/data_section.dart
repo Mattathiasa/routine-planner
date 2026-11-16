@@ -28,7 +28,10 @@ class DataSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              boxShadow: AppShadows.card,
+            ),
             child: Column(
               children: [
                 SizedBox(
@@ -52,7 +55,11 @@ class DataSection extends ConsumerWidget {
                       TextButton(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("You're on the latest seed catalog.")),
+                            const SnackBar(
+                              content: Text(
+                                "You're on the latest seed catalog.",
+                              ),
+                            ),
                           );
                         },
                         child: const Text('Check'),
@@ -62,9 +69,15 @@ class DataSection extends ConsumerWidget {
                   ),
                 ),
                 Divider(height: 1, color: context.colors.divider),
-                _DataRow(label: 'Export backup (JSON)', onTap: () => _exportBackup(context, ref)),
+                _DataRow(
+                  label: 'Export backup (JSON)',
+                  onTap: () => _exportBackup(context, ref),
+                ),
                 Divider(height: 1, color: context.colors.divider),
-                _DataRow(label: 'Import backup', onTap: () => _confirmImport(context, ref)),
+                _DataRow(
+                  label: 'Import backup',
+                  onTap: () => _confirmImport(context, ref),
+                ),
               ],
             ),
           ),
@@ -77,9 +90,8 @@ class DataSection extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final profileId = (await ref.read(currentProfileProvider.future)).id;
-      final json = await BackupService(
-        ref.read(userDatabaseProvider),
-      ).exportBackupJson(profileId);
+      final json = await BackupService(ref.read(userDatabaseProvider))
+          .exportBackupJson(profileId);
       final path = await exportBackupFile(json);
       messenger.showSnackBar(SnackBar(content: Text('Exported to $path')));
     } catch (error) {
@@ -92,7 +104,9 @@ class DataSection extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Import backup?'),
-        content: const Text("This replaces that account's data with the backup. Continue?"),
+        content: const Text(
+          "This replaces that account's data with the backup. Continue?",
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -113,7 +127,9 @@ class DataSection extends ConsumerWidget {
       final importedProfileId = await BackupService(
         ref.read(userDatabaseProvider),
       ).importBackupJson(json);
-      await ref.read(profileRepositoryProvider).selectProfile(importedProfileId);
+      await ref
+          .read(profileRepositoryProvider)
+          .selectProfile(importedProfileId);
       ref.invalidate(currentProfileProvider);
       messenger.showSnackBar(const SnackBar(content: Text('Imported.')));
     } catch (error) {
@@ -137,8 +153,17 @@ class _DataRow extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: AppSpacing.lg),
-            Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
-            Icon(Icons.chevron_right, color: context.colors.textSecondary, size: 18),
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: context.colors.textSecondary,
+              size: 18,
+            ),
             const SizedBox(width: AppSpacing.sm),
           ],
         ),

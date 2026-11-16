@@ -42,12 +42,14 @@ class PlannerController extends _$PlannerController {
         : await planner.inventoryForProfile(profileId);
 
     final currencyMaterials = await catalog.materialsByCategory('currency');
-    final currencyMaterialId = currencyMaterials.isEmpty ? null : currencyMaterials.first.id;
+    final currencyMaterialId = currencyMaterials.isEmpty
+        ? null
+        : currencyMaterials.first.id;
 
     final expBooks = await catalog.materialsByCategory('expBook');
-    final booksDescByValue =
-        [for (final b in expBooks) (materialId: b.id, expValue: b.expValue ?? 0)]
-          ..sort((a, b) => b.expValue.compareTo(a.expValue));
+    final booksDescByValue = [
+      for (final b in expBooks) (materialId: b.id, expValue: b.expValue ?? 0),
+    ]..sort((a, b) => b.expValue.compareTo(a.expValue));
 
     final targetCards = <TargetCardData>[];
     final pooledFarmableNeed = <String, int>{};
@@ -86,11 +88,16 @@ class PlannerController extends _$PlannerController {
         toLevelExclusive: target.goalLevel,
       );
       final totalExp = expRows.fold<int>(0, (sum, row) => sum + row.expToNext);
-      final totalMora = expRows.fold<int>(0, (sum, row) => sum + (row.moraToNext ?? 0));
+      final totalMora = expRows.fold<int>(
+        0,
+        (sum, row) => sum + (row.moraToNext ?? 0),
+      );
 
       final requirementRows = <Quantity>[
-        for (final row in ascensionRows) (materialId: row.materialId, quantity: row.quantity),
-        for (final row in talentRowsRaw) (materialId: row.materialId, quantity: row.quantity),
+        for (final row in ascensionRows)
+          (materialId: row.materialId, quantity: row.quantity),
+        for (final row in talentRowsRaw)
+          (materialId: row.materialId, quantity: row.quantity),
         if (currencyMaterialId != null && totalMora > 0)
           (materialId: currencyMaterialId, quantity: totalMora),
       ];
@@ -103,29 +110,49 @@ class PlannerController extends _$PlannerController {
         final material = await catalog.materialById(entry.key);
         final isFarmable =
             material != null &&
-            (material.category == 'tieredMaterial' || material.category == 'bossMaterial');
+            (material.category == 'tieredMaterial' ||
+                material.category == 'bossMaterial');
         final bucket = isFarmable ? farmableNeed : otherNeed;
         bucket[entry.key] = (bucket[entry.key] ?? 0) + entry.value;
       }
 
       farmableNeed.forEach(
-        (id, qty) => pooledFarmableNeed[id] = (pooledFarmableNeed[id] ?? 0) + qty,
+        (id, qty) =>
+            pooledFarmableNeed[id] = (pooledFarmableNeed[id] ?? 0) + qty,
       );
-      otherNeed.forEach((id, qty) => pooledOtherNeed[id] = (pooledOtherNeed[id] ?? 0) + qty);
+      otherNeed.forEach(
+        (id, qty) => pooledOtherNeed[id] = (pooledOtherNeed[id] ?? 0) + qty,
+      );
 
-      final farmableRows = await _walkFarmableNeed(catalog, farmableNeed, inventory);
-      final farmableTotalNeed = farmableRows.fold<int>(0, (sum, row) => sum + row.need);
-      final farmableTotalHave = farmableRows.fold<int>(0, (sum, row) => sum + row.have);
+      final farmableRows = await _walkFarmableNeed(
+        catalog,
+        farmableNeed,
+        inventory,
+      );
+      final farmableTotalNeed = farmableRows.fold<int>(
+        0,
+        (sum, row) => sum + row.need,
+      );
+      final farmableTotalHave = farmableRows.fold<int>(
+        0,
+        (sum, row) => sum + row.have,
+      );
       final otherClamp = _clampFlat(otherNeed, inventory);
 
       final totalNeed = farmableTotalNeed + otherClamp.need;
       final totalHave = farmableTotalHave + otherClamp.have;
-      final percent = totalNeed == 0 ? 100 : ((100 * totalHave) / totalNeed).round();
+      final percent = totalNeed == 0
+          ? 100
+          : ((100 * totalHave) / totalNeed).round();
 
       targetCards.add(await _toCardData(catalog, target, percent));
     }
 
-    final pooledFarmableRows = await _walkFarmableNeed(catalog, pooledFarmableNeed, inventory);
+    final pooledFarmableRows = await _walkFarmableNeed(
+      catalog,
+      pooledFarmableNeed,
+      inventory,
+    );
     final mostNeeded = <MostNeededRowData>[];
     for (final row in pooledFarmableRows) {
       if (row.missing <= 0) continue;
@@ -133,7 +160,9 @@ class PlannerController extends _$PlannerController {
     }
     mostNeeded.sort((a, b) => b.missing.compareTo(a.missing));
 
-    final farmableShortCount = pooledFarmableRows.where((row) => row.missing > 0).length;
+    final farmableShortCount = pooledFarmableRows
+        .where((row) => row.missing > 0)
+        .length;
     final otherShortCount = pooledOtherNeed.entries
         .where((entry) => entry.value > (inventory[entry.key] ?? 0))
         .length;
@@ -278,7 +307,8 @@ Future<List<MaterialNeedResult>> _walkFarmableNeed(
     } else if (tierGroupsWalked.add(tierGroup)) {
       final family = await catalog.materialsByTierGroup(tierGroup);
       final ascendingByTier = [
-        for (final m in family) (materialId: m.id, need: farmableNeed[m.id] ?? 0),
+        for (final m in family)
+          (materialId: m.id, need: farmableNeed[m.id] ?? 0),
       ];
       results.addAll(walkTierGroup(ascendingByTier, inventory));
     }
@@ -287,7 +317,10 @@ Future<List<MaterialNeedResult>> _walkFarmableNeed(
   return results;
 }
 
-({int need, int have}) _clampFlat(Map<String, int> need, Map<String, int> inventory) {
+({int need, int have}) _clampFlat(
+  Map<String, int> need,
+  Map<String, int> inventory,
+) {
   var totalNeed = 0;
   var totalHave = 0;
   need.forEach((id, qty) {
@@ -343,7 +376,8 @@ Future<TargetCardData> _toCardData(
   String subtitle;
   if (target.linkedCharacterId != null) {
     final linked = await catalog.characterById(target.linkedCharacterId!);
-    subtitle = '${_titleCase(weapon.weaponType)} · for ${linked?.name ?? 'Unknown'}';
+    subtitle =
+        '${_titleCase(weapon.weaponType)} · for ${linked?.name ?? 'Unknown'}';
   } else {
     subtitle = '${_titleCase(weapon.weaponType)} · weapon';
   }
@@ -389,7 +423,9 @@ Future<MostNeededRowData> _toMostNeededRow(
     final alwaysOpen = isAlwaysOpen(mask);
     final openToday = isOpenOnWeekday(mask, serverDate.weekday);
     highlightAvailability = alwaysOpen || openToday;
-    availabilityLabel = alwaysOpen ? 'any day' : (openToday ? 'open today' : formatWeekdayMask(mask));
+    availabilityLabel = alwaysOpen
+        ? 'any day'
+        : (openToday ? 'open today' : formatWeekdayMask(mask));
   }
 
   return MostNeededRowData(

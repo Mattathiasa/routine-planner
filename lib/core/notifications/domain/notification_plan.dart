@@ -52,9 +52,15 @@ List<PlannedNotification> planResinThresholdNotifications({
     if (scheduledAt == null || !scheduledAt.isAfter(now)) continue;
 
     planned.add((
-      id: stableNotificationId(profileId, 'resinThreshold', alert.threshold.toString()),
+      id: stableNotificationId(
+        profileId,
+        'resinThreshold',
+        alert.threshold.toString(),
+      ),
       kind: 'resinThreshold',
-      title: alert.threshold == state.cap ? 'Resin is full' : 'Resin reaches ${alert.threshold}',
+      title: alert.threshold == state.cap
+          ? 'Resin is full'
+          : 'Resin reaches ${alert.threshold}',
       body: 'Open Routine Planner to spend it before it caps.',
       scheduledAt: scheduledAt,
     ));

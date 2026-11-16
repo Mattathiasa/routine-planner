@@ -5,7 +5,11 @@ import '../../../../core/database/tables/profiles_table.dart';
 /// The current anchor for one profile's resin — mirrors `ResinState`'s
 /// scalar fields 1:1 (`transient` is the only non-scalar field, held in
 /// [TransientResinBatches] instead).
-@TableIndex(name: 'resin_state_profile_unique', columns: {#profileId}, unique: true)
+@TableIndex(
+  name: 'resin_state_profile_unique',
+  columns: {#profileId},
+  unique: true,
+)
 class ResinStateTable extends Table {
   TextColumn get id => text()();
   TextColumn get profileId => text().references(Profiles, #id)();
@@ -64,7 +68,8 @@ class ResinEvents extends Table {
   IntColumn get x => integer().nullable()(); // sync
   IntColumn get fullInSeconds => integer().nullable()(); // sync
   IntColumn get cost => integer().nullable()(); // spend, craftCondensed
-  IntColumn get amount => integer().nullable()(); // craftCondensed, useFragile, useCondensed
+  IntColumn get amount =>
+      integer().nullable()(); // craftCondensed, useFragile, useCondensed
   TextColumn get batchId => text().nullable()(); // useTransient
   IntColumn get count => integer().nullable()(); // useTransient
 

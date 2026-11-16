@@ -69,6 +69,11 @@ typedef ResinAlertEntry = ({String id, int threshold, bool enabled});
 @riverpod
 Future<List<ResinAlertEntry>> resinAlerts(Ref ref) async {
   final profileId = (await ref.watch(currentProfileProvider.future)).id;
-  final rows = await ref.watch(settingsRepositoryProvider).alertsForProfile(profileId);
-  return [for (final row in rows) (id: row.id, threshold: row.threshold, enabled: row.enabled)];
+  final rows = await ref
+      .watch(settingsRepositoryProvider)
+      .alertsForProfile(profileId);
+  return [
+    for (final row in rows)
+      (id: row.id, threshold: row.threshold, enabled: row.enabled),
+  ];
 }

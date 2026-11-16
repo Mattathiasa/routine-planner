@@ -28,7 +28,9 @@ class FarmDomainCard extends StatelessWidget {
                     Text(data.name, style: textTheme.titleLarge),
                     Text(
                       data.scheduleLabel,
-                      style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -67,14 +69,18 @@ class _OpenPill extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(color: context.colors.successDot, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: context.colors.successDot,
+              shape: BoxShape.circle,
+            ),
           ),
           const SizedBox(width: AppSpacing.xxs),
           Text(
             'Open',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.colors.success, fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: context.colors.success,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

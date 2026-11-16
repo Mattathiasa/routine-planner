@@ -8,6 +8,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../data/settings_providers.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 class PlannerSettingsSection extends ConsumerWidget {
   const PlannerSettingsSection({super.key});
@@ -26,7 +27,10 @@ class PlannerSettingsSection extends ConsumerWidget {
           data: (settings) => ClipRRect(
             borderRadius: AppRadius.cardRadius,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
+              decoration: BoxDecoration(
+                color: context.colors.surface,
+                boxShadow: AppShadows.card,
+              ),
               child: Column(
                 children: [
                   SizedBox(
@@ -40,15 +44,22 @@ class PlannerSettingsSection extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('World Level', style: textTheme.titleMedium),
-                              Text('Used for run estimates in v2', style: textTheme.bodyMedium),
+                              Text(
+                                'Used for run estimates in v2',
+                                style: textTheme.bodyMedium,
+                              ),
                             ],
                           ),
                         ),
                         _WorldLevelStepper(
                           value: settings.worldLevel,
                           onChanged: (value) async {
-                            final profileId = (await ref.read(currentProfileProvider.future)).id;
-                            await ref.read(settingsRepositoryProvider).updateWorldLevel(profileId, value);
+                            final profileId = (await ref.read(
+                              currentProfileProvider.future,
+                            )).id;
+                            await ref
+                                .read(settingsRepositoryProvider)
+                                .updateWorldLevel(profileId, value);
                             ref.invalidate(settingsSnapshotProvider);
                           },
                         ),
@@ -67,7 +78,10 @@ class PlannerSettingsSection extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('Totals-only mode', style: textTheme.titleMedium),
+                              Text(
+                                'Totals-only mode',
+                                style: textTheme.titleMedium,
+                              ),
                               Text(
                                 'Skip inventory and show full material totals',
                                 style: textTheme.bodyMedium,
@@ -78,7 +92,9 @@ class PlannerSettingsSection extends ConsumerWidget {
                         Switch(
                           value: settings.totalsOnlyMode,
                           onChanged: (value) async {
-                            final profileId = (await ref.read(currentProfileProvider.future)).id;
+                            final profileId = (await ref.read(
+                              currentProfileProvider.future,
+                            )).id;
                             await ref
                                 .read(settingsRepositoryProvider)
                                 .updateTotalsOnlyMode(profileId, value);
@@ -93,11 +109,9 @@ class PlannerSettingsSection extends ConsumerWidget {
               ),
             ),
           ),
-          loading: () => const SizedBox(
-            height: 64,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-          ),
-          error: (error, stack) => Text('Error: $error'),
+          loading: () =>
+              const SizedBox(height: 64, child: AppLoadingView(compact: true)),
+          error: (error, stack) => AppErrorView(error: error),
         ),
       ],
     );
@@ -148,7 +162,11 @@ class _WorldLevelStepper extends StatelessWidget {
 }
 
 class _StepButton extends StatelessWidget {
-  const _StepButton({required this.icon, required this.semanticLabel, required this.onPressed});
+  const _StepButton({
+    required this.icon,
+    required this.semanticLabel,
+    required this.onPressed,
+  });
 
   final IconData icon;
   final String semanticLabel;

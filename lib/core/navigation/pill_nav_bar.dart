@@ -56,7 +56,9 @@ class PillNavBar extends StatelessWidget {
     final tab = _tabs[index];
     final active = navigationShell.currentIndex == index;
     final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
-      color: active ? context.colors.primaryHover : context.colors.textSecondary,
+      color: active
+          ? context.colors.primaryHover
+          : context.colors.textSecondary,
       fontWeight: active ? FontWeight.w700 : FontWeight.w600,
     );
 
@@ -77,7 +79,9 @@ class PillNavBar extends StatelessWidget {
               Icon(
                 tab.icon,
                 size: 20,
-                color: active ? context.colors.primaryHover : context.colors.textSecondary,
+                color: active
+                    ? context.colors.primaryHover
+                    : context.colors.textSecondary,
               ),
               const SizedBox(width: 8),
               Text(tab.label, style: textStyle),

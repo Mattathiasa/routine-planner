@@ -45,8 +45,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('0 targets · 0 materials short'), findsOneWidget);
 
-    // Add target lists real catalog characters.
-    await tester.tap(find.text('Add target'));
+    // Add target lists real catalog characters. (The empty state's CTA
+    // and the header button share the label; either works.)
+    await tester.tap(find.text('Add target').first);
     await tester.pumpAndSettle();
     await tester.tap(find.byType(DropdownButtonFormField<String>).first);
     await tester.pumpAndSettle();

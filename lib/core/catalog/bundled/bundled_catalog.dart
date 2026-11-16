@@ -27,8 +27,9 @@ Future<void> loadBundledCatalog(CatalogDatabase db) {
 /// via the same executor shim as the seed).
 Future<CatalogDatabase> openBundledCatalogDatabaseInMemory() async {
   final db = CatalogDatabase(createSeedCatalogExecutor());
-  final existing =
-      await (db.selectOnly(db.catalogMetadata)..addColumns([db.catalogMetadata.version])).get();
+  final existing = await (db.selectOnly(
+    db.catalogMetadata,
+  )..addColumns([db.catalogMetadata.version])).get();
   if (existing.isEmpty) {
     await loadBundledCatalog(db);
   }

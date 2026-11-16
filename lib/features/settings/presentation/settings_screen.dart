@@ -20,12 +20,22 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.xxl),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.sm,
+            AppSpacing.xl,
+            AppSpacing.xxl,
+          ),
           children: [
             TextButton.icon(
               onPressed: () => context.pop(),
               icon: Icon(Icons.chevron_left, color: context.colors.primary),
-              label: Text('Today', style: textTheme.titleMedium?.copyWith(color: context.colors.primary)),
+              label: Text(
+                'Today',
+                style: textTheme.titleMedium?.copyWith(
+                  color: context.colors.primary,
+                ),
+              ),
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerLeft,
@@ -66,7 +76,10 @@ class _Footer extends StatelessWidget {
       children: [
         Text(
           'Routine Planner 0.1.0',
-          style: textTheme.headlineMedium?.copyWith(fontSize: 14, fontWeight: FontWeight.w800),
+          style: textTheme.headlineMedium?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: AppSpacing.xxs),
         Text(

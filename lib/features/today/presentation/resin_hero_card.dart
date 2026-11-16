@@ -12,6 +12,7 @@ import '../../resin/application/resin_controller.dart';
 import '../../resin/domain/resin_engine.dart';
 import '../../resin/presentation/resin_formatting.dart';
 import '../../../core/widgets/rolling_number.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 /// Tapping opens the Resin tab — the same [ResinController] state the Resin
 /// screen itself will read, so the two never disagree.
@@ -116,13 +117,9 @@ class ResinHeroCard extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const AppCard(
-        child: SizedBox(
-          height: 160,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ),
-      error: (error, stack) => AppCard(child: Text('Error: $error')),
+      loading: () =>
+          const AppCard(child: SizedBox(height: 160, child: AppLoadingView())),
+      error: (error, stack) => AppErrorView(error: error),
     );
   }
 }

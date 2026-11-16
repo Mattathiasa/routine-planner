@@ -108,7 +108,8 @@ class ResinEngine {
       return now.add(regenInterval);
     }
     if (previousN.isAfter(now)) return previousN;
-    final elapsedPeriods = now.difference(previousN).inSeconds ~/ regenInterval.inSeconds;
+    final elapsedPeriods =
+        now.difference(previousN).inSeconds ~/ regenInterval.inSeconds;
     return previousN.add(regenInterval * (elapsedPeriods + 1));
   }
 
@@ -140,13 +141,22 @@ class ResinEngine {
 
   /// Spends [cost] resin on a run, projecting to [now] first so pending
   /// regen ticks aren't lost.
-  (ResinState, ResinEvent) spend(ResinState state, DateTime now, {required int cost}) {
+  (ResinState, ResinEvent) spend(
+    ResinState state,
+    DateTime now, {
+    required int cost,
+  }) {
     final projected = v(state, now);
     if (projected < cost) {
-      throw InsufficientResinException('Need $cost resin but only $projected available.');
+      throw InsufficientResinException(
+        'Need $cost resin but only $projected available.',
+      );
     }
     final newV = projected - cost;
-    final newState = state.copyWith(v: newV, n: _reanchor(newV, state.cap, now, previousN: state.n));
+    final newState = state.copyWith(
+      v: newV,
+      n: _reanchor(newV, state.cap, now, previousN: state.n),
+    );
     final event = ResinEvent.spend(occurredAt: now, cost: cost);
     return (newState, event);
   }
@@ -170,15 +180,25 @@ class ResinEngine {
       n: _reanchor(newV, state.cap, now, previousN: state.n),
       condensed: state.condensed + amount,
     );
-    final event = ResinEvent.craftCondensed(occurredAt: now, cost: cost, amount: amount);
+    final event = ResinEvent.craftCondensed(
+      occurredAt: now,
+      cost: cost,
+      amount: amount,
+    );
     return (newState, event);
   }
 
   /// Converts [amount] fragile resin items into raw resin (may push `v`
   /// above cap, matching the real game).
-  (ResinState, ResinEvent) useFragile(ResinState state, DateTime now, {int amount = 1}) {
+  (ResinState, ResinEvent) useFragile(
+    ResinState state,
+    DateTime now, {
+    int amount = 1,
+  }) {
     if (state.fragile < amount) {
-      throw InsufficientResinException('Only ${state.fragile} fragile resin available, need $amount.');
+      throw InsufficientResinException(
+        'Only ${state.fragile} fragile resin available, need $amount.',
+      );
     }
     final newV = v(state, now) + fragileOrTransientResinValue * amount;
     final newState = state.copyWith(
@@ -192,9 +212,15 @@ class ResinEngine {
 
   /// Converts [amount] condensed resin items into raw resin (may push `v`
   /// above cap, matching the real game).
-  (ResinState, ResinEvent) useCondensed(ResinState state, DateTime now, {int amount = 1}) {
+  (ResinState, ResinEvent) useCondensed(
+    ResinState state,
+    DateTime now, {
+    int amount = 1,
+  }) {
     if (state.condensed < amount) {
-      throw InsufficientResinException('Only ${state.condensed} condensed resin available, need $amount.');
+      throw InsufficientResinException(
+        'Only ${state.condensed} condensed resin available, need $amount.',
+      );
     }
     final newV = v(state, now) + condensedResinValue * amount;
     final newState = state.copyWith(
@@ -207,7 +233,11 @@ class ResinEngine {
   }
 
   /// Converts an entire unexpired transient resin batch into raw resin.
-  (ResinState, ResinEvent) useTransient(ResinState state, DateTime now, {required String batchId}) {
+  (ResinState, ResinEvent) useTransient(
+    ResinState state,
+    DateTime now, {
+    required String batchId,
+  }) {
     TransientResinBatch? batch;
     for (final candidate in state.transient) {
       if (candidate.id == batchId) {
@@ -216,10 +246,14 @@ class ResinEngine {
       }
     }
     if (batch == null) {
-      throw InvalidTransientBatchException('No transient resin batch with id "$batchId".');
+      throw InvalidTransientBatchException(
+        'No transient resin batch with id "$batchId".',
+      );
     }
     if (!batch.expiresAt.isAfter(now)) {
-      throw InvalidTransientBatchException('Transient resin batch "$batchId" has expired.');
+      throw InvalidTransientBatchException(
+        'Transient resin batch "$batchId" has expired.',
+      );
     }
     final newV = v(state, now) + fragileOrTransientResinValue * batch.count;
     final newState = state.copyWith(
@@ -227,7 +261,11 @@ class ResinEngine {
       n: _reanchor(newV, state.cap, now, previousN: state.n),
       transient: state.transient.where((b) => b.id != batchId).toList(),
     );
-    final event = ResinEvent.useTransient(occurredAt: now, batchId: batchId, count: batch.count);
+    final event = ResinEvent.useTransient(
+      occurredAt: now,
+      batchId: batchId,
+      count: batch.count,
+    );
     return (newState, event);
   }
 }

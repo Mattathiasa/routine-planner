@@ -30,7 +30,8 @@ class HoyolabException implements Exception {
 /// support" caveat. Takes an injectable [http.Client] so tests never hit
 /// the real network (`package:http/testing.dart`'s `MockClient`).
 class HoyolabClient {
-  HoyolabClient({http.Client? httpClient}) : _http = httpClient ?? http.Client();
+  HoyolabClient({http.Client? httpClient})
+    : _http = httpClient ?? http.Client();
 
   final http.Client _http;
 
@@ -39,10 +40,11 @@ class HoyolabClient {
     required String uid,
     required String region,
   }) async {
-    final uri = Uri.https('sg-public-api.hoyolab.com', '/event/game_record/genshin/api/dailyNote', {
-      'server': region,
-      'role_id': uid,
-    });
+    final uri = Uri.https(
+      'sg-public-api.hoyolab.com',
+      '/event/game_record/genshin/api/dailyNote',
+      {'server': region, 'role_id': uid},
+    );
 
     final response = await _http.get(
       uri,
@@ -72,7 +74,9 @@ class HoyolabClient {
 
     final data = body['data'];
     if (data is! Map<String, dynamic>) {
-      throw HoyolabException('HoYoLab returned no usable data (retcode 0, data: $data).');
+      throw HoyolabException(
+        'HoYoLab returned no usable data (retcode 0, data: $data).',
+      );
     }
     try {
       return parseHoyolabNotes(data);

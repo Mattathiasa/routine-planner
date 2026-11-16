@@ -29,32 +29,44 @@ class BackupService {
       _db.profiles,
     )..where((t) => t.id.equals(profileId) & t.deletedAt.isNull())).getSingle();
 
-    final settings = await (_db.select(
-      _db.settings,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final settings =
+        await (_db.select(_db.settings)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
 
-    final alerts = await (_db.select(
-      _db.resinAlertThresholds,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final alerts =
+        await (_db.select(_db.resinAlertThresholds)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
 
-    final resinState = await (_db.select(
-      _db.resinStateTable,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final resinState =
+        await (_db.select(_db.resinStateTable)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
 
     final resinStateIds = resinState.map((row) => row.id).toSet();
     final transientBatches = resinStateIds.isEmpty
         ? <TransientResinBatchRow>[]
         : await (_db.select(_db.transientResinBatches)..where(
-            (t) => t.resinStateId.isIn(resinStateIds) & t.deletedAt.isNull(),
-          )).get();
+                (t) =>
+                    t.resinStateId.isIn(resinStateIds) & t.deletedAt.isNull(),
+              ))
+              .get();
 
-    final targets = await (_db.select(
-      _db.plannerTargets,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final targets =
+        await (_db.select(_db.plannerTargets)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
 
-    final inventory = await (_db.select(
-      _db.materialInventory,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final inventory =
+        await (_db.select(_db.materialInventory)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
 
     final payload = {
       'formatVersion': formatVersion,
@@ -64,7 +76,9 @@ class BackupService {
         'settings': [for (final row in settings) row.toJson()],
         'resinAlertThresholds': [for (final row in alerts) row.toJson()],
         'resinState': [for (final row in resinState) row.toJson()],
-        'transientResinBatches': [for (final row in transientBatches) row.toJson()],
+        'transientResinBatches': [
+          for (final row in transientBatches) row.toJson(),
+        ],
         'plannerTargets': [for (final row in targets) row.toJson()],
         'materialInventory': [for (final row in inventory) row.toJson()],
       },
@@ -92,11 +106,12 @@ class BackupService {
     final profileId = rowsOf('profiles').single['id'] as String;
 
     await _db.transaction(() async {
-      final resinStateIds = await (_db.selectOnly(_db.resinStateTable)
-            ..addColumns([_db.resinStateTable.id])
-            ..where(_db.resinStateTable.profileId.equals(profileId)))
-          .map((row) => row.read(_db.resinStateTable.id)!)
-          .get();
+      final resinStateIds =
+          await (_db.selectOnly(_db.resinStateTable)
+                ..addColumns([_db.resinStateTable.id])
+                ..where(_db.resinStateTable.profileId.equals(profileId)))
+              .map((row) => row.read(_db.resinStateTable.id)!)
+              .get();
 
       if (resinStateIds.isNotEmpty) {
         await (_db.delete(
@@ -115,8 +130,12 @@ class BackupService {
       await (_db.delete(
         _db.plannerTargets,
       )..where((t) => t.profileId.equals(profileId))).go();
-      await (_db.delete(_db.settings)..where((t) => t.profileId.equals(profileId))).go();
-      await (_db.delete(_db.profiles)..where((t) => t.id.equals(profileId))).go();
+      await (_db.delete(
+        _db.settings,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.profiles,
+      )..where((t) => t.id.equals(profileId))).go();
 
       for (final json in rowsOf('profiles')) {
         await _db
@@ -131,27 +150,37 @@ class BackupService {
       for (final json in rowsOf('resinAlertThresholds')) {
         await _db
             .into(_db.resinAlertThresholds)
-            .insertOnConflictUpdate(ResinAlertThreshold.fromJson(json).toCompanion(false));
+            .insertOnConflictUpdate(
+              ResinAlertThreshold.fromJson(json).toCompanion(false),
+            );
       }
       for (final json in rowsOf('resinState')) {
         await _db
             .into(_db.resinStateTable)
-            .insertOnConflictUpdate(ResinStateTableData.fromJson(json).toCompanion(false));
+            .insertOnConflictUpdate(
+              ResinStateTableData.fromJson(json).toCompanion(false),
+            );
       }
       for (final json in rowsOf('transientResinBatches')) {
         await _db
             .into(_db.transientResinBatches)
-            .insertOnConflictUpdate(TransientResinBatchRow.fromJson(json).toCompanion(false));
+            .insertOnConflictUpdate(
+              TransientResinBatchRow.fromJson(json).toCompanion(false),
+            );
       }
       for (final json in rowsOf('plannerTargets')) {
         await _db
             .into(_db.plannerTargets)
-            .insertOnConflictUpdate(PlannerTarget.fromJson(json).toCompanion(false));
+            .insertOnConflictUpdate(
+              PlannerTarget.fromJson(json).toCompanion(false),
+            );
       }
       for (final json in rowsOf('materialInventory')) {
         await _db
             .into(_db.materialInventory)
-            .insertOnConflictUpdate(MaterialInventoryData.fromJson(json).toCompanion(false));
+            .insertOnConflictUpdate(
+              MaterialInventoryData.fromJson(json).toCompanion(false),
+            );
       }
     });
 

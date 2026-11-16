@@ -17,7 +17,12 @@ class ResinScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, 112),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.lg,
+            AppSpacing.xl,
+            112,
+          ),
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

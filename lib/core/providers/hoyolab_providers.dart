@@ -11,7 +11,8 @@ part 'hoyolab_providers.g.dart';
 HoyolabClient hoyolabClient(Ref ref) => HoyolabClient();
 
 @Riverpod(keepAlive: true)
-HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) => SecureHoyolabCredentialsStore();
+HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) =>
+    SecureHoyolabCredentialsStore();
 
 @Riverpod(keepAlive: true)
 HoyolabWebLogin hoyolabWebLogin(Ref ref) => RealHoyolabWebLogin();

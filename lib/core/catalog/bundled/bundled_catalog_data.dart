@@ -11,7 +11,9 @@ final bundledCatalogMetadata = [
   CatalogMetadataCompanion.insert(
     id: 'catalog',
     version: bundledCatalogVersion,
-    sha256: const Value('cf018769e2dd669319fe8d8e2d75f61fce043b3bc8724d4b7e5d164bcec70893'),
+    sha256: const Value(
+      'cf018769e2dd669319fe8d8e2d75f61fce043b3bc8724d4b7e5d164bcec70893',
+    ),
   ),
 ];
 
@@ -19,7 +21,10 @@ final bundledGameRules = [
   GameRulesCompanion.insert(key: 'resin_cap', value: '200'),
   GameRulesCompanion.insert(key: 'resin_regen_interval_seconds', value: '480'),
   GameRulesCompanion.insert(key: 'condensed_resin_value', value: '40'),
-  GameRulesCompanion.insert(key: 'fragile_or_transient_resin_value', value: '60'),
+  GameRulesCompanion.insert(
+    key: 'fragile_or_transient_resin_value',
+    value: '60',
+  ),
   GameRulesCompanion.insert(key: 'level_farm_cap', value: '90'),
 ];
 
@@ -679,11 +684,7 @@ final bundledMaterials = [
     category: 'bossMaterial',
     domainId: const Value('signora'),
   ),
-  MaterialsCompanion.insert(
-    id: 'mora',
-    name: 'Mora',
-    category: 'currency',
-  ),
+  MaterialsCompanion.insert(id: 'mora', name: 'Mora', category: 'currency'),
   MaterialsCompanion.insert(
     id: 'mystic_enhancement_ore',
     name: 'Mystic Enhancement Ore',

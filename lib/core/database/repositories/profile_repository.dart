@@ -24,20 +24,25 @@ class ProfileRepository {
     )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).getSingleOrNull();
   }
 
-  Future<Profile> createProfile({String? displayName, required String server}) async {
+  Future<Profile> createProfile({
+    String? displayName,
+    required String server,
+  }) async {
     final id = newId();
     final now = DateTime.now().toUtc();
-    await _db.into(_db.profiles).insert(
-      ProfilesCompanion.insert(
-        id: id,
-        displayName: displayName == null || displayName.isEmpty
-            ? const Value.absent()
-            : Value(displayName),
-        server: server,
-        createdAt: Value(now),
-        updatedAt: now,
-      ),
-    );
+    await _db
+        .into(_db.profiles)
+        .insert(
+          ProfilesCompanion.insert(
+            id: id,
+            displayName: displayName == null || displayName.isEmpty
+                ? const Value.absent()
+                : Value(displayName),
+            server: server,
+            createdAt: Value(now),
+            updatedAt: now,
+          ),
+        );
     return (await getProfile(id))!;
   }
 
@@ -52,7 +57,10 @@ class ProfileRepository {
 
   Future<void> updateServer(String id, String server) {
     return (_db.update(_db.profiles)..where((t) => t.id.equals(id))).write(
-      ProfilesCompanion(server: Value(server), updatedAt: Value(DateTime.now().toUtc())),
+      ProfilesCompanion(
+        server: Value(server),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
     );
   }
 
@@ -65,14 +73,26 @@ class ProfileRepository {
     );
   }
 
-  Future<void> selectProfile(String id) {
-    return _db.into(_db.appState).insertOnConflictUpdate(
-      AppStateCompanion.insert(
-        id: appStateSingletonId,
-        selectedProfileId: Value(id),
-        updatedAt: DateTime.now().toUtc(),
+  /// Clears a soft delete — the undo path for [deleteProfile].
+  Future<void> restoreProfile(String id) {
+    return (_db.update(_db.profiles)..where((t) => t.id.equals(id))).write(
+      ProfilesCompanion(
+        deletedAt: const Value(null),
+        updatedAt: Value(DateTime.now().toUtc()),
       ),
     );
+  }
+
+  Future<void> selectProfile(String id) {
+    return _db
+        .into(_db.appState)
+        .insertOnConflictUpdate(
+          AppStateCompanion.insert(
+            id: appStateSingletonId,
+            selectedProfileId: Value(id),
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
   }
 
   /// Resolves whichever profile should currently be active: the persisted
@@ -108,7 +128,10 @@ class ProfileRepository {
     await _db
         .into(_db.appState)
         .insert(
-          AppStateCompanion.insert(id: appStateSingletonId, updatedAt: DateTime.now().toUtc()),
+          AppStateCompanion.insert(
+            id: appStateSingletonId,
+            updatedAt: DateTime.now().toUtc(),
+          ),
         );
     return _getOrCreateAppState();
   }

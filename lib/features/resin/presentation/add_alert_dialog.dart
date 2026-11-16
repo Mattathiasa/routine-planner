@@ -29,12 +29,16 @@ class _AddAlertDialogState extends ConsumerState<AddAlertDialog> {
     final navigator = Navigator.of(context);
     try {
       final profileId = (await ref.read(currentProfileProvider.future)).id;
-      await ref.read(settingsRepositoryProvider).addAlertThreshold(profileId, threshold);
+      await ref
+          .read(settingsRepositoryProvider)
+          .addAlertThreshold(profileId, threshold);
       ref.invalidate(resinAlertsProvider);
       if (mounted) navigator.pop();
     } catch (_) {
       if (mounted) {
-        messenger.showSnackBar(const SnackBar(content: Text('That alert already exists.')));
+        messenger.showSnackBar(
+          const SnackBar(content: Text('That alert already exists.')),
+        );
       }
     }
   }
@@ -50,7 +54,10 @@ class _AddAlertDialogState extends ConsumerState<AddAlertDialog> {
         decoration: const InputDecoration(labelText: 'Resin value'),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
         TextButton(onPressed: _submit, child: const Text('Add')),
       ],
     );

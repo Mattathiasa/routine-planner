@@ -16,7 +16,9 @@ class WeekStrip extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < week.length; i++)
-          Expanded(child: _WeekDayCell(day: week[i], index: i)),
+          Expanded(
+            child: _WeekDayCell(day: week[i], index: i),
+          ),
       ],
     );
   }
@@ -40,13 +42,18 @@ class _WeekDayCell extends StatelessWidget {
         children: [
           Text(
             _dayAbbreviations[index],
-            style: textTheme.labelSmall?.copyWith(color: context.colors.textSecondary),
+            style: textTheme.labelSmall?.copyWith(
+              color: context.colors.textSecondary,
+            ),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
             '${day.date.day}',
             style: day.isToday
-                ? textTheme.titleLarge?.copyWith(color: context.colors.primary, fontWeight: FontWeight.w800)
+                ? textTheme.titleLarge?.copyWith(
+                    color: context.colors.primary,
+                    fontWeight: FontWeight.w800,
+                  )
                 : textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.xxs),

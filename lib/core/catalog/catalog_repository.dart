@@ -23,7 +23,9 @@ class CatalogRepository {
   }
 
   Future<Material?> materialById(String id) {
-    return (_db.select(_db.materials)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return (_db.select(
+      _db.materials,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
   Future<List<Material>> materialsByTierGroup(String tierGroup) {
@@ -39,15 +41,21 @@ class CatalogRepository {
   /// results — used by the inventory-editing screen, which needs the full
   /// set regardless of category.
   Future<List<Material>> allMaterials() {
-    return (_db.select(_db.materials)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+    return (_db.select(
+      _db.materials,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
   }
 
   Future<List<Character>> allCharacters() {
-    return (_db.select(_db.characters)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+    return (_db.select(
+      _db.characters,
+    )..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
   }
 
   Future<List<Weapon>> allWeapons() {
-    return (_db.select(_db.weapons)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+    return (_db.select(
+      _db.weapons,
+    )..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
   }
 
   /// Materials of one [category] (`'tieredMaterial'|'bossMaterial'|
@@ -65,11 +73,15 @@ class CatalogRepository {
   }
 
   Future<List<Material>> materialsForDomain(String domainId) {
-    return (_db.select(_db.materials)..where((t) => t.domainId.equals(domainId))).get();
+    return (_db.select(
+      _db.materials,
+    )..where((t) => t.domainId.equals(domainId))).get();
   }
 
   Future<List<DomainDrop>> dropsForDomain(String domainId) {
-    return (_db.select(_db.domainDrops)..where((t) => t.domainId.equals(domainId))).get();
+    return (_db.select(
+      _db.domainDrops,
+    )..where((t) => t.domainId.equals(domainId))).get();
   }
 
   /// Every domain with at least one [DomainDrops] row open on [serverDate]
@@ -78,17 +90,22 @@ class CatalogRepository {
     final drops = await _db.select(_db.domainDrops).get();
     final openDomainIds = <String>{
       for (final drop in drops)
-        if (_isOpenOnWeekday(drop.weekdayMask, serverDate.weekday)) drop.domainId,
+        if (_isOpenOnWeekday(drop.weekdayMask, serverDate.weekday))
+          drop.domainId,
     };
     if (openDomainIds.isEmpty) return [];
-    return (_db.select(_db.domains)..where((t) => t.id.isIn(openDomainIds))).get();
+    return (_db.select(
+      _db.domains,
+    )..where((t) => t.id.isIn(openDomainIds))).get();
   }
 
   Future<bool> isDomainOpenOn(String domainId, DateTime serverDate) async {
     final drops = await (_db.select(
       _db.domainDrops,
     )..where((t) => t.domainId.equals(domainId))).get();
-    return drops.any((drop) => _isOpenOnWeekday(drop.weekdayMask, serverDate.weekday));
+    return drops.any(
+      (drop) => _isOpenOnWeekday(drop.weekdayMask, serverDate.weekday),
+    );
   }
 
   bool _isOpenOnWeekday(int weekdayMask, int isoWeekday) {
@@ -102,15 +119,19 @@ class CatalogRepository {
     int? toPhaseInclusive,
   }) {
     return (_db.select(_db.ascensionRequirements)..where((t) {
-      var predicate = t.entityKind.equals(entityKind) & t.entityId.equals(entityId);
-      if (fromPhaseExclusive != null) {
-        predicate = predicate & t.phase.isBiggerThanValue(fromPhaseExclusive);
-      }
-      if (toPhaseInclusive != null) {
-        predicate = predicate & t.phase.isSmallerOrEqualValue(toPhaseInclusive);
-      }
-      return predicate;
-    })).get();
+          var predicate =
+              t.entityKind.equals(entityKind) & t.entityId.equals(entityId);
+          if (fromPhaseExclusive != null) {
+            predicate =
+                predicate & t.phase.isBiggerThanValue(fromPhaseExclusive);
+          }
+          if (toPhaseInclusive != null) {
+            predicate =
+                predicate & t.phase.isSmallerOrEqualValue(toPhaseInclusive);
+          }
+          return predicate;
+        }))
+        .get();
   }
 
   Future<List<TalentRequirement>> talentRequirements(
@@ -119,21 +140,25 @@ class CatalogRepository {
     int? toLevelInclusive,
   }) {
     return (_db.select(_db.talentRequirements)..where((t) {
-      var predicate = t.entityId.equals(entityId);
-      if (fromLevelExclusive != null) {
-        predicate = predicate & t.level.isBiggerThanValue(fromLevelExclusive);
-      }
-      if (toLevelInclusive != null) {
-        predicate = predicate & t.level.isSmallerOrEqualValue(toLevelInclusive);
-      }
-      return predicate;
-    })).get();
+          var predicate = t.entityId.equals(entityId);
+          if (fromLevelExclusive != null) {
+            predicate =
+                predicate & t.level.isBiggerThanValue(fromLevelExclusive);
+          }
+          if (toLevelInclusive != null) {
+            predicate =
+                predicate & t.level.isSmallerOrEqualValue(toLevelInclusive);
+          }
+          return predicate;
+        }))
+        .get();
   }
 
   Future<ExpCurve?> expCurve(String entityKind, int level) {
-    return (_db.select(
-      _db.expCurves,
-    )..where((t) => t.entityKind.equals(entityKind) & t.level.equals(level))).getSingleOrNull();
+    return (_db.select(_db.expCurves)..where(
+          (t) => t.entityKind.equals(entityKind) & t.level.equals(level),
+        ))
+        .getSingleOrNull();
   }
 
   /// Every seeded EXP-curve row for `fromLevelInclusive <= level <
@@ -148,19 +173,24 @@ class CatalogRepository {
     required int toLevelExclusive,
   }) {
     return (_db.select(_db.expCurves)..where(
-      (t) =>
-          t.entityKind.equals(entityKind) &
-          t.level.isBiggerOrEqualValue(fromLevelInclusive) &
-          t.level.isSmallerThanValue(toLevelExclusive),
-    )).get();
+          (t) =>
+              t.entityKind.equals(entityKind) &
+              t.level.isBiggerOrEqualValue(fromLevelInclusive) &
+              t.level.isSmallerThanValue(toLevelExclusive),
+        ))
+        .get();
   }
 
   Future<Character?> characterById(String id) {
-    return (_db.select(_db.characters)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return (_db.select(
+      _db.characters,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
   Future<Weapon?> weaponById(String id) {
-    return (_db.select(_db.weapons)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return (_db.select(
+      _db.weapons,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
   Future<String> catalogVersion() async {

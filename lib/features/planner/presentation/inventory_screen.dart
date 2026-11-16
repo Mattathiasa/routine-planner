@@ -9,6 +9,7 @@ import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../application/planner_controller.dart';
 import '../data/planner_providers.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 /// Every catalog material with an editable count — the only place in the
 /// app `MaterialInventory` rows can be written, which is what every
@@ -47,7 +48,9 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     final clamped = value < 0 ? 0 : value;
 
     final profileId = (await ref.read(currentProfileProvider.future)).id;
-    await ref.read(plannerRepositoryProvider).setInventoryCount(profileId, row.materialId, clamped);
+    await ref
+        .read(plannerRepositoryProvider)
+        .setInventoryCount(profileId, row.materialId, clamped);
     ref.invalidate(inventoryRowsProvider);
     // The one invalidation that actually matters — without it, Planner
     // keeps showing stale percentages until some unrelated mutation
@@ -76,7 +79,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                   child: Column(
                     children: [
                       for (var i = 0; i < rows.length; i++) ...[
-                        if (i > 0) Divider(height: 1, color: context.colors.divider),
+                        if (i > 0)
+                          Divider(height: 1, color: context.colors.divider),
                         _InventoryRow(
                           row: rows[i],
                           controller: _controllerFor(rows[i]),
@@ -89,8 +93,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               ),
             ],
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          loading: () => const AppLoadingView(),
+          error: (error, stack) => Center(child: AppErrorView(error: error)),
         ),
       ),
     );
@@ -98,7 +102,11 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
 }
 
 class _InventoryRow extends StatelessWidget {
-  const _InventoryRow({required this.row, required this.controller, required this.onSubmitted});
+  const _InventoryRow({
+    required this.row,
+    required this.controller,
+    required this.onSubmitted,
+  });
 
   final InventoryRow row;
   final TextEditingController controller;
@@ -111,14 +119,22 @@ class _InventoryRow extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: AppSpacing.lg),
-          Expanded(child: Text(row.label, style: Theme.of(context).textTheme.titleMedium)),
+          Expanded(
+            child: Text(
+              row.label,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
           SizedBox(
             width: 100,
             child: TextField(
               controller: controller,
               textAlign: TextAlign.right,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+              ),
               onSubmitted: onSubmitted,
             ),
           ),

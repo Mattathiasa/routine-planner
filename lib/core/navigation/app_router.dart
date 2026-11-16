@@ -18,16 +18,34 @@ final appRouter = GoRouter(
       builder: (context, state, shell) => AppShell(navigationShell: shell),
       branches: [
         StatefulShellBranch(
-          routes: [GoRoute(path: '/today', builder: (context, state) => const TodayScreen())],
+          routes: [
+            GoRoute(
+              path: '/today',
+              builder: (context, state) => const TodayScreen(),
+            ),
+          ],
         ),
         StatefulShellBranch(
-          routes: [GoRoute(path: '/resin', builder: (context, state) => const ResinScreen())],
+          routes: [
+            GoRoute(
+              path: '/resin',
+              builder: (context, state) => const ResinScreen(),
+            ),
+          ],
         ),
         StatefulShellBranch(
-          routes: [GoRoute(path: '/planner', builder: (context, state) => const PlannerScreen())],
+          routes: [
+            GoRoute(
+              path: '/planner',
+              builder: (context, state) => const PlannerScreen(),
+            ),
+          ],
         ),
       ],
     ),
-    GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
   ],
 );

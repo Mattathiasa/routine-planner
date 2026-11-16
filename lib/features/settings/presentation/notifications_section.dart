@@ -33,29 +33,37 @@ class NotificationsSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              boxShadow: AppShadows.card,
+            ),
             child: Column(
               children: [
                 _AlertSwitch(
                   title: 'Resin reaches 160',
                   subtitle: '5 h 20 min before it caps',
                   value: has160,
-                  onChanged: (value) => _setResinAlert(ref, threshold: 160, enabled: value),
+                  onChanged: (value) =>
+                      _setResinAlert(ref, threshold: 160, enabled: value),
                 ),
                 Divider(height: 1, color: context.colors.divider),
                 _AlertSwitch(
                   title: 'Resin reaches 200',
                   subtitle: 'At cap, regeneration stops',
                   value: has200,
-                  onChanged: (value) => _setResinAlert(ref, threshold: 200, enabled: value),
+                  onChanged: (value) =>
+                      _setResinAlert(ref, threshold: 200, enabled: value),
                 ),
                 Divider(height: 1, color: context.colors.divider),
                 _AlertSwitch(
                   title: 'Transient Resin expiring',
                   subtitle: '24 h before a stack expires',
-                  value: settingsAsync.value?.transientExpiryAlertEnabled ?? false,
+                  value:
+                      settingsAsync.value?.transientExpiryAlertEnabled ?? false,
                   onChanged: (value) async {
-                    final profileId = (await ref.read(currentProfileProvider.future)).id;
+                    final profileId = (await ref.read(
+                      currentProfileProvider.future,
+                    )).id;
                     await ref
                         .read(settingsRepositoryProvider)
                         .updateTransientExpiryAlertEnabled(profileId, value);
@@ -72,7 +80,11 @@ class NotificationsSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _setResinAlert(WidgetRef ref, {required int threshold, required bool enabled}) async {
+  Future<void> _setResinAlert(
+    WidgetRef ref, {
+    required int threshold,
+    required bool enabled,
+  }) async {
     final profileId = (await ref.read(currentProfileProvider.future)).id;
     final settingsRepo = ref.read(settingsRepositoryProvider);
     final alerts = await ref.read(resinAlertsProvider.future);
@@ -140,16 +152,27 @@ class _ExactAlarmsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dotColor = allowed ? context.colors.successDot : context.colors.warning;
-    final strongColor = allowed ? context.colors.success : context.colors.warning;
-    final background = allowed ? context.colors.successContainer : context.colors.warningContainer;
-    final strongText = allowed ? 'Exact alarms allowed. ' : 'Exact alarms not available. ';
+    final dotColor = allowed
+        ? context.colors.successDot
+        : context.colors.warning;
+    final strongColor = allowed
+        ? context.colors.success
+        : context.colors.warning;
+    final background = allowed
+        ? context.colors.successContainer
+        : context.colors.warningContainer;
+    final strongText = allowed
+        ? 'Exact alarms allowed. '
+        : 'Exact alarms not available. ';
     final mutedText = allowed
         ? 'Alerts fire on time.'
         : 'Alerts may arrive late (approximate).';
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       color: background,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +182,10 @@ class _ExactAlarmsBanner extends StatelessWidget {
             child: Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -169,11 +195,18 @@ class _ExactAlarmsBanner extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: strongText,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: strongColor),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: strongColor,
+                    ),
                   ),
                   TextSpan(
                     text: mutedText,
-                    style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.colors.textSecondary,
+                    ),
                   ),
                 ],
               ),

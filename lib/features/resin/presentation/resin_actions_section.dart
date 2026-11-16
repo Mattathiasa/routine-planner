@@ -22,7 +22,10 @@ import 'sync_dialog.dart';
 class ResinActionsSection extends ConsumerWidget {
   const ResinActionsSection({super.key});
 
-  Future<void> _runMutation(BuildContext context, Future<void> Function() action) async {
+  Future<void> _runMutation(
+    BuildContext context,
+    Future<void> Function() action,
+  ) async {
     final messenger = ScaffoldMessenger.of(context);
     try {
       await action();
@@ -47,11 +50,18 @@ class ResinActionsSection extends ConsumerWidget {
     final region = hoyolabRegionForUid(credentials.uid);
     final notes = await ref
         .read(hoyolabClientProvider)
-        .fetchNotes(cookie: credentials.cookie, uid: credentials.uid, region: region);
+        .fetchNotes(
+          cookie: credentials.cookie,
+          uid: credentials.uid,
+          region: region,
+        );
 
     await ref
         .read(resinControllerProvider.notifier)
-        .sync(notes.currentResin, fullIn: Duration(seconds: notes.secondsUntilFull));
+        .sync(
+          notes.currentResin,
+          fullIn: Duration(seconds: notes.secondsUntilFull),
+        );
   }
 
   @override
@@ -59,7 +69,8 @@ class ResinActionsSection extends ConsumerWidget {
     final resinState = ref.watch(resinControllerProvider).value;
     final controller = ref.read(resinControllerProvider.notifier);
     final soonestTransient = _soonestExpiring(resinState?.transient);
-    final hoyolabConnected = ref.watch(hoyolabCredentialsProvider).value != null;
+    final hoyolabConnected =
+        ref.watch(hoyolabCredentialsProvider).value != null;
 
     return Column(
       children: [
@@ -71,14 +82,19 @@ class ResinActionsSection extends ConsumerWidget {
             boxShadow: AppShadows.primaryButton,
           ),
           child: ElevatedButton.icon(
-            onPressed: () => showDialog<void>(context: context, builder: (_) => const SyncDialog()),
+            onPressed: () => showDialog<void>(
+              context: context,
+              builder: (_) => const SyncDialog(),
+            ),
             icon: const Icon(Icons.sync),
             label: const Text('Sync with game'),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+              ),
             ),
           ),
         ),
@@ -88,13 +104,16 @@ class ResinActionsSection extends ConsumerWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton.icon(
-              onPressed: () => _runMutation(context, () => _syncFromHoyolab(ref)),
+              onPressed: () =>
+                  _runMutation(context, () => _syncFromHoyolab(ref)),
               icon: const Icon(Icons.cloud_sync_outlined),
               label: const Text('Sync from HoYoLab'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.primary,
                 side: BorderSide(color: context.colors.primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                ),
               ),
             ),
           ),
@@ -111,20 +130,26 @@ class ResinActionsSection extends ConsumerWidget {
             _ActionButton(
               label: 'Spend 20',
               sublabel: 'Domain run',
-              onPressed: () =>
-                  _runMutation(context, () => controller.spend(20, label: 'Domain run')),
+              onPressed: () => _runMutation(
+                context,
+                () => controller.spend(20, label: 'Domain run'),
+              ),
             ),
             _ActionButton(
               label: 'Spend 40',
               sublabel: 'Boss run',
-              onPressed: () =>
-                  _runMutation(context, () => controller.spend(40, label: 'Boss run')),
+              onPressed: () => _runMutation(
+                context,
+                () => controller.spend(40, label: 'Boss run'),
+              ),
             ),
             _ActionButton(
               label: 'Craft Condensed',
               sublabel: 'Uses 40',
-              onPressed: () =>
-                  _runMutation(context, () => controller.craftCondensed(cost: 40)),
+              onPressed: () => _runMutation(
+                context,
+                () => controller.craftCondensed(cost: 40),
+              ),
             ),
             _ActionButton(
               label: 'Use Condensed',
@@ -154,13 +179,18 @@ class ResinActionsSection extends ConsumerWidget {
 
   TransientResinBatch? _soonestExpiring(List<TransientResinBatch>? batches) {
     if (batches == null || batches.isEmpty) return null;
-    final sorted = [...batches]..sort((a, b) => a.expiresAt.compareTo(b.expiresAt));
+    final sorted = [...batches]
+      ..sort((a, b) => a.expiresAt.compareTo(b.expiresAt));
     return sorted.first;
   }
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.label, required this.sublabel, required this.onPressed});
+  const _ActionButton({
+    required this.label,
+    required this.sublabel,
+    required this.onPressed,
+  });
 
   final String label;
   final String sublabel;
@@ -174,8 +204,13 @@ class _ActionButton extends StatelessWidget {
         alignment: Alignment.centerLeft,
         foregroundColor: context.colors.textPrimary,
         side: BorderSide(color: context.colors.border),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mlg, vertical: AppSpacing.smd),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.mlg,
+          vertical: AppSpacing.smd,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

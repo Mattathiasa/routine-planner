@@ -22,7 +22,9 @@ class AppPageRoute<T> extends MaterialPageRoute<T> {
   @override
   Duration get transitionDuration {
     final context = navigator?.context;
-    if (context != null && MediaQuery.of(context).disableAnimations) return Duration.zero;
+    if (context != null && MediaQuery.of(context).disableAnimations) {
+      return Duration.zero;
+    }
     return AppMotion.duration;
   }
 }

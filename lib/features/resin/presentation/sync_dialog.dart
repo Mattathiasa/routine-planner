@@ -44,7 +44,10 @@ class _SyncDialogState extends ConsumerState<SyncDialog> {
         decoration: const InputDecoration(labelText: 'Current resin'),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
         TextButton(onPressed: _submit, child: const Text('Sync')),
       ],
     );

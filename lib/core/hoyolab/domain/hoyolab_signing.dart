@@ -25,8 +25,14 @@ const _asciiLetters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 /// `"{t},{r},{md5("salt={salt}&t={t}&r={r}")}"` — the exact format
 /// HoYoLab's own clients send as the `ds` header.
-String dynamicSecret({required String salt, required int unixSeconds, required String random}) {
-  final hash = md5.convert(utf8.encode('salt=$salt&t=$unixSeconds&r=$random')).toString();
+String dynamicSecret({
+  required String salt,
+  required int unixSeconds,
+  required String random,
+}) {
+  final hash = md5
+      .convert(utf8.encode('salt=$salt&t=$unixSeconds&r=$random'))
+      .toString();
   return '$unixSeconds,$random,$hash';
 }
 
@@ -38,7 +44,10 @@ String dynamicSecret({required String salt, required int unixSeconds, required S
 String dynamicSecretForNow(String salt) {
   final random = Random();
   final letters = String.fromCharCodes(
-    List.generate(6, (_) => _asciiLetters.codeUnitAt(random.nextInt(_asciiLetters.length))),
+    List.generate(
+      6,
+      (_) => _asciiLetters.codeUnitAt(random.nextInt(_asciiLetters.length)),
+    ),
   );
   return dynamicSecret(
     salt: salt,

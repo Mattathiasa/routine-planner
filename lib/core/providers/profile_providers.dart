@@ -18,8 +18,13 @@ part 'profile_providers.g.dart';
 /// `riverpod_generator`'s inability to resolve types declared entirely in
 /// Drift's generated output.
 @riverpod
-Future<List<({String id, String displayName, String server})>> profileList(Ref ref) async {
+Future<List<({String id, String displayName, String server})>> profileList(
+  Ref ref,
+) async {
   await ref.watch(currentProfileProvider.future);
   final profiles = await ref.watch(profileRepositoryProvider).listProfiles();
-  return [for (final p in profiles) (id: p.id, displayName: p.displayName, server: p.server)];
+  return [
+    for (final p in profiles)
+      (id: p.id, displayName: p.displayName, server: p.server),
+  ];
 }

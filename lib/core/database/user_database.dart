@@ -29,16 +29,16 @@ part 'user_database.g.dart';
 )
 class UserDatabase extends _$UserDatabase {
   UserDatabase([QueryExecutor? executor])
-      : super(
-          executor ??
-              driftDatabase(
-                name: 'user',
-                web: DriftWebOptions(
-                  sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-                  driftWorker: Uri.parse('drift_worker.js'),
-                ),
+    : super(
+        executor ??
+            driftDatabase(
+              name: 'user',
+              web: DriftWebOptions(
+                sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                driftWorker: Uri.parse('drift_worker.js'),
               ),
-        );
+            ),
+      );
 
   @override
   int get schemaVersion => 2;
@@ -54,7 +54,9 @@ class UserDatabase extends _$UserDatabase {
         // alterTable sidesteps that by rebuilding the table (SQLite's own
         // recommended 12-step procedure) — existing rows get createdAt via
         // the table's own default during the copy, no transformer needed.
-        await m.alterTable(TableMigration(profiles, newColumns: [profiles.createdAt]));
+        await m.alterTable(
+          TableMigration(profiles, newColumns: [profiles.createdAt]),
+        );
         await m.createTable(appState);
         // Whichever profile already exists becomes the implicitly selected
         // one, so upgrading users see no change at all. Safe to assume at

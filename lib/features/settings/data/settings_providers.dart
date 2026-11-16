@@ -7,12 +7,18 @@ part 'settings_providers.g.dart';
 
 /// Plain fields only, never the Drift-generated `Setting` row — see
 /// `current_profile_provider.dart`'s doc comment for why.
-typedef SettingsSnapshot = ({int worldLevel, bool totalsOnlyMode, bool transientExpiryAlertEnabled});
+typedef SettingsSnapshot = ({
+  int worldLevel,
+  bool totalsOnlyMode,
+  bool transientExpiryAlertEnabled,
+});
 
 @riverpod
 Future<SettingsSnapshot> settingsSnapshot(Ref ref) async {
   final profileId = (await ref.watch(currentProfileProvider.future)).id;
-  final settings = await ref.watch(settingsRepositoryProvider).getOrCreateSettings(profileId);
+  final settings = await ref
+      .watch(settingsRepositoryProvider)
+      .getOrCreateSettings(profileId);
   return (
     worldLevel: settings.worldLevel,
     totalsOnlyMode: settings.totalsOnlyMode,

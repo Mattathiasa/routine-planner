@@ -14,7 +14,8 @@ const _wednesday = 1 << 2;
 const _friday = 1 << 4;
 const _saturday = 1 << 5;
 const _sunday = 1 << 6;
-const _allDays = _monday | _tuesday | _wednesday | (1 << 3) | _friday | _saturday | _sunday;
+const _allDays =
+    _monday | _tuesday | _wednesday | (1 << 3) | _friday | _saturday | _sunday;
 
 final seedCatalogMetadata = [
   CatalogMetadataCompanion.insert(id: 'catalog', version: '0.1.0-seed'),
@@ -24,7 +25,10 @@ final seedGameRules = [
   GameRulesCompanion.insert(key: 'resin_cap', value: '200'),
   GameRulesCompanion.insert(key: 'resin_regen_interval_seconds', value: '480'),
   GameRulesCompanion.insert(key: 'condensed_resin_value', value: '40'),
-  GameRulesCompanion.insert(key: 'fragile_or_transient_resin_value', value: '60'),
+  GameRulesCompanion.insert(
+    key: 'fragile_or_transient_resin_value',
+    value: '60',
+  ),
   GameRulesCompanion.insert(key: 'level_farm_cap', value: '90'),
 ];
 
@@ -62,9 +66,24 @@ final seedWeapons = [
 ];
 
 final seedDomains = [
-  DomainsCompanion.insert(id: 'dawn', name: 'Dawn', kind: 'talent', costResin: 20),
-  DomainsCompanion.insert(id: 'tidal', name: 'Tidal', kind: 'weapon', costResin: 20),
-  DomainsCompanion.insert(id: 'mire', name: 'Mire', kind: 'weapon', costResin: 20),
+  DomainsCompanion.insert(
+    id: 'dawn',
+    name: 'Dawn',
+    kind: 'talent',
+    costResin: 20,
+  ),
+  DomainsCompanion.insert(
+    id: 'tidal',
+    name: 'Tidal',
+    kind: 'weapon',
+    costResin: 20,
+  ),
+  DomainsCompanion.insert(
+    id: 'mire',
+    name: 'Mire',
+    kind: 'weapon',
+    costResin: 20,
+  ),
   DomainsCompanion.insert(
     id: 'ember_core_boss',
     name: 'Ember Lair',

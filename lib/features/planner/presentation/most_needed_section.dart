@@ -60,7 +60,12 @@ class MostNeededSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         if (rows.isEmpty)
-          AppCard(child: Text('Nothing missing — fully stocked.', style: textTheme.bodyLarge))
+          AppCard(
+            child: Text(
+              'Nothing missing — fully stocked.',
+              style: textTheme.bodyLarge,
+            ),
+          )
         else
           DecoratedBox(
             decoration: BoxDecoration(
@@ -70,17 +75,23 @@ class MostNeededSection extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Builder(builder: (context) {
-                final tints = _tileTints(context.colors);
-                return Column(
-                  children: [
-                    for (var i = 0; i < rows.length; i++) ...[
-                      if (i > 0) Divider(height: 1, color: context.colors.divider),
-                      _MostNeededRow(data: rows[i], tint: tints[i % tints.length]),
+              child: Builder(
+                builder: (context) {
+                  final tints = _tileTints(context.colors);
+                  return Column(
+                    children: [
+                      for (var i = 0; i < rows.length; i++) ...[
+                        if (i > 0)
+                          Divider(height: 1, color: context.colors.divider),
+                        _MostNeededRow(
+                          data: rows[i],
+                          tint: tints[i % tints.length],
+                        ),
+                      ],
                     ],
-                  ],
-                );
-              }),
+                  );
+                },
+              ),
             ),
           ),
       ],
@@ -105,7 +116,10 @@ class _MostNeededRow extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: tint.background, borderRadius: AppRadius.tileRadius),
+            decoration: BoxDecoration(
+              color: tint.background,
+              borderRadius: AppRadius.tileRadius,
+            ),
             child: Icon(tint.glyph, color: tint.icon, size: 20),
           ),
           const SizedBox(width: AppSpacing.md),

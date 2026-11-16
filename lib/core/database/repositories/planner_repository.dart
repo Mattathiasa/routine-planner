@@ -22,12 +22,16 @@ class PlannerRepository {
   /// names a live row (callers generate a fresh id via [newId] for new
   /// targets).
   Future<void> upsertTarget(PlannerTargetsCompanion target) {
-    final withTimestamp = target.copyWith(updatedAt: Value(DateTime.now().toUtc()));
+    final withTimestamp = target.copyWith(
+      updatedAt: Value(DateTime.now().toUtc()),
+    );
     return _db.into(_db.plannerTargets).insertOnConflictUpdate(withTimestamp);
   }
 
   Future<void> softDeleteTarget(String id) {
-    return (_db.update(_db.plannerTargets)..where((t) => t.id.equals(id))).write(
+    return (_db.update(
+      _db.plannerTargets,
+    )..where((t) => t.id.equals(id))).write(
       PlannerTargetsCompanion(
         deletedAt: Value(DateTime.now().toUtc()),
         updatedAt: Value(DateTime.now().toUtc()),
@@ -37,7 +41,9 @@ class PlannerRepository {
 
   /// Clears a soft delete — the undo path for [softDeleteTarget].
   Future<void> restoreTarget(String id) {
-    return (_db.update(_db.plannerTargets)..where((t) => t.id.equals(id))).write(
+    return (_db.update(
+      _db.plannerTargets,
+    )..where((t) => t.id.equals(id))).write(
       PlannerTargetsCompanion(
         deletedAt: const Value(null),
         updatedAt: Value(DateTime.now().toUtc()),
@@ -46,28 +52,41 @@ class PlannerRepository {
   }
 
   Future<Map<String, int>> inventoryForProfile(String profileId) async {
-    final rows = await (_db.select(
-      _db.materialInventory,
-    )..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())).get();
+    final rows =
+        await (_db.select(_db.materialInventory)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
     return {for (final row in rows) row.materialId: row.count};
   }
 
-  Future<void> setInventoryCount(String profileId, String materialId, int count) async {
+  Future<void> setInventoryCount(
+    String profileId,
+    String materialId,
+    int count,
+  ) async {
     final now = DateTime.now().toUtc();
-    final existing = await (_db.select(_db.materialInventory)..where(
-      (t) => t.profileId.equals(profileId) & t.materialId.equals(materialId) & t.deletedAt.isNull(),
-    )).getSingleOrNull();
+    final existing =
+        await (_db.select(_db.materialInventory)..where(
+              (t) =>
+                  t.profileId.equals(profileId) &
+                  t.materialId.equals(materialId) &
+                  t.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
 
     if (existing == null) {
-      await _db.into(_db.materialInventory).insert(
-        MaterialInventoryCompanion.insert(
-          id: newId(),
-          profileId: profileId,
-          materialId: materialId,
-          count: Value(count),
-          updatedAt: now,
-        ),
-      );
+      await _db
+          .into(_db.materialInventory)
+          .insert(
+            MaterialInventoryCompanion.insert(
+              id: newId(),
+              profileId: profileId,
+              materialId: materialId,
+              count: Value(count),
+              updatedAt: now,
+            ),
+          );
     } else {
       await (_db.update(
         _db.materialInventory,
@@ -79,8 +98,12 @@ class PlannerRepository {
 
   Future<DailyTask?> taskForKey(String profileId, String taskKey) {
     return (_db.select(_db.dailyTasks)..where(
-      (t) => t.profileId.equals(profileId) & t.taskKey.equals(taskKey) & t.deletedAt.isNull(),
-    )).getSingleOrNull();
+          (t) =>
+              t.profileId.equals(profileId) &
+              t.taskKey.equals(taskKey) &
+              t.deletedAt.isNull(),
+        ))
+        .getSingleOrNull();
   }
 
   /// Gets the live checklist row for `$periodAnchor:$domainId:$tierGroup`,
@@ -95,23 +118,28 @@ class PlannerRepository {
     final existing = await taskForKey(profileId, taskKey);
     if (existing != null) return existing;
 
-    await _db.into(_db.dailyTasks).insert(
-      DailyTasksCompanion.insert(
-        id: newId(),
-        profileId: profileId,
-        taskKey: taskKey,
-        periodAnchor: periodAnchor,
-        domainId: domainId,
-        tierGroup: tierGroup,
-        updatedAt: DateTime.now().toUtc(),
-      ),
-    );
+    await _db
+        .into(_db.dailyTasks)
+        .insert(
+          DailyTasksCompanion.insert(
+            id: newId(),
+            profileId: profileId,
+            taskKey: taskKey,
+            periodAnchor: periodAnchor,
+            domainId: domainId,
+            tierGroup: tierGroup,
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
     return (await taskForKey(profileId, taskKey))!;
   }
 
   Future<void> setChecked(String id, bool checked) {
     return (_db.update(_db.dailyTasks)..where((t) => t.id.equals(id))).write(
-      DailyTasksCompanion(checked: Value(checked), updatedAt: Value(DateTime.now().toUtc())),
+      DailyTasksCompanion(
+        checked: Value(checked),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
     );
   }
 

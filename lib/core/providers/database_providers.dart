@@ -11,7 +11,9 @@ part 'database_providers.g.dart';
 /// plain, non-generated provider so nothing here depends on async codegen
 /// for a resource that's static once loaded.
 final catalogDatabaseProvider = Provider<CatalogDatabase>((ref) {
-  throw UnimplementedError('catalogDatabaseProvider must be overridden in main.dart.');
+  throw UnimplementedError(
+    'catalogDatabaseProvider must be overridden in main.dart.',
+  );
 });
 
 @Riverpod(keepAlive: true)

@@ -10,6 +10,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import 'settings_formatting.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 String _formatUtcOffset(Duration offset) {
   final sign = offset.isNegative ? '-' : '+';
@@ -38,7 +39,9 @@ class GameServerSection extends ConsumerWidget {
               groupValue: selected,
               onChanged: (server) async {
                 if (server == null) return;
-                await ref.read(profileRepositoryProvider).updateServer(profile.id, server.name);
+                await ref
+                    .read(profileRepositoryProvider)
+                    .updateServer(profile.id, server.name);
                 ref.invalidate(currentProfileProvider);
               },
               child: ClipRRect(
@@ -51,8 +54,13 @@ class GameServerSection extends ConsumerWidget {
                   child: Column(
                     children: [
                       for (var i = 0; i < GameServer.values.length; i++) ...[
-                        if (i > 0) Divider(height: 1, color: context.colors.divider),
-                        _ServerRow(server: GameServer.values[i], now: now, localOffset: localOffset),
+                        if (i > 0)
+                          Divider(height: 1, color: context.colors.divider),
+                        _ServerRow(
+                          server: GameServer.values[i],
+                          now: now,
+                          localOffset: localOffset,
+                        ),
                       ],
                     ],
                   ),
@@ -60,11 +68,9 @@ class GameServerSection extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(
-            height: 56,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-          ),
-          error: (error, stack) => Text('Error: $error'),
+          loading: () =>
+              const SizedBox(height: 56, child: AppLoadingView(compact: true)),
+          error: (error, stack) => AppErrorView(error: error),
         ),
         const SizedBox(height: AppSpacing.sm),
         Padding(
@@ -80,7 +86,11 @@ class GameServerSection extends ConsumerWidget {
 }
 
 class _ServerRow extends StatelessWidget {
-  const _ServerRow({required this.server, required this.now, required this.localOffset});
+  const _ServerRow({
+    required this.server,
+    required this.now,
+    required this.localOffset,
+  });
 
   final GameServer server;
   final DateTime now;
@@ -89,7 +99,11 @@ class _ServerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final caption = resetCaption(server: server, nowUtc: now, localOffset: localOffset);
+    final caption = resetCaption(
+      server: server,
+      nowUtc: now,
+      localOffset: localOffset,
+    );
     final resetLabel =
         '${_formatUtcOffset(server.utcOffset)} · resets ${caption.time}'
         '${caption.dayBefore ? ' the day before' : ''}';

@@ -8,6 +8,7 @@ import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../application/resin_controller.dart';
 import '../domain/resin_engine.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 /// "In stock": Condensed / Fragile / Transient. The mock's "2 / 5" implies
 /// a condensed-resin cap, but no such cap exists anywhere in the schema
@@ -75,7 +76,7 @@ class ResinStockSection extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox(height: 108),
-      error: (error, stack) => Text('Error: $error'),
+      error: (error, stack) => AppErrorView(error: error),
     );
   }
 }
@@ -124,13 +125,21 @@ class _StockTile extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.smd),
             Text(count, style: textTheme.headlineLarge),
-            Text(label, style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: context.colors.textSecondary,
+              ),
+            ),
             if (subLabel != null)
               Text(
                 subLabel!,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: subLabelColor != null ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: subLabelColor != null
+                      ? FontWeight.w600
+                      : FontWeight.normal,
                   color: subLabelColor ?? context.colors.textSecondary,
                 ),
               ),

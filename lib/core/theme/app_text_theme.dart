@@ -10,7 +10,12 @@ import 'app_colors.dart';
 /// (with the design's letter-spacing, converted from em to logical
 /// pixels); Inter is the default for everything else, including titles.
 TextTheme buildAppTextTheme(AppColorScheme colors) {
-  TextStyle manrope(double size, FontWeight weight, double letterSpacingEm, Color color) {
+  TextStyle manrope(
+    double size,
+    FontWeight weight,
+    double letterSpacingEm,
+    Color color,
+  ) {
     return GoogleFonts.manrope(
       fontSize: size,
       fontWeight: weight,
@@ -78,6 +83,11 @@ abstract final class AppDisplayNumbers {
 
   /// The Planner target cards' small ring-gauge percent label.
   static TextStyle gaugePercent({Color color = AppColors.textPrimary}) {
-    return GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w800, color: color, height: 1);
+    return GoogleFonts.manrope(
+      fontSize: 12,
+      fontWeight: FontWeight.w800,
+      color: color,
+      height: 1,
+    );
   }
 }

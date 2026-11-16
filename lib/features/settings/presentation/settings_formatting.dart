@@ -19,8 +19,16 @@ import '../../../core/clock/server_clock.dart';
   final resetLocal = resetUtc.add(localOffset);
   final nowLocal = nowUtc.add(localOffset);
 
-  final resetLocalDate = DateTime.utc(resetLocal.year, resetLocal.month, resetLocal.day);
-  final nowLocalDate = DateTime.utc(nowLocal.year, nowLocal.month, nowLocal.day);
+  final resetLocalDate = DateTime.utc(
+    resetLocal.year,
+    resetLocal.month,
+    resetLocal.day,
+  );
+  final nowLocalDate = DateTime.utc(
+    nowLocal.year,
+    nowLocal.month,
+    nowLocal.day,
+  );
 
   return (
     time:

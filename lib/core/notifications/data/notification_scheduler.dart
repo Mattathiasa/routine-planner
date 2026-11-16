@@ -24,7 +24,11 @@ class FlutterLocalNotificationsScheduler implements NotificationScheduler {
   static const _channelId = 'resin_alerts';
   static const _channelName = 'Resin alerts';
   static const _notificationDetails = NotificationDetails(
-    android: AndroidNotificationDetails(_channelId, _channelName, importance: Importance.high),
+    android: AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      importance: Importance.high,
+    ),
   );
 
   final _plugin = FlutterLocalNotificationsPlugin();
@@ -41,7 +45,9 @@ class FlutterLocalNotificationsScheduler implements NotificationScheduler {
         ),
       );
       await _plugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
     } catch (error) {
       // Unsupported platform, or a registration hiccup — never let
@@ -54,7 +60,9 @@ class FlutterLocalNotificationsScheduler implements NotificationScheduler {
   Future<bool> canScheduleExactAlarms() async {
     try {
       final allowed = await _plugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.canScheduleExactNotifications();
       return allowed ?? false;
     } catch (error) {
@@ -73,7 +81,10 @@ class FlutterLocalNotificationsScheduler implements NotificationScheduler {
           id: notification.id,
           title: notification.title,
           body: notification.body,
-          scheduledDate: tz.TZDateTime.from(notification.scheduledAt.toUtc(), tz.UTC),
+          scheduledDate: tz.TZDateTime.from(
+            notification.scheduledAt.toUtc(),
+            tz.UTC,
+          ),
           notificationDetails: _notificationDetails,
           androidScheduleMode: exact
               ? AndroidScheduleMode.exactAllowWhileIdle

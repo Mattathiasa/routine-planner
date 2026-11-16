@@ -38,5 +38,9 @@ HoyolabNotes parseHoyolabNotes(Map<String, dynamic> json) {
       'Expected int (or numeric string) current_resin/max_resin/resin_recovery_time, got: $json',
     );
   }
-  return (currentResin: currentResin, maxResin: maxResin, secondsUntilFull: secondsUntilFull);
+  return (
+    currentResin: currentResin,
+    maxResin: maxResin,
+    secondsUntilFull: secondsUntilFull,
+  );
 }

@@ -17,7 +17,8 @@ class RollingNumber extends StatelessWidget {
       tween: Tween(end: value.toDouble()),
       duration: AppMotion.of(context),
       curve: AppMotion.curve,
-      builder: (context, animated, _) => Text('${animated.round()}', style: style),
+      builder: (context, animated, _) =>
+          Text('${animated.round()}', style: style),
     );
   }
 }

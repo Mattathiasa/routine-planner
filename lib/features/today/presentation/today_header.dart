@@ -7,6 +7,7 @@ import '../../../core/providers/clock_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/circle_icon_button.dart';
+import '../../../core/widgets/app_status_views.dart';
 
 const _weekdayNames = [
   'Monday',
@@ -52,11 +53,14 @@ class TodayHeader extends ConsumerWidget {
         final serverDate = serverClock.serverDateFor(now);
         final dayStart = serverClock.dayStartUtc(now);
         final elapsed = now.difference(dayStart);
-        final progress = (elapsed.inSeconds / const Duration(hours: 24).inSeconds).clamp(
-          0.0,
-          1.0,
-        );
-        final remaining = dayStart.add(const Duration(hours: 24)).difference(now);
+        final progress =
+            (elapsed.inSeconds / const Duration(hours: 24).inSeconds).clamp(
+              0.0,
+              1.0,
+            );
+        final remaining = dayStart
+            .add(const Duration(hours: 24))
+            .difference(now);
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +75,10 @@ class TodayHeader extends ConsumerWidget {
                     style: textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.xxs),
-                  Text(_weekdayNames[serverDate.weekday - 1], style: textTheme.displayLarge),
+                  Text(
+                    _weekdayNames[serverDate.weekday - 1],
+                    style: textTheme.displayLarge,
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(3),
@@ -79,13 +86,17 @@ class TodayHeader extends ConsumerWidget {
                       value: progress,
                       minHeight: 6,
                       backgroundColor: context.colors.border,
-                      valueColor: AlwaysStoppedAnimation(context.colors.primary),
+                      valueColor: AlwaysStoppedAnimation(
+                        context.colors.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     'Reset in ${_formatCountdown(remaining)}',
-                    style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: context.colors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -99,11 +110,9 @@ class TodayHeader extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const SizedBox(
-        height: 44,
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      ),
-      error: (error, stack) => Text('Error: $error'),
+      loading: () =>
+          const SizedBox(height: 44, child: AppLoadingView(compact: true)),
+      error: (error, stack) => AppErrorView(error: error),
     );
   }
 }
