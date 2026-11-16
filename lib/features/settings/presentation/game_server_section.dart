@@ -112,8 +112,9 @@ class _ServerRow extends StatelessWidget {
       // The whole row is tappable, not just the Radio itself — matches the
       // mock's `<label>`-wraps-everything behavior.
       onTap: () => RadioGroup.maybeOf<GameServer>(context)?.onChanged(server),
-      child: SizedBox(
-        height: 56,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 56),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
         child: Row(
           children: [
             const SizedBox(width: AppSpacing.lg),

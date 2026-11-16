@@ -116,8 +116,12 @@ class _MostNeededRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 64,
+    return Container(
+      // minHeight rather than a fixed height: 64 in the design's fonts,
+      // but tolerant of taller text metrics (large font scale, test font).
+      constraints: const BoxConstraints(minHeight: 64),
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         children: [
           Container(
