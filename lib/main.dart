@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/catalog/seed/seed_catalog.dart';
+import 'core/catalog/bundled/bundled_catalog.dart';
 import 'core/navigation/app_router.dart';
 import 'core/providers/database_providers.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final catalogDb = await openSeedCatalogDatabaseInMemory();
+  final catalogDb = await openBundledCatalogDatabaseInMemory();
   runApp(
     ProviderScope(
       overrides: [catalogDatabaseProvider.overrideWithValue(catalogDb)],

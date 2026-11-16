@@ -35,5 +35,28 @@ assumption tests — they document the current guess, they do not prove it.
 
 ## Catalog data
 
-5. *(added in the data phase)* — see the section appended by `tool/build_catalog.dart` work:
-   all catalog names and numbers are community-sourced and unverified in-game.
+5. **Every catalog name and number is community-sourced and unverified in-game.** The
+   catalog is built by `dart run tool/build_catalog.dart` from a vendored extract of the
+   MIT-licensed [genshin-db](https://www.npmjs.com/package/genshin-db) dataset (version
+   pinned in `tool/fetch_catalog_source.sh`; provenance and hashes in
+   `build/catalog/manifest.json` and the `catalog_metadata` row). Characters, weapons,
+   ascension/talent costs, tier chains (derived from the game's own 3:1 crafting recipes in
+   the dataset), farm-domain names and weekday schedules all come straight from that
+   dataset — including any upstream mistakes. Nothing was hand-authored.
+
+6. **Resin cost per run** — 20 for a talent/weapon domain, 40 for an open-world boss, 60
+   for a weekly boss (with 3 discounted runs per week modelled as `max_runs_per_period`) —
+   and the `game_rules` constants (cap 200, 480 s per resin, condensed = 40, fragile = 60)
+   are long-standing community knowledge, not dataset fields
+   (`tool/build_catalog.dart`, `bundledGameRules`).
+
+7. **Level EXP/Mora ladders are absent.** The vendored dataset has no per-level character
+   or weapon EXP table, so `exp_curves` ships empty: the planner's derived EXP-book and
+   leveling-Mora needs are 0 for every target (ascension and talent Mora costs *are* real
+   rows). The aggregation layer was already designed for sparse curves, so this degrades
+   silently and honestly rather than inventing a ladder.
+
+8. Two modelling notes, not game facts: gathered local specialties and one-off items
+   (e.g. Crown of Insight) are stored under the untiered `bossMaterial` category with no
+   farm domain; and each boss is modelled as its own always-open "domain" whose name is
+   mechanically derived from the dataset's drop-source text.

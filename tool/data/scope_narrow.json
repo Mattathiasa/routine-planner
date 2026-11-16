@@ -1,0 +1,19 @@
+{
+  "_comment": "CATALOG_SCOPE=narrow: the curated entity set the v1 catalog ships with. Keys are genshin-db entry keys. --scope full ignores this file and takes every character/weapon in the vendored dataset.",
+  "characters": [
+    "furina",
+    "hutao",
+    "nahida",
+    "raidenshogun",
+    "kaedeharakazuha",
+    "bennett",
+    "xingqiu",
+    "fischl"
+  ],
+  "weapons": [
+    "favoniussword",
+    "dragonsbane",
+    "thewidsith",
+    "sacrificialbow"
+  ]
+}
