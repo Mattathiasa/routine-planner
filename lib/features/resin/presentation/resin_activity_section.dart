@@ -59,7 +59,7 @@ class ResinActivitySection extends ConsumerWidget {
                   onPressed: () => _undoLast(context, ref),
                   style: TextButton.styleFrom(
                     foregroundColor: context.colors.primary,
-                    minimumSize: const Size(0, 44),
+                    minimumSize: const Size(0, 48),
                   ),
                   child: const Text('Undo last'),
                 ),

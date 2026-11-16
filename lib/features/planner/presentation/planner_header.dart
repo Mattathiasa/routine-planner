@@ -40,7 +40,7 @@ class PlannerHeader extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: context.colors.primary,
                   padding: EdgeInsets.zero,
-                  minimumSize: const Size(0, 32),
+                  minimumSize: const Size(0, 48),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
                 ),
@@ -79,7 +79,7 @@ class _AddTargetButton extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
             child: SizedBox(
-              height: 44,
+              height: 48,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

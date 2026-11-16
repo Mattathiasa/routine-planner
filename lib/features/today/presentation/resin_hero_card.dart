@@ -70,7 +70,12 @@ class ResinHeroCard extends ConsumerWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    RollingNumber(v, style: AppDisplayNumbers.heroNumber()),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: RollingNumber(v, style: AppDisplayNumbers.heroNumber()),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10, left: 4),
                       child: Text(
@@ -99,16 +104,24 @@ class ResinHeroCard extends ConsumerWidget {
                   ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _StatColumn(
-                      label: 'Condensed',
-                      value: '${state.condensed}',
+                    Expanded(
+                      child: _StatColumn(
+                        label: 'Condensed',
+                        value: '${state.condensed}',
+                      ),
                     ),
-                    _StatColumn(label: 'Fragile', value: '${state.fragile}'),
-                    _StatColumn(
-                      label: 'Transient',
-                      value: '${state.transient.length}',
+                    Expanded(
+                      child: _StatColumn(
+                        label: 'Fragile',
+                        value: '${state.fragile}',
+                      ),
+                    ),
+                    Expanded(
+                      child: _StatColumn(
+                        label: 'Transient',
+                        value: '${state.transient.length}',
+                      ),
                     ),
                   ],
                 ),

@@ -95,7 +95,7 @@ class ResinForecastSection extends ConsumerWidget {
               style: TextButton.styleFrom(
                 foregroundColor: context.colors.primary,
                 padding: EdgeInsets.zero,
-                minimumSize: const Size(0, 44),
+                minimumSize: const Size(0, 48),
               ),
             ),
           ],
@@ -148,13 +148,20 @@ class _NowRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('$value resin', style: textTheme.titleMedium),
+                Text(
+                  '$value resin',
+                  style: textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Text(
                   '+1 every ${const ResinEngine().regenInterval.inMinutes} minutes',
                   style: TextStyle(
                     fontSize: 12,
                     color: context.colors.textSecondary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

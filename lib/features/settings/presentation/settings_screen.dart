@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerLeft,
-                minimumSize: const Size(0, 44),
+                minimumSize: const Size(0, 48),
               ),
             ),
             const SizedBox(height: AppSpacing.xs),

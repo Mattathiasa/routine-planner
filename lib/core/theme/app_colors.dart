@@ -25,7 +25,10 @@ abstract final class AppColors {
   static const success = Color(0xFF0F7552);
   static const successContainer = Color(0xFFE7F6EF);
   static const successDot = Color(0xFF12B76A);
-  static const warning = Color(0xFFA35F0B);
+  // v3's #A35F0B measured 4.46:1 on its container — a hair under WCAG AA.
+  // Darkened imperceptibly (3 points on two channels) to 4.57:1; the only
+  // deviation from the approved palette, made to meet the AA requirement.
+  static const warning = Color(0xFFA05E0B);
   static const warningContainer = Color(0xFFFDF0E1);
 
   // Elements (fixed mapping)
@@ -48,7 +51,7 @@ abstract final class AppColors {
 
   // Rarity chips
   static const rarity5Background = Color(0xFFFDF0E1);
-  static const rarity5Text = Color(0xFFA35F0B);
+  static const rarity5Text = Color(0xFFA05E0B); // see [warning]'s AA note
   static const rarity4Background = Color(0xFFF0EAFB);
   static const rarity4Text = Color(0xFF6B46C1);
 

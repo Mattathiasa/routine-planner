@@ -25,7 +25,14 @@ class TodaysFarmSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Today's farm", style: textTheme.headlineLarge),
+            Expanded(
+              child: Text(
+                "Today's farm",
+                style: textTheme.headlineLarge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             Text(
               '$taskCount task${taskCount == 1 ? '' : 's'}',
               style: textTheme.bodyLarge?.copyWith(

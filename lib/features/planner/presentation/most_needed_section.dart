@@ -54,7 +54,14 @@ class MostNeededSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('Most needed', style: textTheme.headlineLarge),
+            Expanded(
+              child: Text(
+                'Most needed',
+                style: textTheme.headlineLarge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             Text('Missing', style: textTheme.bodyLarge),
           ],
         ),

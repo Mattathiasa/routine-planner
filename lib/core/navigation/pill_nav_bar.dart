@@ -35,8 +35,9 @@ class PillNavBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
           padding: const EdgeInsets.all(6),
-          decoration: const BoxDecoration(
-            color: Color(0xE6FFFFFF), // rgba(255,255,255,.9)
+          decoration: BoxDecoration(
+            // rgba(surface, .9) — white in light, deep neutral in dark.
+            color: context.colors.surface.withValues(alpha: 0.9),
             boxShadow: AppShadows.pillNav,
           ),
           child: Row(
@@ -71,8 +72,9 @@ class PillNavBar extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        child: ConstrainedBox(
+          // 48dp minimum tap target for each nav destination.
+          constraints: const BoxConstraints(minHeight: 48),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -84,7 +86,14 @@ class PillNavBar extends StatelessWidget {
                     : context.colors.textSecondary,
               ),
               const SizedBox(width: 8),
-              Text(tab.label, style: textStyle),
+              Flexible(
+                child: Text(
+                  tab.label,
+                  style: textStyle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),

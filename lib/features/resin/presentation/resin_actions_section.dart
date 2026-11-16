@@ -215,11 +215,26 @@ class _ActionButton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: Theme.of(context).textTheme.titleLarge),
-          Text(
-            sublabel,
-            style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.titleLarge,
+              maxLines: 1,
+            ),
+          ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              sublabel,
+              style: TextStyle(
+                fontSize: 12,
+                color: context.colors.textSecondary,
+              ),
+              maxLines: 1,
+            ),
           ),
         ],
       ),
