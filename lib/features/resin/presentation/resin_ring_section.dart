@@ -34,8 +34,8 @@ class ResinRingSection extends ConsumerWidget {
         final fullAt = timers.fullAt;
 
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
+          decoration: BoxDecoration(
+            color: context.colors.surface,
             borderRadius: BorderRadius.all(Radius.circular(24)),
             boxShadow: AppShadows.card,
           ),
@@ -97,7 +97,10 @@ class _ResinRing extends StatelessWidget {
       width: 220,
       height: 220,
       child: CustomPaint(
-        painter: _ResinRingPainter(fraction: fraction),
+        painter: _ResinRingPainter(
+          fraction: fraction,
+          trackColor: context.colors.primaryContainer,
+        ),
         child: Center(
           child: Semantics(
             label: '$value of $cap Original Resin',
@@ -105,14 +108,17 @@ class _ResinRing extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('$value', style: AppDisplayNumbers.ringNumber()),
+                  Text(
+                    '$value',
+                    style: AppDisplayNumbers.ringNumber(color: context.colors.textPrimary),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     'of $cap',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
+                      color: context.colors.textSecondary,
                     ),
                   ),
                 ],
@@ -126,9 +132,10 @@ class _ResinRing extends StatelessWidget {
 }
 
 class _ResinRingPainter extends CustomPainter {
-  _ResinRingPainter({required this.fraction});
+  _ResinRingPainter({required this.fraction, required this.trackColor});
 
   final double fraction;
+  final Color trackColor;
 
   static const _strokeWidth = 14.0;
 
@@ -139,7 +146,7 @@ class _ResinRingPainter extends CustomPainter {
     final radius = (size.shortestSide - _strokeWidth) / 2;
 
     final trackPaint = Paint()
-      ..color = AppColors.primaryContainer
+      ..color = trackColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = _strokeWidth;
     canvas.drawCircle(center, radius, trackPaint);
@@ -167,7 +174,7 @@ class _ResinRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ResinRingPainter oldDelegate) =>
-      oldDelegate.fraction != fraction;
+      oldDelegate.fraction != fraction || oldDelegate.trackColor != trackColor;
 }
 
 class _StatTile extends StatelessWidget {
@@ -180,8 +187,8 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mlg, vertical: AppSpacing.md),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      decoration: BoxDecoration(
+        color: context.colors.background,
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: Column(
@@ -189,7 +196,7 @@ class _StatTile extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
           ),
           Text(value, style: Theme.of(context).textTheme.headlineLarge),
         ],

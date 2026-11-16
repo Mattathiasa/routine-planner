@@ -75,8 +75,8 @@ class ResinActionsSection extends ConsumerWidget {
             icon: const Icon(Icons.sync),
             label: const Text('Sync with game'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: context.colors.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
             ),
@@ -92,8 +92,8 @@ class ResinActionsSection extends ConsumerWidget {
               icon: const Icon(Icons.cloud_sync_outlined),
               label: const Text('Sync from HoYoLab'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primary),
+                foregroundColor: context.colors.primary,
+                side: BorderSide(color: context.colors.primary),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
               ),
             ),
@@ -172,8 +172,8 @@ class _ActionButton extends StatelessWidget {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         alignment: Alignment.centerLeft,
-        foregroundColor: AppColors.textPrimary,
-        side: const BorderSide(color: AppColors.border),
+        foregroundColor: context.colors.textPrimary,
+        side: BorderSide(color: context.colors.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mlg, vertical: AppSpacing.smd),
       ),
@@ -184,7 +184,7 @@ class _ActionButton extends StatelessWidget {
           Text(label, style: Theme.of(context).textTheme.titleLarge),
           Text(
             sublabel,
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
           ),
         ],
       ),

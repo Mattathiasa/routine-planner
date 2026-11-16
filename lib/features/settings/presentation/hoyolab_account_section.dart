@@ -27,7 +27,7 @@ class HoyolabAccountSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: const BoxDecoration(color: AppColors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
             // Secure-storage reads resolve near-instantly on a real device,
             // so "not yet known" and "not connected" look the same to the
             // user — deliberately not an indeterminate spinner here, which

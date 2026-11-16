@@ -24,7 +24,7 @@ class AppShell extends ConsumerWidget {
     ref.watch(notificationReconcileProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       body: Stack(
         children: [
           navigationShell,

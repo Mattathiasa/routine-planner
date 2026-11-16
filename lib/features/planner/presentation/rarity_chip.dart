@@ -13,7 +13,7 @@ class RarityChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: isFiveStar ? AppColors.rarity5Background : AppColors.rarity4Background,
+        color: isFiveStar ? context.colors.rarity5Background : context.colors.rarity4Background,
         borderRadius: const BorderRadius.all(Radius.circular(6)),
       ),
       child: Text(
@@ -21,7 +21,7 @@ class RarityChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: isFiveStar ? AppColors.rarity5Text : AppColors.rarity4Text,
+          color: isFiveStar ? context.colors.rarity5Text : context.colors.rarity4Text,
         ),
       ),
     );

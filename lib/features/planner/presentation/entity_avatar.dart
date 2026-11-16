@@ -21,26 +21,32 @@ class EntityAvatar extends StatelessWidget {
   final String? element;
   final double size;
 
-  static const _elementStyles = {
-    'Pyro': (
-      background: AppColors.pyroAvatarBackground,
-      text: AppColors.pyroAvatarText,
-      badge: AppColors.pyro,
-      icon: Icons.local_fire_department,
-    ),
-    'Hydro': (
-      background: AppColors.hydroAvatarBackground,
-      text: AppColors.hydroAvatarText,
-      badge: AppColors.hydro,
-      icon: Icons.water_drop,
-    ),
-    'Electro': (
-      background: AppColors.electroAvatarBackground,
-      text: AppColors.electroAvatarText,
-      badge: AppColors.electro,
-      icon: Icons.bolt,
-    ),
-  };
+  static ({Color background, Color text, Color badge, IconData icon})? _elementStyle(
+    AppColorScheme colors,
+    String? element,
+  ) {
+    return switch (element) {
+      'Pyro' => (
+          background: colors.pyroAvatarBackground,
+          text: colors.pyroAvatarText,
+          badge: colors.pyro,
+          icon: Icons.local_fire_department,
+        ),
+      'Hydro' => (
+          background: colors.hydroAvatarBackground,
+          text: colors.hydroAvatarText,
+          badge: colors.hydro,
+          icon: Icons.water_drop,
+        ),
+      'Electro' => (
+          background: colors.electroAvatarBackground,
+          text: colors.electroAvatarText,
+          badge: colors.electro,
+          icon: Icons.bolt,
+        ),
+      _ => null,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +54,15 @@ class EntityAvatar extends StatelessWidget {
       return Container(
         width: size,
         height: size,
-        decoration: const BoxDecoration(
-          color: AppColors.weaponTileBackground,
+        decoration: BoxDecoration(
+          color: context.colors.weaponTileBackground,
           borderRadius: AppRadius.tileRadius,
         ),
-        child: const Icon(Icons.auto_fix_high_outlined, color: AppColors.textPrimary, size: 26),
+        child: Icon(Icons.auto_fix_high_outlined, color: context.colors.textPrimary, size: 26),
       );
     }
 
-    final style = _elementStyles[element];
+    final style = _elementStyle(context.colors, element);
     final initial = name.isEmpty ? '?' : name[0].toUpperCase();
 
     return SizedBox(
@@ -69,7 +75,7 @@ class EntityAvatar extends StatelessWidget {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: style?.background ?? AppColors.background,
+              color: style?.background ?? context.colors.background,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
@@ -78,7 +84,7 @@ class EntityAvatar extends StatelessWidget {
               style: GoogleFonts.manrope(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
-                color: style?.text ?? AppColors.textPrimary,
+                color: style?.text ?? context.colors.textPrimary,
               ),
             ),
           ),
@@ -92,9 +98,9 @@ class EntityAvatar extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: style.badge,
-                  border: Border.all(color: AppColors.surface, width: 2),
+                  border: Border.all(color: context.colors.surface, width: 2),
                 ),
-                child: Icon(style.icon, color: AppColors.surface, size: 12),
+                child: Icon(style.icon, color: context.colors.surface, size: 12),
               ),
             ),
         ],

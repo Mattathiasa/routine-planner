@@ -78,14 +78,14 @@ class TodayHeader extends ConsumerWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 6,
-                      backgroundColor: AppColors.border,
-                      valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+                      backgroundColor: context.colors.border,
+                      valueColor: AlwaysStoppedAnimation(context.colors.primary),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     'Reset in ${_formatCountdown(remaining)}',
-                    style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+                    style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
                   ),
                 ],
               ),

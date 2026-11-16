@@ -40,8 +40,8 @@ class ResinStockSection extends ConsumerWidget {
           children: [
             Expanded(
               child: _StockTile(
-                background: AppColors.tilePurpleBackground,
-                iconColor: AppColors.tilePurpleIcon,
+                background: context.colors.tilePurpleBackground,
+                iconColor: context.colors.tilePurpleIcon,
                 icon: Icons.auto_awesome,
                 count: '${state.condensed}',
                 label: 'Condensed',
@@ -51,8 +51,8 @@ class ResinStockSection extends ConsumerWidget {
             const SizedBox(width: AppSpacing.smd),
             Expanded(
               child: _StockTile(
-                background: AppColors.tileAmberBackground,
-                iconColor: AppColors.tileAmberIcon,
+                background: context.colors.tileAmberBackground,
+                iconColor: context.colors.tileAmberIcon,
                 icon: Icons.bolt,
                 count: '${state.fragile}',
                 label: 'Fragile',
@@ -62,13 +62,13 @@ class ResinStockSection extends ConsumerWidget {
             const SizedBox(width: AppSpacing.smd),
             Expanded(
               child: _StockTile(
-                background: AppColors.tileBlueBackground,
-                iconColor: AppColors.tileBlueIcon,
+                background: context.colors.tileBlueBackground,
+                iconColor: context.colors.tileBlueIcon,
                 icon: Icons.hourglass_bottom,
                 count: '${unexpiredBatches.length}',
                 label: 'Transient',
                 subLabel: expiryLabel,
-                subLabelColor: AppColors.warning,
+                subLabelColor: context.colors.warning,
               ),
             ),
           ],
@@ -103,8 +103,8 @@ class _StockTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
         borderRadius: BorderRadius.all(Radius.circular(AppRadius.xxl)),
         boxShadow: AppShadows.card,
       ),
@@ -124,14 +124,14 @@ class _StockTile extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.smd),
             Text(count, style: textTheme.headlineLarge),
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            Text(label, style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
             if (subLabel != null)
               Text(
                 subLabel!,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: subLabelColor != null ? FontWeight.w600 : FontWeight.normal,
-                  color: subLabelColor ?? AppColors.textSecondary,
+                  color: subLabelColor ?? context.colors.textSecondary,
                 ),
               ),
           ],

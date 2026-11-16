@@ -33,10 +33,17 @@ class PercentRingGauge extends StatelessWidget {
           children: [
             CustomPaint(
               size: const Size(_diameter, _diameter),
-              painter: _RingPainter(fraction: fraction),
+              painter: _RingPainter(
+                fraction: fraction,
+                trackColor: context.colors.primaryContainer,
+                progressColor: context.colors.primary,
+              ),
             ),
             ExcludeSemantics(
-              child: Text('$percent%', style: AppDisplayNumbers.gaugePercent()),
+              child: Text(
+                '$percent%',
+                style: AppDisplayNumbers.gaugePercent(color: context.colors.textPrimary),
+              ),
             ),
           ],
         ),
@@ -46,23 +53,25 @@ class PercentRingGauge extends StatelessWidget {
 }
 
 class _RingPainter extends CustomPainter {
-  _RingPainter({required this.fraction});
+  _RingPainter({required this.fraction, required this.trackColor, required this.progressColor});
 
   final double fraction;
+  final Color trackColor;
+  final Color progressColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
 
     final trackPaint = Paint()
-      ..color = AppColors.primaryContainer
+      ..color = trackColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = _strokeWidth;
     canvas.drawCircle(center, _radius, trackPaint);
 
     if (fraction > 0) {
       final progressPaint = Paint()
-        ..color = AppColors.primary
+        ..color = progressColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = _strokeWidth
         ..strokeCap = StrokeCap.round;
@@ -77,5 +86,8 @@ class _RingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _RingPainter oldDelegate) => oldDelegate.fraction != fraction;
+  bool shouldRepaint(covariant _RingPainter oldDelegate) =>
+      oldDelegate.fraction != fraction ||
+      oldDelegate.trackColor != trackColor ||
+      oldDelegate.progressColor != progressColor;
 }

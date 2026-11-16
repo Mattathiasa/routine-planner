@@ -33,12 +33,12 @@ class CircleIconButton extends StatelessWidget {
           child: Container(
             width: size,
             height: size,
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
+            decoration: BoxDecoration(
+              color: context.colors.surface,
               shape: BoxShape.circle,
               boxShadow: AppShadows.iconButton,
             ),
-            child: Icon(icon, size: size * 0.5, color: AppColors.textPrimary),
+            child: Icon(icon, size: size * 0.5, color: context.colors.textPrimary),
           ),
         ),
       ),

@@ -33,7 +33,7 @@ class NotificationsSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: const BoxDecoration(color: AppColors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
             child: Column(
               children: [
                 _AlertSwitch(
@@ -42,14 +42,14 @@ class NotificationsSection extends ConsumerWidget {
                   value: has160,
                   onChanged: (value) => _setResinAlert(ref, threshold: 160, enabled: value),
                 ),
-                const Divider(height: 1, color: AppColors.divider),
+                Divider(height: 1, color: context.colors.divider),
                 _AlertSwitch(
                   title: 'Resin reaches 200',
                   subtitle: 'At cap, regeneration stops',
                   value: has200,
                   onChanged: (value) => _setResinAlert(ref, threshold: 200, enabled: value),
                 ),
-                const Divider(height: 1, color: AppColors.divider),
+                Divider(height: 1, color: context.colors.divider),
                 _AlertSwitch(
                   title: 'Transient Resin expiring',
                   subtitle: '24 h before a stack expires',
@@ -62,7 +62,7 @@ class NotificationsSection extends ConsumerWidget {
                     ref.invalidate(settingsSnapshotProvider);
                   },
                 ),
-                const Divider(height: 1, color: AppColors.divider),
+                Divider(height: 1, color: context.colors.divider),
                 _ExactAlarmsBanner(allowed: exactAllowedAsync.value ?? false),
               ],
             ),
@@ -140,9 +140,9 @@ class _ExactAlarmsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dotColor = allowed ? AppColors.successDot : AppColors.warning;
-    final strongColor = allowed ? AppColors.success : AppColors.warning;
-    final background = allowed ? AppColors.successContainer : AppColors.warningContainer;
+    final dotColor = allowed ? context.colors.successDot : context.colors.warning;
+    final strongColor = allowed ? context.colors.success : context.colors.warning;
+    final background = allowed ? context.colors.successContainer : context.colors.warningContainer;
     final strongText = allowed ? 'Exact alarms allowed. ' : 'Exact alarms not available. ';
     final mutedText = allowed
         ? 'Alerts fire on time.'
@@ -173,7 +173,7 @@ class _ExactAlarmsBanner extends StatelessWidget {
                   ),
                   TextSpan(
                     text: mutedText,
-                    style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
                   ),
                 ],
               ),

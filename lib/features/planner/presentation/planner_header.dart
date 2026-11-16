@@ -34,7 +34,7 @@ class PlannerHeader extends StatelessWidget {
                   context,
                 ).push(MaterialPageRoute(builder: (_) => const InventoryScreen())),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary,
+                  foregroundColor: context.colors.primary,
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(0, 32),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -58,8 +58,8 @@ class _AddTargetButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
+      decoration: BoxDecoration(
+        color: context.colors.primary,
         borderRadius: BorderRadius.all(Radius.circular(999)),
         boxShadow: AppShadows.primaryButton,
       ),
@@ -69,18 +69,22 @@ class _AddTargetButton extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(999)),
           onTap: () =>
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddTargetScreen())),
-          child: const Padding(
-            padding: EdgeInsets.fromLTRB(12, 0, 16, 0),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
             child: SizedBox(
               height: 44,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, color: Colors.white, size: 18),
-                  SizedBox(width: AppSpacing.xs),
+                  Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary, size: 18),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
                     'Add target',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),

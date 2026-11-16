@@ -33,8 +33,8 @@ class ResinForecastSection extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
         borderRadius: AppRadius.cardRadius,
         boxShadow: AppShadows.card,
       ),
@@ -85,7 +85,7 @@ class ResinForecastSection extends ConsumerWidget {
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add an alert'),
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
+                foregroundColor: context.colors.primary,
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(0, 44),
               ),
@@ -112,10 +112,10 @@ class _NowRow extends StatelessWidget {
           Container(
             width: 12,
             height: 12,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
+            decoration: BoxDecoration(
+              color: context.colors.primary,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: AppColors.primaryContainer, spreadRadius: 4)],
+              boxShadow: [BoxShadow(color: context.colors.primaryContainer, spreadRadius: 4)],
             ),
           ),
           const SizedBox(width: AppSpacing.mlg),
@@ -123,7 +123,7 @@ class _NowRow extends StatelessWidget {
             width: 44,
             child: Text(
               'Now',
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
             ),
           ),
           Expanded(
@@ -134,7 +134,7 @@ class _NowRow extends StatelessWidget {
                 Text('$value resin', style: textTheme.titleMedium),
                 Text(
                   '+1 every ${const ResinEngine().regenInterval.inMinutes} minutes',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
                 ),
               ],
             ),
@@ -164,10 +164,10 @@ class _AlertRow extends ConsumerWidget {
           Container(
             width: 12,
             height: 12,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surface,
-              border: Border.fromBorderSide(BorderSide(color: AppColors.primary, width: 2)),
+              color: context.colors.surface,
+              border: Border.fromBorderSide(BorderSide(color: context.colors.primary, width: 2)),
             ),
           ),
           const SizedBox(width: AppSpacing.mlg),
@@ -175,7 +175,7 @@ class _AlertRow extends ConsumerWidget {
             width: 44,
             child: Text(
               formatTime(row.time),
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
             ),
           ),
           Expanded(
@@ -186,7 +186,7 @@ class _AlertRow extends ConsumerWidget {
                 Text(label, style: textTheme.titleMedium),
                 Text(
                   'Alert · in ${formatCountdown(row.time.difference(now))}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
                 ),
               ],
             ),

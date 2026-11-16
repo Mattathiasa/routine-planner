@@ -69,14 +69,14 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               ClipRRect(
                 borderRadius: AppRadius.cardRadius,
                 child: DecoratedBox(
-                  decoration: const BoxDecoration(
-                    color: AppColors.surface,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
                     boxShadow: AppShadows.card,
                   ),
                   child: Column(
                     children: [
                       for (var i = 0; i < rows.length; i++) ...[
-                        if (i > 0) const Divider(height: 1, color: AppColors.divider),
+                        if (i > 0) Divider(height: 1, color: context.colors.divider),
                         _InventoryRow(
                           row: rows[i],
                           controller: _controllerFor(rows[i]),

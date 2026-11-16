@@ -14,8 +14,8 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
         borderRadius: AppRadius.cardRadius,
         boxShadow: AppShadows.card,
       ),

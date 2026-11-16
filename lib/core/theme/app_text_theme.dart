@@ -9,7 +9,7 @@ import 'app_colors.dart';
 /// via `copyWith`. Manrope is used for numerals and page/section headings
 /// (with the design's letter-spacing, converted from em to logical
 /// pixels); Inter is the default for everything else, including titles.
-TextTheme buildAppTextTheme() {
+TextTheme buildAppTextTheme(AppColorScheme colors) {
   TextStyle manrope(double size, FontWeight weight, double letterSpacingEm, Color color) {
     return GoogleFonts.manrope(
       fontSize: size,
@@ -26,29 +26,29 @@ TextTheme buildAppTextTheme() {
 
   return TextTheme(
     // Page titles (e.g. "Friday", "Resin", "Planner", "Settings").
-    displayLarge: manrope(40, FontWeight.w800, -0.03, AppColors.textPrimary),
-    displayMedium: manrope(36, FontWeight.w800, -0.03, AppColors.textPrimary),
-    displaySmall: manrope(22, FontWeight.w800, -0.02, AppColors.textPrimary),
+    displayLarge: manrope(40, FontWeight.w800, -0.03, colors.textPrimary),
+    displayMedium: manrope(36, FontWeight.w800, -0.03, colors.textPrimary),
+    displaySmall: manrope(22, FontWeight.w800, -0.02, colors.textPrimary),
 
     // Section headers and bold stat values (e.g. "Today's farm", "5:12").
-    headlineLarge: manrope(20, FontWeight.w800, -0.02, AppColors.textPrimary),
-    headlineMedium: manrope(17, FontWeight.w800, -0.01, AppColors.textPrimary),
-    headlineSmall: inter(17, FontWeight.w700, AppColors.textPrimary),
+    headlineLarge: manrope(20, FontWeight.w800, -0.02, colors.textPrimary),
+    headlineMedium: manrope(17, FontWeight.w800, -0.01, colors.textPrimary),
+    headlineSmall: inter(17, FontWeight.w700, colors.textPrimary),
 
     // Card/row titles and button labels.
-    titleLarge: inter(15, FontWeight.w700, AppColors.textPrimary),
-    titleMedium: inter(15, FontWeight.w600, AppColors.textPrimary),
-    titleSmall: inter(14, FontWeight.w600, AppColors.textPrimary),
+    titleLarge: inter(15, FontWeight.w700, colors.textPrimary),
+    titleMedium: inter(15, FontWeight.w600, colors.textPrimary),
+    titleSmall: inter(14, FontWeight.w600, colors.textPrimary),
 
     // Secondary/body text — captions, subtitles, chip text.
-    bodyLarge: inter(13, FontWeight.w400, AppColors.textSecondary),
-    bodyMedium: inter(12, FontWeight.w400, AppColors.textSecondary),
-    bodySmall: inter(11, FontWeight.w600, AppColors.textSecondary),
+    bodyLarge: inter(13, FontWeight.w400, colors.textSecondary),
+    bodyMedium: inter(12, FontWeight.w400, colors.textSecondary),
+    bodySmall: inter(11, FontWeight.w600, colors.textSecondary),
 
     // Labels — nav/button text, micro-captions.
-    labelLarge: inter(14, FontWeight.w700, AppColors.textPrimary),
-    labelMedium: inter(13, FontWeight.w600, AppColors.textSecondary),
-    labelSmall: inter(11, FontWeight.w600, AppColors.textSecondary),
+    labelLarge: inter(14, FontWeight.w700, colors.textPrimary),
+    labelMedium: inter(13, FontWeight.w600, colors.textSecondary),
+    labelSmall: inter(11, FontWeight.w600, colors.textSecondary),
   );
 }
 

@@ -26,7 +26,7 @@ class PlannerSettingsSection extends ConsumerWidget {
           data: (settings) => ClipRRect(
             borderRadius: AppRadius.cardRadius,
             child: DecoratedBox(
-              decoration: const BoxDecoration(color: AppColors.surface, boxShadow: AppShadows.card),
+              decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
               child: Column(
                 children: [
                   SizedBox(
@@ -56,7 +56,7 @@ class PlannerSettingsSection extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const Divider(height: 1, color: AppColors.divider),
+                  Divider(height: 1, color: context.colors.divider),
                   SizedBox(
                     height: 64,
                     child: Row(
@@ -113,8 +113,8 @@ class _WorldLevelStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      decoration: BoxDecoration(
+        color: context.colors.background,
         borderRadius: BorderRadius.all(Radius.circular(14)),
       ),
       child: Padding(
@@ -160,7 +160,7 @@ class _StepButton extends StatelessWidget {
       width: 40,
       height: 40,
       child: Material(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: const BorderRadius.all(Radius.circular(11)),
         child: InkWell(
           borderRadius: const BorderRadius.all(Radius.circular(11)),
@@ -168,7 +168,7 @@ class _StepButton extends StatelessWidget {
           child: Semantics(
             label: semanticLabel,
             button: true,
-            child: Icon(icon, size: 16, color: AppColors.textPrimary),
+            child: Icon(icon, size: 16, color: context.colors.textPrimary),
           ),
         ),
       ),

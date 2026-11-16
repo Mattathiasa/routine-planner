@@ -66,7 +66,7 @@ class ResinHeroCard extends ConsumerWidget {
                       child: Text(
                         '/ ${state.cap}',
                         style: textTheme.titleMedium?.copyWith(
-                          color: AppColors.onGradientSecondary,
+                          color: context.colors.onGradientSecondary,
                         ),
                       ),
                     ),
@@ -83,7 +83,7 @@ class ResinHeroCard extends ConsumerWidget {
                 if (fullAt != null)
                   Text(
                     'Full at ${formatTime(fullAt)}',
-                    style: textTheme.bodyLarge?.copyWith(color: AppColors.onGradientSecondary),
+                    style: textTheme.bodyLarge?.copyWith(color: context.colors.onGradientSecondary),
                   ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
@@ -120,7 +120,7 @@ class _StatColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(value, style: textTheme.titleSmall?.copyWith(color: Colors.white)),
-        Text(label, style: textTheme.labelSmall?.copyWith(color: AppColors.onGradientSecondary)),
+        Text(label, style: textTheme.labelSmall?.copyWith(color: context.colors.onGradientSecondary)),
       ],
     );
   }

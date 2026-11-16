@@ -37,14 +37,14 @@ class AccountsSection extends ConsumerWidget {
               child: ClipRRect(
                 borderRadius: AppRadius.cardRadius,
                 child: DecoratedBox(
-                  decoration: const BoxDecoration(
-                    color: AppColors.surface,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
                     boxShadow: AppShadows.card,
                   ),
                   child: Column(
                     children: [
                       for (var i = 0; i < profiles.length; i++) ...[
-                        if (i > 0) const Divider(height: 1, color: AppColors.divider),
+                        if (i > 0) Divider(height: 1, color: context.colors.divider),
                         _ProfileRow(
                           id: profiles[i].id,
                           displayName: profiles[i].displayName,
@@ -52,7 +52,7 @@ class AccountsSection extends ConsumerWidget {
                           canDelete: profiles.length > 1,
                         ),
                       ],
-                      const Divider(height: 1, color: AppColors.divider),
+                      Divider(height: 1, color: context.colors.divider),
                       _AddProfileRow(server: currentAsync.value?.server ?? 'asia'),
                     ],
                   ),
@@ -183,13 +183,13 @@ class _AddProfileRow extends ConsumerWidget {
         child: Row(
           children: [
             const SizedBox(width: AppSpacing.lg),
-            const Icon(Icons.add, color: AppColors.primary, size: 20),
+            Icon(Icons.add, color: context.colors.primary, size: 20),
             const SizedBox(width: AppSpacing.sm),
             Text(
               'Add account',
               style: Theme.of(
                 context,
-              ).textTheme.titleMedium?.copyWith(color: AppColors.primary),
+              ).textTheme.titleMedium?.copyWith(color: context.colors.primary),
             ),
           ],
         ),

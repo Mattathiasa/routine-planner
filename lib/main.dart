@@ -25,6 +25,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Routine Planner',
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.system,
       routerConfig: appRouter,
     );
   }

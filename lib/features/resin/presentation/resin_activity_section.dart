@@ -32,8 +32,8 @@ class ResinActivitySection extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
         borderRadius: AppRadius.cardRadius,
         boxShadow: AppShadows.card,
       ),
@@ -54,7 +54,7 @@ class ResinActivitySection extends ConsumerWidget {
                 TextButton(
                   onPressed: () => _undoLast(context, ref),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primary,
+                    foregroundColor: context.colors.primary,
                     minimumSize: const Size(0, 44),
                   ),
                   child: const Text('Undo last'),
@@ -66,8 +66,8 @@ class ResinActivitySection extends ConsumerWidget {
                 children: [
                   for (final event in events)
                     DecoratedBox(
-                      decoration: const BoxDecoration(
-                        border: Border(top: BorderSide(color: AppColors.divider)),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: context.colors.divider)),
                       ),
                       child: SizedBox(
                         height: 48,
@@ -77,7 +77,7 @@ class ResinActivitySection extends ConsumerWidget {
                               width: 44,
                               child: Text(
                                 formatTime(event.occurredAt),
-                                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
                               ),
                             ),
                             const SizedBox(width: AppSpacing.md),

@@ -106,7 +106,7 @@ class _PlannerChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: done ? AppColors.successContainer : AppColors.background,
+        color: done ? context.colors.successContainer : context.colors.background,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Text(
@@ -114,7 +114,7 @@ class _PlannerChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: done ? AppColors.success : AppColors.textPrimary,
+          color: done ? context.colors.success : context.colors.textPrimary,
         ),
       ),
     );

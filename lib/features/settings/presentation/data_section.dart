@@ -28,7 +28,7 @@ class DataSection extends ConsumerWidget {
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
           child: DecoratedBox(
-            decoration: const BoxDecoration(color: AppColors.surface, boxShadow: AppShadows.card),
+            decoration: BoxDecoration(color: context.colors.surface, boxShadow: AppShadows.card),
             child: Column(
               children: [
                 SizedBox(
@@ -61,9 +61,9 @@ class DataSection extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppColors.divider),
+                Divider(height: 1, color: context.colors.divider),
                 _DataRow(label: 'Export backup (JSON)', onTap: () => _exportBackup(context, ref)),
-                const Divider(height: 1, color: AppColors.divider),
+                Divider(height: 1, color: context.colors.divider),
                 _DataRow(label: 'Import backup', onTap: () => _confirmImport(context, ref)),
               ],
             ),
@@ -138,7 +138,7 @@ class _DataRow extends StatelessWidget {
           children: [
             const SizedBox(width: AppSpacing.lg),
             Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
-            const Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 18),
+            Icon(Icons.chevron_right, color: context.colors.textSecondary, size: 18),
             const SizedBox(width: AppSpacing.sm),
           ],
         ),

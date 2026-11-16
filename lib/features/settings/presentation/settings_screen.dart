@@ -24,8 +24,8 @@ class SettingsScreen extends StatelessWidget {
           children: [
             TextButton.icon(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.chevron_left, color: AppColors.primary),
-              label: Text('Today', style: textTheme.titleMedium?.copyWith(color: AppColors.primary)),
+              icon: Icon(Icons.chevron_left, color: context.colors.primary),
+              label: Text('Today', style: textTheme.titleMedium?.copyWith(color: context.colors.primary)),
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerLeft,

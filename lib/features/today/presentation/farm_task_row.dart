@@ -45,7 +45,7 @@ class FarmTaskRow extends ConsumerWidget {
                 Text(row.label, style: textTheme.titleLarge),
                 Text(
                   _subtitle(row),
-                  style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+                  style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
                 ),
               ],
             ),

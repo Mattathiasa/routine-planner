@@ -40,13 +40,13 @@ class _WeekDayCell extends StatelessWidget {
         children: [
           Text(
             _dayAbbreviations[index],
-            style: textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),
+            style: textTheme.labelSmall?.copyWith(color: context.colors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
             '${day.date.day}',
             style: day.isToday
-                ? textTheme.titleLarge?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w800)
+                ? textTheme.titleLarge?.copyWith(color: context.colors.primary, fontWeight: FontWeight.w800)
                 : textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.xxs),
@@ -59,8 +59,8 @@ class _WeekDayCell extends StatelessWidget {
                   child: Container(
                     width: 4,
                     height: 4,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
+                    decoration: BoxDecoration(
+                      color: context.colors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),

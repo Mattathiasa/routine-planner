@@ -16,28 +16,32 @@ class MostNeededSection extends StatelessWidget {
 
   final List<MostNeededRowData> rows;
 
-  static const _tileTints = [
-    (
-      background: AppColors.tileGreenBackground,
-      icon: AppColors.tileGreenIcon,
-      glyph: Icons.auto_stories_outlined,
-    ),
-    (
-      background: AppColors.tilePurpleBackground,
-      icon: AppColors.tilePurpleIcon,
-      glyph: Icons.circle_outlined,
-    ),
-    (
-      background: AppColors.tileBlueBackground,
-      icon: AppColors.tileBlueIcon,
-      glyph: Icons.diamond_outlined,
-    ),
-    (
-      background: AppColors.tileAmberBackground,
-      icon: AppColors.tileAmberIcon,
-      glyph: Icons.auto_awesome_outlined,
-    ),
-  ];
+  static List<({Color background, Color icon, IconData glyph})> _tileTints(
+    AppColorScheme colors,
+  ) {
+    return [
+      (
+        background: colors.tileGreenBackground,
+        icon: colors.tileGreenIcon,
+        glyph: Icons.auto_stories_outlined,
+      ),
+      (
+        background: colors.tilePurpleBackground,
+        icon: colors.tilePurpleIcon,
+        glyph: Icons.circle_outlined,
+      ),
+      (
+        background: colors.tileBlueBackground,
+        icon: colors.tileBlueIcon,
+        glyph: Icons.diamond_outlined,
+      ),
+      (
+        background: colors.tileAmberBackground,
+        icon: colors.tileAmberIcon,
+        glyph: Icons.auto_awesome_outlined,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,21 +63,24 @@ class MostNeededSection extends StatelessWidget {
           AppCard(child: Text('Nothing missing — fully stocked.', style: textTheme.bodyLarge))
         else
           DecoratedBox(
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
+            decoration: BoxDecoration(
+              color: context.colors.surface,
               borderRadius: AppRadius.cardRadius,
               boxShadow: AppShadows.card,
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
-                children: [
-                  for (var i = 0; i < rows.length; i++) ...[
-                    if (i > 0) const Divider(height: 1, color: AppColors.divider),
-                    _MostNeededRow(data: rows[i], tint: _tileTints[i % _tileTints.length]),
+              child: Builder(builder: (context) {
+                final tints = _tileTints(context.colors);
+                return Column(
+                  children: [
+                    for (var i = 0; i < rows.length; i++) ...[
+                      if (i > 0) Divider(height: 1, color: context.colors.divider),
+                      _MostNeededRow(data: rows[i], tint: tints[i % tints.length]),
+                    ],
                   ],
-                ],
-              ),
+                );
+              }),
             ),
           ),
       ],
@@ -118,8 +125,8 @@ class _MostNeededRow extends StatelessWidget {
                         text: data.availabilityLabel,
                         style: TextStyle(
                           color: data.highlightAvailability
-                              ? AppColors.success
-                              : AppColors.textSecondary,
+                              ? context.colors.success
+                              : context.colors.textSecondary,
                           fontWeight: data.highlightAvailability
                               ? FontWeight.w600
                               : FontWeight.w400,

@@ -56,12 +56,12 @@ class PillNavBar extends StatelessWidget {
     final tab = _tabs[index];
     final active = navigationShell.currentIndex == index;
     final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
-      color: active ? AppColors.primaryHover : AppColors.textSecondary,
+      color: active ? context.colors.primaryHover : context.colors.textSecondary,
       fontWeight: active ? FontWeight.w700 : FontWeight.w600,
     );
 
     return Material(
-      color: active ? AppColors.primaryContainer : Colors.transparent,
+      color: active ? context.colors.primaryContainer : Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -77,7 +77,7 @@ class PillNavBar extends StatelessWidget {
               Icon(
                 tab.icon,
                 size: 20,
-                color: active ? AppColors.primaryHover : AppColors.textSecondary,
+                color: active ? context.colors.primaryHover : context.colors.textSecondary,
               ),
               const SizedBox(width: 8),
               Text(tab.label, style: textStyle),

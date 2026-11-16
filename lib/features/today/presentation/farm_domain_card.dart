@@ -28,7 +28,7 @@ class FarmDomainCard extends StatelessWidget {
                     Text(data.name, style: textTheme.titleLarge),
                     Text(
                       data.scheduleLabel,
-                      style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+                      style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
                     ),
                   ],
                 ),
@@ -41,7 +41,7 @@ class FarmDomainCard extends StatelessWidget {
             child: Divider(height: 1),
           ),
           for (var i = 0; i < data.rows.length; i++) ...[
-            if (i > 0) const Divider(height: 1, color: AppColors.divider),
+            if (i > 0) Divider(height: 1, color: context.colors.divider),
             FarmTaskRow(row: data.rows[i], costResin: data.costResin),
           ],
         ],
@@ -57,8 +57,8 @@ class _OpenPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: const BoxDecoration(
-        color: AppColors.successContainer,
+      decoration: BoxDecoration(
+        color: context.colors.successContainer,
         borderRadius: BorderRadius.all(Radius.circular(999)),
       ),
       child: Row(
@@ -67,14 +67,14 @@ class _OpenPill extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: const BoxDecoration(color: AppColors.successDot, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: context.colors.successDot, shape: BoxShape.circle),
           ),
           const SizedBox(width: AppSpacing.xxs),
           Text(
             'Open',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.success, fontWeight: FontWeight.w600),
+            ).textTheme.bodyMedium?.copyWith(color: context.colors.success, fontWeight: FontWeight.w600),
           ),
         ],
       ),

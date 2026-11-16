@@ -24,7 +24,7 @@ class TodaysFarmSection extends StatelessWidget {
             Text("Today's farm", style: textTheme.headlineLarge),
             Text(
               '$taskCount task${taskCount == 1 ? '' : 's'}',
-              style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+              style: textTheme.bodyLarge?.copyWith(color: context.colors.textSecondary),
             ),
           ],
         ),
