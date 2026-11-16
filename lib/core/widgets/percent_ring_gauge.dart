@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_theme.dart';
+import '../theme/app_motion.dart';
 
 const _diameter = 48.0;
 const _radius = 19.0;
@@ -14,7 +15,11 @@ const _strokeWidth = 5.0;
 /// Resin screen's 220px ring — not a shared/refactored painter, to avoid
 /// touching that already-shipped screen.
 class PercentRingGauge extends StatelessWidget {
-  const PercentRingGauge({super.key, required this.percent, required this.semanticLabel});
+  const PercentRingGauge({
+    super.key,
+    required this.percent,
+    required this.semanticLabel,
+  });
 
   final int percent;
   final String semanticLabel;
@@ -31,18 +36,25 @@ class PercentRingGauge extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            CustomPaint(
-              size: const Size(_diameter, _diameter),
-              painter: _RingPainter(
-                fraction: fraction,
-                trackColor: context.colors.primaryContainer,
-                progressColor: context.colors.primary,
+            TweenAnimationBuilder<double>(
+              tween: Tween(end: fraction),
+              duration: AppMotion.of(context),
+              curve: AppMotion.curve,
+              builder: (context, animatedFraction, _) => CustomPaint(
+                size: const Size(_diameter, _diameter),
+                painter: _RingPainter(
+                  fraction: animatedFraction,
+                  trackColor: context.colors.primaryContainer,
+                  progressColor: context.colors.primary,
+                ),
               ),
             ),
             ExcludeSemantics(
               child: Text(
                 '$percent%',
-                style: AppDisplayNumbers.gaugePercent(color: context.colors.textPrimary),
+                style: AppDisplayNumbers.gaugePercent(
+                  color: context.colors.textPrimary,
+                ),
               ),
             ),
           ],
@@ -53,7 +65,11 @@ class PercentRingGauge extends StatelessWidget {
 }
 
 class _RingPainter extends CustomPainter {
-  _RingPainter({required this.fraction, required this.trackColor, required this.progressColor});
+  _RingPainter({
+    required this.fraction,
+    required this.trackColor,
+    required this.progressColor,
+  });
 
   final double fraction;
   final Color trackColor;

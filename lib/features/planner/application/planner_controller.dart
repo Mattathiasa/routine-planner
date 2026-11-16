@@ -156,13 +156,75 @@ class PlannerController extends _$PlannerController {
     required int currentAscension,
     required int goalAscension,
     List<({int current, int goal})>? talents,
+  }) {
+    return _writeTarget(
+      id: newId(),
+      entityKind: entityKind,
+      entityId: entityId,
+      linkedCharacterId: linkedCharacterId,
+      currentLevel: currentLevel,
+      goalLevel: goalLevel,
+      currentAscension: currentAscension,
+      goalAscension: goalAscension,
+      talents: talents,
+    );
+  }
+
+  /// Rewrites an existing target's progress fields (same id, upsert
+  /// semantics) — the edit-form counterpart of [addTarget].
+  Future<void> updateTarget({
+    required String id,
+    required String entityKind,
+    required String entityId,
+    String? linkedCharacterId,
+    required int currentLevel,
+    required int goalLevel,
+    required int currentAscension,
+    required int goalAscension,
+    List<({int current, int goal})>? talents,
+  }) {
+    return _writeTarget(
+      id: id,
+      entityKind: entityKind,
+      entityId: entityId,
+      linkedCharacterId: linkedCharacterId,
+      currentLevel: currentLevel,
+      goalLevel: goalLevel,
+      currentAscension: currentAscension,
+      goalAscension: goalAscension,
+      talents: talents,
+    );
+  }
+
+  /// Soft-deletes a target. Reversible via [restoreTarget] — the UI pairs
+  /// this with an undo snackbar instead of a confirm dialog.
+  Future<void> removeTarget(String id) async {
+    await ref.read(plannerRepositoryProvider).softDeleteTarget(id);
+    ref.invalidateSelf();
+  }
+
+  Future<void> restoreTarget(String id) async {
+    await ref.read(plannerRepositoryProvider).restoreTarget(id);
+    ref.invalidateSelf();
+  }
+
+  Future<void> _writeTarget({
+    required String id,
+    required String entityKind,
+    required String entityId,
+    String? linkedCharacterId,
+    required int currentLevel,
+    required int goalLevel,
+    required int currentAscension,
+    required int goalAscension,
+    List<({int current, int goal})>? talents,
   }) async {
     final profileId = (await ref.read(currentProfileProvider.future)).id;
     await ref
         .read(plannerRepositoryProvider)
         .upsertTarget(
           PlannerTargetsCompanion.insert(
-            id: newId(),
+            id: id,
             profileId: profileId,
             entityKind: entityKind,
             entityId: entityId,
@@ -265,6 +327,7 @@ Future<TargetCardData> _toCardData(
       name: character.name,
       rarity: character.rarity,
       isWeapon: false,
+      entityId: target.entityId,
       element: character.element,
       subtitle: '${character.element} · character',
       percentInHand: percent,
@@ -290,6 +353,8 @@ Future<TargetCardData> _toCardData(
     name: weapon.name,
     rarity: weapon.rarity,
     isWeapon: true,
+    entityId: target.entityId,
+    linkedCharacterId: target.linkedCharacterId,
     element: null,
     subtitle: subtitle,
     percentInHand: percent,

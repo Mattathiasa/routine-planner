@@ -35,6 +35,16 @@ class PlannerRepository {
     );
   }
 
+  /// Clears a soft delete — the undo path for [softDeleteTarget].
+  Future<void> restoreTarget(String id) {
+    return (_db.update(_db.plannerTargets)..where((t) => t.id.equals(id))).write(
+      PlannerTargetsCompanion(
+        deletedAt: const Value(null),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
+  }
+
   Future<Map<String, int>> inventoryForProfile(String profileId) async {
     final rows = await (_db.select(
       _db.materialInventory,

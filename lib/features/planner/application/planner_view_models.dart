@@ -15,6 +15,11 @@ abstract class TargetCardData with _$TargetCardData {
     required int rarity,
     required bool isWeapon,
 
+    /// Catalog identity, carried so the card can open the edit form
+    /// prefilled without re-querying the row.
+    required String entityId,
+    String? linkedCharacterId,
+
     /// Null for weapons — they get a square tile, not an element-tinted
     /// avatar circle.
     String? element,

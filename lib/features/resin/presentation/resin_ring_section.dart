@@ -11,6 +11,8 @@ import '../../../core/theme/app_text_theme.dart';
 import '../application/resin_controller.dart';
 import '../domain/resin_engine.dart';
 import 'resin_formatting.dart';
+import '../../../core/theme/app_motion.dart';
+import '../../../core/widgets/rolling_number.dart';
 
 /// The ring gauge + the "Next +1 in" / "Full at" stat tiles, in one 24px
 /// white section — the ring section's own radius (24px) doesn't match
@@ -96,10 +98,16 @@ class _ResinRing extends StatelessWidget {
     return SizedBox(
       width: 220,
       height: 220,
-      child: CustomPaint(
-        painter: _ResinRingPainter(
-          fraction: fraction,
-          trackColor: context.colors.primaryContainer,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(end: fraction),
+        duration: AppMotion.of(context),
+        curve: AppMotion.curve,
+        builder: (context, animatedFraction, child) => CustomPaint(
+          painter: _ResinRingPainter(
+            fraction: animatedFraction,
+            trackColor: context.colors.primaryContainer,
+          ),
+          child: child,
         ),
         child: Center(
           child: Semantics(
@@ -108,9 +116,11 @@ class _ResinRing extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '$value',
-                    style: AppDisplayNumbers.ringNumber(color: context.colors.textPrimary),
+                  RollingNumber(
+                    value,
+                    style: AppDisplayNumbers.ringNumber(
+                      color: context.colors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -186,7 +196,10 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mlg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.mlg,
+        vertical: AppSpacing.md,
+      ),
       decoration: BoxDecoration(
         color: context.colors.background,
         borderRadius: BorderRadius.all(Radius.circular(16)),

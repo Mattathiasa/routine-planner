@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_motion.dart';
+import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/percent_ring_gauge.dart';
 import '../application/planner_view_models.dart';
+import 'add_target_screen.dart';
 import 'entity_avatar.dart';
 import 'rarity_chip.dart';
 
@@ -22,68 +25,98 @@ class TargetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: AppRadius.cardRadius,
+        onTap: () => Navigator.of(context).push(
+          AppPageRoute<void>(builder: (_) => AddTargetScreen(editing: data)),
+        ),
+        child: AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              EntityAvatar(isWeapon: data.isWeapon, name: data.name, element: data.element),
-              const SizedBox(width: AppSpacing.mlg),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: 'target-avatar-${data.id}',
+                    child: EntityAvatar(
+                      isWeapon: data.isWeapon,
+                      name: data.name,
+                      element: data.element,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.mlg),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Flexible(
-                          child: Text(
-                            data.name,
-                            style: textTheme.titleLarge,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                data.name,
+                                style: textTheme.titleLarge,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            RarityChip(rarity: data.rarity),
+                          ],
                         ),
-                        const SizedBox(width: AppSpacing.sm),
-                        RarityChip(rarity: data.rarity),
+                        const SizedBox(height: 3),
+                        Text(data.subtitle, style: textTheme.bodyLarge),
                       ],
                     ),
-                    const SizedBox(height: 3),
-                    Text(data.subtitle, style: textTheme.bodyLarge),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: AppSpacing.mlg),
+                  PercentRingGauge(
+                    percent: data.percentInHand,
+                    semanticLabel:
+                        '${data.percentInHand}% of materials in hand',
+                  ),
+                ],
               ),
-              const SizedBox(width: AppSpacing.mlg),
-              PercentRingGauge(
-                percent: data.percentInHand,
-                semanticLabel: '${data.percentInHand}% of materials in hand',
+              const SizedBox(height: AppSpacing.mlg),
+              Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: _buildChips(),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.mlg),
-          Wrap(spacing: AppSpacing.xs, runSpacing: AppSpacing.xs, children: _buildChips()),
-        ],
+        ),
       ),
     );
   }
 
   List<Widget> _buildChips() {
     final levelAscensionDone =
-        data.currentLevel == data.goalLevel && data.currentAscension == data.goalAscension;
+        data.currentLevel == data.goalLevel &&
+        data.currentAscension == data.goalAscension;
 
     final chips = <Widget>[];
     if (levelAscensionDone) {
       chips.add(_PlannerChip(label: 'Lv ${data.goalLevel} · done', done: true));
     } else {
-      chips.add(_PlannerChip(label: 'Lv ${data.currentLevel} → ${data.goalLevel}'));
-      chips.add(_PlannerChip(label: 'A${data.currentAscension} → A${data.goalAscension}'));
+      chips.add(
+        _PlannerChip(label: 'Lv ${data.currentLevel} → ${data.goalLevel}'),
+      );
+      chips.add(
+        _PlannerChip(
+          label: 'A${data.currentAscension} → A${data.goalAscension}',
+        ),
+      );
     }
 
     final talents = data.talents;
     if (talents != null) {
       final first = talents.first;
-      final uniform = talents.every((t) => t.current == first.current && t.goal == first.goal);
+      final uniform = talents.every(
+        (t) => t.current == first.current && t.goal == first.goal,
+      );
       final label = uniform
           ? 'Talents all ${first.current} → ${first.goal}'
           : 'Talents ${talents.map((t) => t.current).join('·')} → '
@@ -106,7 +139,9 @@ class _PlannerChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: done ? context.colors.successContainer : context.colors.background,
+        color: done
+            ? context.colors.successContainer
+            : context.colors.background,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Text(

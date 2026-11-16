@@ -11,6 +11,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../resin/application/resin_controller.dart';
 import '../../resin/domain/resin_engine.dart';
 import '../../resin/presentation/resin_formatting.dart';
+import '../../../core/widgets/rolling_number.dart';
 
 /// Tapping opens the Resin tab — the same [ResinController] state the Resin
 /// screen itself will read, so the two never disagree.
@@ -42,11 +43,19 @@ class ResinHeroCard extends ConsumerWidget {
               gradient: const LinearGradient(
                 begin: Alignment(-0.6, -1),
                 end: Alignment(0.6, 1),
-                colors: [Color(0xFF3B4FE0), Color(0xFF4F5FEA), Color(0xFF6A77F2)],
+                colors: [
+                  Color(0xFF3B4FE0),
+                  Color(0xFF4F5FEA),
+                  Color(0xFF6A77F2),
+                ],
                 stops: [0.0, 0.55, 1.0],
               ),
               boxShadow: const [
-                BoxShadow(color: Color(0x593B4FE0), offset: Offset(0, 12), blurRadius: 30),
+                BoxShadow(
+                  color: Color(0x593B4FE0),
+                  offset: Offset(0, 12),
+                  blurRadius: 30,
+                ),
               ],
             ),
             child: Column(
@@ -60,7 +69,7 @@ class ResinHeroCard extends ConsumerWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('$v', style: AppDisplayNumbers.heroNumber()),
+                    RollingNumber(v, style: AppDisplayNumbers.heroNumber()),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10, left: 4),
                       child: Text(
@@ -83,15 +92,23 @@ class ResinHeroCard extends ConsumerWidget {
                 if (fullAt != null)
                   Text(
                     'Full at ${formatTime(fullAt)}',
-                    style: textTheme.bodyLarge?.copyWith(color: context.colors.onGradientSecondary),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: context.colors.onGradientSecondary,
+                    ),
                   ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _StatColumn(label: 'Condensed', value: '${state.condensed}'),
+                    _StatColumn(
+                      label: 'Condensed',
+                      value: '${state.condensed}',
+                    ),
                     _StatColumn(label: 'Fragile', value: '${state.fragile}'),
-                    _StatColumn(label: 'Transient', value: '${state.transient.length}'),
+                    _StatColumn(
+                      label: 'Transient',
+                      value: '${state.transient.length}',
+                    ),
                   ],
                 ),
               ],
@@ -100,7 +117,10 @@ class ResinHeroCard extends ConsumerWidget {
         );
       },
       loading: () => const AppCard(
-        child: SizedBox(height: 160, child: Center(child: CircularProgressIndicator())),
+        child: SizedBox(
+          height: 160,
+          child: Center(child: CircularProgressIndicator()),
+        ),
       ),
       error: (error, stack) => AppCard(child: Text('Error: $error')),
     );
@@ -120,7 +140,12 @@ class _StatColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(value, style: textTheme.titleSmall?.copyWith(color: Colors.white)),
-        Text(label, style: textTheme.labelSmall?.copyWith(color: context.colors.onGradientSecondary)),
+        Text(
+          label,
+          style: textTheme.labelSmall?.copyWith(
+            color: context.colors.onGradientSecondary,
+          ),
+        ),
       ],
     );
   }
