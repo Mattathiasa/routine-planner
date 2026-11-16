@@ -40,7 +40,7 @@ jobs:
       - name: Update docs/releases with new APK
         run: |
           mkdir -p docs/releases
-          cp build/app/outputs/flutter-apk/app-release.apk docs/releases/routine-planner-v0.1.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk docs/releases/routine-planner-v1.0.0.apk
 
       - name: Commit and push updated docs
         run: |
