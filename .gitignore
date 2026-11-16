@@ -6,3 +6,6 @@ build/
 .idea/
 *.iml
 .DS_Store
+
+# golden test failure artifacts
+test/goldens/failures/
