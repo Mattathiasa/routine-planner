@@ -197,4 +197,46 @@ void main() {
       expect(engine.planningTotal(state, now), 0);
     });
   });
+
+  // ASSUMPTION TESTS (docs/ASSUMPTIONS.md): these pin the engine's current
+  // guesses about two in-game mechanics nobody has verified. They document
+  // behaviour under the named constants — they are not trusted fixtures,
+  // and other tests must not rely on these behaviours as ground truth.
+  group('unverified mechanics behind named constants', () {
+    test('ASSUMPTION 1: spending below cap restarts the timer from zero', () {
+      expect(ResinEngine.assumedTimerRestartsFromZeroOnReset, isTrue,
+          reason: 'If this constant was flipped, update docs/ASSUMPTIONS.md and this group.');
+      // Timer was mid-tick (due in 5 min); after spending, it restarts at
+      // a full R rather than keeping the old phase.
+      final (state, _) = engine.spend(ResinState(v: 100, n: notDueYet), now, cost: 20);
+      expect(state.n, now.add(r));
+    });
+
+    test('ASSUMPTION 2: resin at or above cap does not regenerate', () {
+      expect(ResinEngine.assumedNoRegenerationAboveCap, isTrue,
+          reason: 'If this constant was flipped, update docs/ASSUMPTIONS.md and this group.');
+      // Over-cap value from a fragile resin: no timer, value frozen even
+      // a week later.
+      final (state, _) = engine.useFragile(const ResinState(v: 180, n: null, fragile: 1), now);
+      expect(state.v, 240);
+      expect(state.n, isNull);
+      expect(engine.v(state, now.add(const Duration(days: 7))), 240);
+    });
+
+    test('time travel: a device clock jumped backward never produces negative ticks', () {
+      // The engine is a pure function of the queried instant; a query
+      // before the anchor (clock set back) yields k == 0, not an error or
+      // a negative projection.
+      final state = ResinState(v: 100, n: now);
+      final past = now.subtract(const Duration(days: 2));
+      expect(engine.k(state, past), 0);
+      expect(engine.v(state, past), 100);
+      expect(engine.timeToThreshold(state, 150), now.add(r * 49));
+    });
+
+    test('time travel: a device clock jumped far forward just clamps at cap', () {
+      final state = ResinState(v: 100, n: now);
+      expect(engine.v(state, now.add(const Duration(days: 365))), state.cap);
+    });
+  });
 }

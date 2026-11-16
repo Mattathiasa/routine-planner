@@ -36,6 +36,18 @@ class ResinEngine {
   /// Resin value of one fragile or transient resin item once used.
   static const int fragileOrTransientResinValue = 60;
 
+  /// UNVERIFIED in-game (see docs/ASSUMPTIONS.md): when a mutation drops
+  /// resin below cap, the +1 timer restarts from zero (`now + R`) rather
+  /// than keeping the phase of the previously running tick. Flip to false
+  /// to get the alternative hypothesis (tick phase survives mutations).
+  static const bool assumedTimerRestartsFromZeroOnReset = true;
+
+  /// UNVERIFIED in-game (see docs/ASSUMPTIONS.md): resin at or above cap
+  /// does not regenerate — the timer stops (`n == null`) and the stored
+  /// value stays frozen. Flip to false to get the alternative hypothesis
+  /// (natural +1 ticks continue past cap).
+  static const bool assumedNoRegenerationAboveCap = true;
+
   /// `k(t) = floor((t - n) / R) + 1` if `n != null` and `t >= n`, else `0`.
   int k(ResinState state, DateTime now) {
     final n = state.n;
@@ -49,10 +61,12 @@ class ResinEngine {
   /// returned as-is — including when it's legitimately above cap from
   /// using Condensed/Fragile/Transient resin. The `min` only ever needs to
   /// guard against a large elapsed-tick count overshooting cap while a
-  /// regen is actively in progress.
+  /// regen is actively in progress — and only exists at all under
+  /// [assumedNoRegenerationAboveCap].
   int v(ResinState state, DateTime now) {
     if (state.n == null) return state.v;
     final projected = state.v + k(state, now);
+    if (!assumedNoRegenerationAboveCap) return projected;
     return projected > state.cap ? state.cap : projected;
   }
 
@@ -80,10 +94,22 @@ class ResinEngine {
         fragileOrTransientResinValue * (state.fragile + unexpiredTransient);
   }
 
-  /// Timer restarts from zero (`now + R`) while still under cap; no timer
-  /// (`null`) once at or above cap — resin above cap does not regenerate.
-  DateTime? _reanchor(int newV, int cap, DateTime now) {
-    return newV >= cap ? null : now.add(regenInterval);
+  /// Re-derives `n` after a mutation changed `v`. Both branches encode the
+  /// unverified mechanics, each behind its named constant:
+  /// - [assumedNoRegenerationAboveCap]: at/above cap there is no timer
+  ///   (`null`); the alternative keeps ticking past cap.
+  /// - [assumedTimerRestartsFromZeroOnReset]: under cap the timer restarts
+  ///   from zero (`now + R`); the alternative preserves the tick phase of
+  ///   the previously running timer ([previousN], advanced by whole
+  ///   intervals into the future).
+  DateTime? _reanchor(int newV, int cap, DateTime now, {DateTime? previousN}) {
+    if (newV >= cap && assumedNoRegenerationAboveCap) return null;
+    if (assumedTimerRestartsFromZeroOnReset || previousN == null) {
+      return now.add(regenInterval);
+    }
+    if (previousN.isAfter(now)) return previousN;
+    final elapsedPeriods = now.difference(previousN).inSeconds ~/ regenInterval.inSeconds;
+    return previousN.add(regenInterval * (elapsedPeriods + 1));
   }
 
   /// Reads `x` straight from the in-game UI. With [fullIn] (an in-game
@@ -99,6 +125,8 @@ class ResinEngine {
     final cap = state.cap;
     final DateTime? n;
     if (x >= cap) {
+      // Encodes [assumedNoRegenerationAboveCap]: a UI read at/above cap
+      // means no timer is running.
       n = null;
     } else if (fullIn != null) {
       n = now.add(fullIn).subtract(regenInterval * (cap - x - 1));
@@ -118,7 +146,7 @@ class ResinEngine {
       throw InsufficientResinException('Need $cost resin but only $projected available.');
     }
     final newV = projected - cost;
-    final newState = state.copyWith(v: newV, n: _reanchor(newV, state.cap, now));
+    final newState = state.copyWith(v: newV, n: _reanchor(newV, state.cap, now, previousN: state.n));
     final event = ResinEvent.spend(occurredAt: now, cost: cost);
     return (newState, event);
   }
@@ -139,7 +167,7 @@ class ResinEngine {
     final newV = projected - cost;
     final newState = state.copyWith(
       v: newV,
-      n: _reanchor(newV, state.cap, now),
+      n: _reanchor(newV, state.cap, now, previousN: state.n),
       condensed: state.condensed + amount,
     );
     final event = ResinEvent.craftCondensed(occurredAt: now, cost: cost, amount: amount);
@@ -155,7 +183,7 @@ class ResinEngine {
     final newV = v(state, now) + fragileOrTransientResinValue * amount;
     final newState = state.copyWith(
       v: newV,
-      n: _reanchor(newV, state.cap, now),
+      n: _reanchor(newV, state.cap, now, previousN: state.n),
       fragile: state.fragile - amount,
     );
     final event = ResinEvent.useFragile(occurredAt: now, amount: amount);
@@ -171,7 +199,7 @@ class ResinEngine {
     final newV = v(state, now) + condensedResinValue * amount;
     final newState = state.copyWith(
       v: newV,
-      n: _reanchor(newV, state.cap, now),
+      n: _reanchor(newV, state.cap, now, previousN: state.n),
       condensed: state.condensed - amount,
     );
     final event = ResinEvent.useCondensed(occurredAt: now, amount: amount);
@@ -196,7 +224,7 @@ class ResinEngine {
     final newV = v(state, now) + fragileOrTransientResinValue * batch.count;
     final newState = state.copyWith(
       v: newV,
-      n: _reanchor(newV, state.cap, now),
+      n: _reanchor(newV, state.cap, now, previousN: state.n),
       transient: state.transient.where((b) => b.id != batchId).toList(),
     );
     final event = ResinEvent.useTransient(occurredAt: now, batchId: batchId, count: batch.count);

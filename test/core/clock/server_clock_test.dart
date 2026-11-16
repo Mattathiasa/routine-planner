@@ -152,6 +152,54 @@ void main() {
     });
   });
 
+  group('device timezone and DST immunity', () {
+    // Server offsets are fixed (docs/ASSUMPTIONS.md #4): no game server
+    // observes DST. The only DST in play is the *device's* zone, and
+    // ServerClock must be blind to it because everything enters as UTC.
+    test('server date is a pure function of the UTC instant', () {
+      final clock = ServerClock(FakeClock(DateTime.utc(2026)), GameServer.america);
+      // 2026-03-08 is the US spring-forward date. One real hour before and
+      // after the 07:00 UTC local jump: the server date (America, UTC-5,
+      // reset 04:00) must move only per the fixed offset, never per any
+      // local wall-clock discontinuity.
+      final beforeJump = DateTime.utc(2026, 3, 8, 6, 30);
+      final afterJump = DateTime.utc(2026, 3, 8, 7, 30);
+      expect(clock.serverDateFor(beforeJump), DateTime.utc(2026, 3, 7));
+      expect(clock.serverDateFor(afterJump), DateTime.utc(2026, 3, 7));
+      // The day rolls at exactly 09:00 UTC regardless of the device's DST.
+      expect(clock.serverDateFor(DateTime.utc(2026, 3, 8, 8, 59, 59)), DateTime.utc(2026, 3, 7));
+      expect(clock.serverDateFor(DateTime.utc(2026, 3, 8, 9)), DateTime.utc(2026, 3, 8));
+    });
+
+    test('round-tripping an instant through the device zone changes nothing', () {
+      final clock = ServerClock(FakeClock(DateTime.utc(2026)), GameServer.europe);
+      final utc = DateTime.utc(2026, 10, 25, 2, 30); // EU fall-back morning
+      // Same instant expressed via whatever zone this machine runs in:
+      // the server date depends only on the instant, not its rendering.
+      expect(clock.serverDateFor(utc.toLocal().toUtc()), clock.serverDateFor(utc));
+      expect(clock.serverDateFor(utc), DateTime.utc(2026, 10, 24));
+    });
+
+    test('time travel: moving the injected clock backward moves the server day back', () {
+      final clock = FakeClock(DateTime.utc(2026, 6, 10, 12));
+      final serverClock = ServerClock(clock, GameServer.asia);
+      final dayBefore = serverClock.serverDate();
+
+      // Device clock jumps back 3 days (user changed the date).
+      clock.set(DateTime.utc(2026, 6, 7, 12));
+      expect(serverClock.serverDate(), dayBefore.subtract(const Duration(days: 3)));
+    });
+
+    test('time travel: dayStartUtc stays consistent across a forward jump', () {
+      final clock = FakeClock(DateTime.utc(2026, 6, 10, 12));
+      final serverClock = ServerClock(clock, GameServer.twHkMo);
+      clock.set(DateTime.utc(2026, 6, 15, 1));
+      final dayStart = serverClock.dayStartUtc();
+      expect(dayStart.isAfter(serverClock.nowUtc()), isFalse);
+      expect(serverClock.serverDateFor(dayStart), serverClock.serverDate());
+    });
+  });
+
   group('SystemClock', () {
     test('nowUtc() tracks real wall-clock time', () {
       final before = DateTime.now().toUtc();
