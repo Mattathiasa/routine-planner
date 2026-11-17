@@ -66,8 +66,10 @@ bash tool/fetch_catalog_source.sh        # only when bumping the pinned genshin-
 dart run tool/build_catalog.dart --scope narrow
 ```
 
-Golden tests render with the deterministic FlutterTest font; after an
-intentional UI change: `flutter test --tags golden --update-goldens`.
+Golden tests render with the deterministic FlutterTest font but are still
+rasterizer-pinned to macOS, so CI excludes the `golden` tag; run them locally
+with `flutter test --tags golden`, and after an intentional UI change
+regenerate with `flutter test --tags golden --update-goldens`.
 
 The README screenshots come from a demo-seeded web build:
 `flutter build web --release --dart-define=DEMO_SEED=true`.

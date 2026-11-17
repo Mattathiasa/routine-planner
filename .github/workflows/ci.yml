@@ -27,8 +27,11 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      # Golden images are rasterizer-pinned (generated on macOS); linux
+      # renders them a few pixels differently, so CI runs everything else
+      # and goldens stay enforced locally (flutter test --tags golden).
       - name: Test
-        run: flutter test
+        run: flutter test --exclude-tags golden
 
   build-apk:
     runs-on: ubuntu-latest
