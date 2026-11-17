@@ -21,6 +21,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
       - name: Analyze
         run: flutter analyze
 
@@ -53,6 +56,9 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
 
       # With the four RP_* secrets configured the APK is release-signed;
       # without them the build falls back to debug signing (see
