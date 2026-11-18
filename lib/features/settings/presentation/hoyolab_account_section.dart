@@ -92,7 +92,9 @@ class HoyolabAccountSection extends ConsumerWidget {
           'account data, and violating it can mean account suspension. That risk is real, even '
           'if small for a read-only resin check, and only you can decide whether to take it. '
           "You'll log in on HoYoLab's own site, shown inside the app — this app never sees "
-          'your password, only the session it creates, which stays on this device.',
+          'your password, only the session it creates, which stays on this device. '
+          "You'll be signed out of HoYoLab in the app's browser first, so you can pick which "
+          'account to connect — each of your accounts keeps its own separate login.',
         ),
         actions: [
           TextButton(
@@ -107,6 +109,12 @@ class HoyolabAccountSection extends ConsumerWidget {
       ),
     );
     if (acknowledged != true || !context.mounted) return;
+
+    // Sign out first, so the login page can't hand back the previously
+    // connected account's still-valid session instead of the one being
+    // connected now.
+    await ref.read(hoyolabWebLoginProvider).clearSession();
+    if (!context.mounted) return;
 
     final cookie = await ref
         .read(hoyolabWebLoginProvider)

@@ -12,8 +12,25 @@ class FakeHoyolabWebLogin implements HoyolabWebLogin {
 
   /// The cookie string [captureCookie] resolves with. `null` simulates the
   /// user backing out of the login screen without completing login.
-  final String? cookie;
+  /// Mutable so one fake can stand in for logging into two different
+  /// HoYoLab accounts in sequence.
+  String? cookie;
+
+  /// Every call this fake saw, in order — lets a test assert that the
+  /// session was cleared *before* the login was shown, which is the whole
+  /// point of [clearSession].
+  final calls = <String>[];
+
+  bool get sessionCleared => calls.contains('clearSession');
 
   @override
-  Future<String?> captureCookie(BuildContext context) async => cookie;
+  Future<void> clearSession() async {
+    calls.add('clearSession');
+  }
+
+  @override
+  Future<String?> captureCookie(BuildContext context) async {
+    calls.add('captureCookie');
+    return cookie;
+  }
 }
