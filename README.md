@@ -42,8 +42,10 @@ Game data ships in a read-only catalog built by `dart run tool/build_catalog.dar
 from a vendored, MIT-licensed [genshin-db](https://www.npmjs.com/package/genshin-db)
 extract (names, numbers and schedules only — no game art is bundled). The build
 is version-stamped (`build/catalog/manifest.json` + the `catalog_metadata` row)
-and honours `--scope narrow|full`; v1 ships the narrow scope in
-`tool/data/scope_narrow.json`.
+and honours `--scope narrow|full`. The app ships the **full** scope: every playable
+character and weapon in the dataset (122 and 256), so you can plan for whoever you
+actually own. `--scope narrow` builds the small curated set in
+`tool/data/scope_narrow.json` instead, which is handy for quick iteration.
 
 **Every catalog value is community-sourced and unverified in-game.** The full
 list of unverified mechanics and data — including the two resin mechanics kept
@@ -71,7 +73,7 @@ Regenerate the catalog after editing the scope or bumping the dataset:
 
 ```sh
 bash tool/fetch_catalog_source.sh        # only when bumping the pinned genshin-db version
-dart run tool/build_catalog.dart --scope narrow
+dart run tool/build_catalog.dart --scope full
 ```
 
 Golden tests render with the deterministic FlutterTest font but are still

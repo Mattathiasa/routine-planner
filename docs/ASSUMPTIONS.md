@@ -56,14 +56,22 @@ assumption tests — they document the current guess, they do not prove it.
    rows). The aggregation layer was already designed for sparse curves, so this degrades
    silently and honestly rather than inventing a ladder.
 
-8. Two modelling notes, not game facts: gathered local specialties and one-off items
+8. **Six materials have no record in the dataset** — `Kristallfold`, `Fairy Wormwood`,
+   `Shattered Stability Anchor`, `Snowborn Heart of Ignorance`, `Snowborn Heartshard` and
+   `Snowborn Mirrorheart` are referenced by ascension costs (so their names and quantities
+   are the dataset's own), but genshin-db 5.2.15 carries no entry describing them. They are
+   stored as untiered, non-farmable materials so the characters needing them stay
+   plannable; where they actually drop is unknown. The build prints them every run and
+   lists them in `build/catalog/manifest.json` under `materialsWithoutRecords`.
+
+9. Two modelling notes, not game facts: gathered local specialties and one-off items
    (e.g. Crown of Insight) are stored under the untiered `bossMaterial` category with no
    farm domain; and each boss is modelled as its own always-open "domain" whose name is
    mechanically derived from the dataset's drop-source text.
 
 ## Live account data (HoYoLab)
 
-9. **The `dailyNote` field names are community-sourced and unverified.** Resin
+10. **The `dailyNote` field names are community-sourced and unverified.** Resin
    (`current_resin`, `max_resin`, `resin_recovery_time`) is required and a missing field is
    treated as a broken response. Everything added for the per-account view — commissions
    (`finished_task_num`, `total_task_num`, `is_extra_task_reward_received`), weekly boss
@@ -73,11 +81,11 @@ assumption tests — they document the current guess, they do not prove it.
    is optional and degrades to "unknown" rather than zero, so an upstream rename can never
    break resin sync (`lib/core/hoyolab/domain/hoyolab_notes.dart`).
 
-10. **Four commissions per server day** is assumed only for the *manual* tracker used by
+11. **Four commissions per server day** is assumed only for the *manual* tracker used by
     accounts with no HoYoLab login (`defaultDailyCommissionCount`). A connected account
     always prefers the live `total_task_num` over this constant.
 
-11. **Two product choices, not game rules**: the commission reminder fires
+12. **Two product choices, not game rules**: the commission reminder fires
     `commissionReminderLeadTime` (2 hours) before an account's own server reset
     (`lib/core/notifications/domain/notification_plan.dart`), and a cached snapshot counts
     as fresh for `accountSnapshotFreshness` (5 minutes), which throttles app-open refreshes

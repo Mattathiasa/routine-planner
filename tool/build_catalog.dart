@@ -113,6 +113,7 @@ class Builder {
         _craftedFrom[outputName] = inputName;
       }
     }
+    _assignTierGroupNames();
   }
 
   final Json vendor;
@@ -154,13 +155,20 @@ class Builder {
       final phase = int.tryParse(entry.key.replaceFirst(phasePrefix, ''));
       if (phase == null) continue;
       for (final item in entry.value as List) {
-        final materialId = _ensureMaterial((item as Json)['name'] as String);
+        final name = (item as Json)['name'] as String;
+        final quantity = item['count'];
+        if (quantity is! int) {
+          throw StateError(
+            'Cost entry for $entityKind "$entityId" $phasePrefix$phase lists "$name" '
+            'with no usable count (got: $quantity). Refusing to guess a quantity.',
+          );
+        }
         catalog.ascension.add((
           entityKind: entityKind,
           entityId: entityId,
           phase: phase,
-          materialId: materialId,
-          quantity: item['count'] as int,
+          materialId: _ensureMaterial(name),
+          quantity: quantity,
         ));
       }
     }
@@ -195,9 +203,27 @@ class Builder {
     }
   }
 
+  /// Materials a cost row references that the dataset has no record for —
+  /// reported at the end of a build so the gap stays visible.
+  final materialsWithoutRecords = <String>{};
+
   String _ensureMaterial(String name) {
     final entry = _materialsByName[name];
-    if (entry == null) throw StateError('Material "$name" not in vendored dataset.');
+    if (entry == null) {
+      // The dataset's own cost rows are the authority on the name and
+      // quantity; its materials folder just lags behind for the newest
+      // items. Record a minimal untiered, non-farmable entry rather than
+      // dropping the character that needs it — nothing is invented beyond
+      // the same category choice already made for gathered specialties
+      // (docs/ASSUMPTIONS.md).
+      final syntheticId = slug(name);
+      materialsWithoutRecords.add(name);
+      catalog.materials.putIfAbsent(
+        syntheticId,
+        () => MaterialRow(id: syntheticId, name: name, category: 'bossMaterial'),
+      );
+      return syntheticId;
+    }
     final id = slug(name);
     if (catalog.materials.containsKey(id)) return id;
 
@@ -228,7 +254,7 @@ class Builder {
       // recipes. Members that carry a drop domain + weekday schedule
       // (books, weapon mats) also get their domain and per-tier drop rows;
       // gems and common drops have neither and stay domain-less.
-      final group = _tierGroupName(chain);
+      final group = _tierGroupFor(chain);
       for (final memberName in chain) {
         final memberId = slug(memberName);
         if (catalog.materials.containsKey(memberId)) continue;
@@ -346,6 +372,49 @@ class Builder {
       chain.add(upgradesTo[chain.last]!);
     }
     return chain.contains(name) ? chain : [name];
+  }
+
+  /// Final tier-group id for the chain rooted at [root], resolved once up
+  /// front by [_assignTierGroupNames] so colliding families can't merge.
+  String _tierGroupFor(List<String> chain) =>
+      _groupNameByRoot[chain.first] ?? _tierGroupName(chain);
+
+  final _groupNameByRoot = <String, String>{};
+
+  /// Names every craft chain before any material is classified.
+  ///
+  /// The shared-word name alone is not unique: "Chaos Device/Circuit/Core",
+  /// "Chaos Gear/Axis/Oculus" and "Chaos Storage/Module/Bolt" all reduce to
+  /// "chaos", which merged three unrelated families into one group — and a
+  /// tier group is exactly what the Planner walks when carrying surplus
+  /// upward at 3:1, so merging them silently corrupts the material math.
+  /// When several chains want the same name, every one of them falls back
+  /// to its own root's slug (all of them, so the result doesn't depend on
+  /// which chain happened to be seen first).
+  void _assignTierGroupNames() {
+    final upgradesTo = <String, String>{
+      for (final e in _craftedFrom.entries) e.value: e.key,
+    };
+    final roots = <String>{
+      for (final name in _materialsByName.keys)
+        if (!_craftedFrom.containsKey(name) && upgradesTo.containsKey(name)) name,
+    };
+
+    final rootsByCandidate = <String, List<String>>{};
+    for (final root in roots) {
+      final chain = <String>[root];
+      while (upgradesTo.containsKey(chain.last)) {
+        chain.add(upgradesTo[chain.last]!);
+      }
+      rootsByCandidate.putIfAbsent(_tierGroupName(chain), () => []).add(root);
+    }
+
+    for (final entry in rootsByCandidate.entries) {
+      final contested = entry.value.length > 1;
+      for (final root in entry.value) {
+        _groupNameByRoot[root] = contested ? slug(root) : entry.key;
+      }
+    }
   }
 
   /// Mechanical group name for a craft chain: the words all member names
@@ -628,7 +697,24 @@ Future<void> main(List<String> args) async {
     characterKeys = (scopeJson['characters'] as List).cast<String>();
     weaponKeys = (scopeJson['weapons'] as List).cast<String>();
   } else {
-    characterKeys = (vendor['characters'] as Json).keys.toList()..sort();
+    // The dataset carries non-playable entries alongside real characters
+    // (test dummies like "Manekin": element "None", no talent tree, and
+    // cost rows with no quantities). Filtered out mechanically rather than
+    // by name, so new dummies are excluded too and the picker only ever
+    // offers characters a player can actually own.
+    final talents = vendor['talents'] as Json;
+    characterKeys =
+        (vendor['characters'] as Json).entries
+            .where((e) {
+              final element = (e.value as Json)['elementText'];
+              return element is String &&
+                  element.isNotEmpty &&
+                  element != 'None' &&
+                  talents.containsKey(e.key);
+            })
+            .map((e) => e.key)
+            .toList()
+          ..sort();
     weaponKeys = (vendor['weapons'] as Json).keys.toList()..sort();
   }
   for (final key in characterKeys) {
@@ -661,6 +747,7 @@ Future<void> main(List<String> args) async {
     'builtAt': builtAt.toIso8601String(),
     'source': provenance,
     'sqlite': {'file': 'catalog.sqlite', 'sha256': sqliteSha256},
+    'materialsWithoutRecords': (builder.materialsWithoutRecords.toList()..sort()),
     'counts': {
       'characters': catalog.characters.length,
       'weapons': catalog.weapons.length,
@@ -673,6 +760,13 @@ Future<void> main(List<String> args) async {
   });
   File('$_sqliteOutDir/manifest.json').writeAsStringSync('$manifest\n');
 
+  if (builder.materialsWithoutRecords.isNotEmpty) {
+    stdout.writeln(
+      'Note: ${builder.materialsWithoutRecords.length} material(s) referenced by cost rows '
+      'have no record in the dataset and were stored as untiered, non-farmable items: '
+      '${(builder.materialsWithoutRecords.toList()..sort()).join(', ')}',
+    );
+  }
   stdout.writeln('Built catalog "$versionStamp":');
   stdout.writeln('  $_dartOutPath');
   stdout.writeln('  $sqlitePath + manifest.json');

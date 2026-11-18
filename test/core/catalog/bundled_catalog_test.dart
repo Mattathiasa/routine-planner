@@ -85,12 +85,19 @@ void main() {
     }
   });
 
-  test('every weapon has all 6 ascension phases', () async {
+  test('weapons have every ascension phase their rarity allows', () async {
     final weapons = await repo.allWeapons();
     expect(weapons, isNotEmpty);
     for (final weapon in weapons) {
       final ascension = await repo.ascensionRequirements('weapon', weapon.id);
-      expect({for (final r in ascension) r.phase}, {1, 2, 3, 4, 5, 6}, reason: weapon.id);
+      // 1- and 2-star weapons stop at the 4th ascension (they cap at a
+      // lower level than the rest); everything 3-star and up has all 6.
+      final expected = weapon.rarity <= 2 ? {1, 2, 3, 4} : {1, 2, 3, 4, 5, 6};
+      expect(
+        {for (final r in ascension) r.phase},
+        expected,
+        reason: '${weapon.id} (rarity ${weapon.rarity})',
+      );
     }
   });
 
