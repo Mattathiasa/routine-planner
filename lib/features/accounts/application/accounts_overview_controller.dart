@@ -7,6 +7,7 @@ import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/providers/profile_providers.dart';
 import '../../../core/providers/repository_providers.dart';
+import '../../resin/application/resin_controller.dart';
 import '../../resin/data/resin_providers.dart';
 import '../../resin/domain/resin_engine.dart';
 import '../data/accounts_refresh_providers.dart';
@@ -31,6 +32,13 @@ class AccountsOverviewController extends _$AccountsOverviewController {
     final resinRepository = ref.watch(resinRepositoryProvider);
     final statusRepository = ref.watch(accountStatusRepositoryProvider);
     final errors = ref.watch(accountRefreshErrorsProvider);
+
+    // Resin for other accounts is read straight from the repository, but
+    // the *selected* account's can change under us (logging a run, Sync,
+    // undo). Watching the controller keeps this card in step with the
+    // hero card instead of showing a stale number until the next refresh
+    // — same reason `resinRecentEventsProvider` watches it.
+    await ref.watch(resinControllerProvider.future);
 
     final cards = <AccountOverviewData>[];
     for (final profile in profiles) {

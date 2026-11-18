@@ -6,12 +6,16 @@ import 'package:routine_planner/core/catalog/seed/seed_catalog.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/navigation/app_router.dart';
 import 'package:routine_planner/core/notifications/data/fake_notification_scheduler.dart';
+import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 
 void main() {
-  testWidgets('bottom nav switches tabs; gear reaches Settings; back returns', (tester) async {
+  testWidgets('bottom nav switches tabs; gear reaches Settings; back returns', (
+    tester,
+  ) async {
     final catalogDb = await openSeedCatalogDatabaseInMemory();
     final userDb = UserDatabase(NativeDatabase.memory());
     addTearDown(catalogDb.close);
@@ -22,9 +26,17 @@ void main() {
         overrides: [
           catalogDatabaseProvider.overrideWithValue(catalogDb),
           userDatabaseProvider.overrideWithValue(userDb),
-          notificationSchedulerProvider.overrideWithValue(FakeNotificationScheduler()),
+          hoyolabCredentialsStoreProvider.overrideWithValue(
+            FakeHoyolabCredentialsStore(),
+          ),
+          notificationSchedulerProvider.overrideWithValue(
+            FakeNotificationScheduler(),
+          ),
         ],
-        child: MaterialApp.router(theme: AppTheme.light(), routerConfig: appRouter),
+        child: MaterialApp.router(
+          theme: AppTheme.light(),
+          routerConfig: appRouter,
+        ),
       ),
     );
     await tester.pumpAndSettle();

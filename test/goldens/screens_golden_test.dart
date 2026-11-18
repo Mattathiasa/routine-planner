@@ -11,9 +11,11 @@ import 'package:routine_planner/core/clock/fake_clock.dart';
 import 'package:routine_planner/core/database/ids.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/notifications/data/fake_notification_scheduler.dart';
+import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/providers/clock_providers.dart';
 import 'package:routine_planner/core/providers/current_profile_provider.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/providers/repository_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
@@ -36,7 +38,9 @@ void main() {
   // value) through a throwaway container bound to the same databases.
   Future<void> seedFixtureData(ProviderContainer container) async {
     final profileId = (await container.read(currentProfileProvider.future)).id;
-    await container.read(plannerRepositoryProvider).upsertTarget(
+    await container
+        .read(plannerRepositoryProvider)
+        .upsertTarget(
           PlannerTargetsCompanion.insert(
             id: newId(),
             profileId: profileId,
@@ -61,7 +65,10 @@ void main() {
         .sync(132, fullIn: const Duration(hours: 9, minutes: 4));
   }
 
-  for (final (mode, theme) in [('light', AppTheme.light()), ('dark', AppTheme.dark())]) {
+  for (final (mode, theme) in [
+    ('light', AppTheme.light()),
+    ('dark', AppTheme.dark()),
+  ]) {
     for (final (name, screen) in <(String, Widget)>[
       ('today', const TodayScreen()),
       ('resin', const ResinScreen()),
@@ -82,8 +89,13 @@ void main() {
         final overrides = [
           catalogDatabaseProvider.overrideWithValue(catalogDb),
           userDatabaseProvider.overrideWithValue(userDb),
+          hoyolabCredentialsStoreProvider.overrideWithValue(
+            FakeHoyolabCredentialsStore(),
+          ),
           clockProvider.overrideWithValue(FakeClock(fixedNow)),
-          notificationSchedulerProvider.overrideWithValue(FakeNotificationScheduler()),
+          notificationSchedulerProvider.overrideWithValue(
+            FakeNotificationScheduler(),
+          ),
         ];
         final seedContainer = ProviderContainer(overrides: overrides);
         await seedFixtureData(seedContainer);

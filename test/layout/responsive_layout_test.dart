@@ -7,8 +7,10 @@ import 'package:routine_planner/core/clock/fake_clock.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/navigation/app_router.dart';
 import 'package:routine_planner/core/notifications/data/fake_notification_scheduler.dart';
+import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/providers/clock_providers.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 
@@ -18,7 +20,9 @@ import 'package:routine_planner/core/theme/app_theme.dart';
 void main() {
   for (final width in const [320.0, 360.0, 412.0]) {
     for (final scale in const [1.0, 1.3]) {
-      testWidgets('all tabs render at ${width.toInt()}dp, text scale $scale', (tester) async {
+      testWidgets('all tabs render at ${width.toInt()}dp, text scale $scale', (
+        tester,
+      ) async {
         tester.view.physicalSize = Size(width, 780);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -34,15 +38,25 @@ void main() {
             overrides: [
               catalogDatabaseProvider.overrideWithValue(catalogDb),
               userDatabaseProvider.overrideWithValue(userDb),
-              notificationSchedulerProvider.overrideWithValue(FakeNotificationScheduler()),
-              clockProvider.overrideWithValue(FakeClock(DateTime.utc(2026, 11, 3, 12))),
+              hoyolabCredentialsStoreProvider.overrideWithValue(
+                FakeHoyolabCredentialsStore(),
+              ),
+              notificationSchedulerProvider.overrideWithValue(
+                FakeNotificationScheduler(),
+              ),
+              clockProvider.overrideWithValue(
+                FakeClock(DateTime.utc(2026, 11, 3, 12)),
+              ),
             ],
             child: MediaQuery(
               data: MediaQueryData(
                 size: Size(width, 780),
                 textScaler: TextScaler.linear(scale),
               ),
-              child: MaterialApp.router(theme: AppTheme.light(), routerConfig: appRouter),
+              child: MaterialApp.router(
+                theme: AppTheme.light(),
+                routerConfig: appRouter,
+              ),
             ),
           ),
         );

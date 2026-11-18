@@ -4,7 +4,9 @@ import '../../../core/providers/clock_providers.dart';
 import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/providers/profile_providers.dart';
 import '../../../core/providers/repository_providers.dart';
+import '../../resin/application/resin_controller.dart';
 import '../../resin/data/resin_providers.dart';
+import '../application/accounts_overview_controller.dart';
 import 'accounts_refresh_service.dart';
 
 part 'accounts_refresh_providers.g.dart';
@@ -56,5 +58,12 @@ Future<List<AccountRefreshOutcome>> refreshAllAccounts(
       .read(accountsRefreshServiceProvider)
       .refreshAll([for (final p in profiles) p.id], force: force);
   ref.read(accountRefreshErrorsProvider.notifier).record(outcomes);
+  if (outcomes.any((o) => o.refreshed)) {
+    // Fresh rows are in the database; rebuild the cards that read them.
+    // The selected account's resin also moved, so its controller — which
+    // holds state optimistically rather than re-reading — must reload.
+    ref.invalidate(resinControllerProvider);
+    ref.invalidate(accountsOverviewControllerProvider);
+  }
   return outcomes;
 }

@@ -5,13 +5,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:routine_planner/core/catalog/seed/seed_catalog.dart';
 import 'package:routine_planner/core/clock/fake_clock.dart';
 import 'package:routine_planner/core/database/user_database.dart';
+import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/providers/clock_providers.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/features/today/presentation/today_screen.dart';
 
 void main() {
-  testWidgets('renders open domains and logging a run mutates the DB', (tester) async {
+  testWidgets('renders open domains and logging a run mutates the DB', (
+    tester,
+  ) async {
+    // Taller than the default viewport: the accounts strip sits above the
+    // farm section, pushing it off a phone-sized screen.
+    tester.view.physicalSize = const Size(1000, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final catalogDb = await openSeedCatalogDatabaseInMemory();
     final userDb = UserDatabase(NativeDatabase.memory());
     addTearDown(catalogDb.close);
@@ -26,6 +37,9 @@ void main() {
         overrides: [
           catalogDatabaseProvider.overrideWithValue(catalogDb),
           userDatabaseProvider.overrideWithValue(userDb),
+          hoyolabCredentialsStoreProvider.overrideWithValue(
+            FakeHoyolabCredentialsStore(),
+          ),
           clockProvider.overrideWithValue(fakeClock),
         ],
         child: MaterialApp(theme: AppTheme.light(), home: const TodayScreen()),
@@ -38,60 +52,69 @@ void main() {
     expect(find.text('Original Resin'), findsOneWidget);
 
     // Dawn's cost is 20; confirm the hero card's resin count decreases by
-    // exactly that after tapping "Log a run" on the first Dawn row.
-    expect(find.text('200'), findsOneWidget);
+    // exactly that after tapping "Log a run" on the first Dawn row. The
+    // accounts strip shows the same number for this account, so both
+    // surfaces are expected to read it.
+    expect(find.text('200'), findsNWidgets(2));
 
     await tester.tap(find.byIcon(Icons.add).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('180'), findsOneWidget);
+    expect(find.text('180'), findsNWidgets(2));
 
     final rows = await userDb.select(userDb.dailyTasks).get();
     expect(rows.any((r) => r.runsDone == 1), isTrue);
   });
 
-  testWidgets('logging a run with insufficient resin shows a SnackBar instead of crashing', (
-    tester,
-  ) async {
-    final catalogDb = await openSeedCatalogDatabaseInMemory();
-    final userDb = UserDatabase(NativeDatabase.memory());
-    addTearDown(catalogDb.close);
-    addTearDown(userDb.close);
+  testWidgets(
+    'logging a run with insufficient resin shows a SnackBar instead of crashing',
+    (tester) async {
+      final catalogDb = await openSeedCatalogDatabaseInMemory();
+      final userDb = UserDatabase(NativeDatabase.memory());
+      addTearDown(catalogDb.close);
+      addTearDown(userDb.close);
 
-    final fakeClock = FakeClock(DateTime.utc(2026, 11, 3, 12));
+      final fakeClock = FakeClock(DateTime.utc(2026, 11, 3, 12));
 
-    // Default test viewport is too small for the tap offset to stay
-    // on-screen across repeated taps/rebuilds below the fold.
-    tester.view.physicalSize = const Size(1000, 2800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+      // Default test viewport is too small for the tap offset to stay
+      // on-screen across repeated taps/rebuilds below the fold.
+      tester.view.physicalSize = const Size(1000, 2800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          catalogDatabaseProvider.overrideWithValue(catalogDb),
-          userDatabaseProvider.overrideWithValue(userDb),
-          clockProvider.overrideWithValue(fakeClock),
-        ],
-        child: MaterialApp(theme: AppTheme.light(), home: const TodayScreen()),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    // Dawn's cost is 20; a fresh profile starts at 200, so exactly 10 runs
-    // exhausts it to 0 — the 11th must throw, not crash.
-    final logButton = find.byIcon(Icons.add).first;
-    for (var i = 0; i < 10; i++) {
-      await tester.tap(logButton);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            catalogDatabaseProvider.overrideWithValue(catalogDb),
+            userDatabaseProvider.overrideWithValue(userDb),
+            hoyolabCredentialsStoreProvider.overrideWithValue(
+              FakeHoyolabCredentialsStore(),
+            ),
+            clockProvider.overrideWithValue(fakeClock),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light(),
+            home: const TodayScreen(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
-    }
-    final resinRow = await userDb.select(userDb.resinStateTable).getSingle();
-    expect(resinRow.v, 0);
 
-    await tester.tap(logButton);
-    await tester.pump();
+      // Dawn's cost is 20; a fresh profile starts at 200, so exactly 10 runs
+      // exhausts it to 0 — the 11th must throw, not crash.
+      final logButton = find.byIcon(Icons.add).first;
+      for (var i = 0; i < 10; i++) {
+        await tester.tap(logButton);
+        await tester.pumpAndSettle();
+      }
+      final resinRow = await userDb.select(userDb.resinStateTable).getSingle();
+      expect(resinRow.v, 0);
 
-    expect(find.textContaining('Need 20 resin'), findsOneWidget);
-  });
+      await tester.tap(logButton);
+      await tester.pump();
+
+      expect(find.textContaining('Need 20 resin'), findsOneWidget);
+    },
+  );
 }
