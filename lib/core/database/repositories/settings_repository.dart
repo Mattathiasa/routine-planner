@@ -50,6 +50,13 @@ class SettingsRepository {
     );
   }
 
+  Future<void> updateCommissionReminderEnabled(String profileId, bool enabled) {
+    return _updateSettings(
+      profileId,
+      SettingsCompanion(commissionReminderEnabled: Value(enabled)),
+    );
+  }
+
   Future<void> _updateSettings(String profileId, SettingsCompanion patch) {
     return (_db.update(_db.settings)
           ..where((t) => t.profileId.equals(profileId)))

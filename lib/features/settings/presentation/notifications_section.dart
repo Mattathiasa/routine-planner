@@ -71,6 +71,22 @@ class NotificationsSection extends ConsumerWidget {
                   },
                 ),
                 Divider(height: 1, color: context.colors.divider),
+                _AlertSwitch(
+                  title: 'Commissions unfinished',
+                  subtitle: '2 h before this account\'s daily reset',
+                  value:
+                      settingsAsync.value?.commissionReminderEnabled ?? false,
+                  onChanged: (value) async {
+                    final profileId = (await ref.read(
+                      currentProfileProvider.future,
+                    )).id;
+                    await ref
+                        .read(settingsRepositoryProvider)
+                        .updateCommissionReminderEnabled(profileId, value);
+                    ref.invalidate(settingsSnapshotProvider);
+                  },
+                ),
+                Divider(height: 1, color: context.colors.divider),
                 _ExactAlarmsBanner(allowed: exactAllowedAsync.value ?? false),
               ],
             ),

@@ -44,6 +44,7 @@ List<PlannedNotification> planResinThresholdNotifications({
   required ResinState state,
   required DateTime now,
   required List<({String id, int threshold, bool enabled})> alerts,
+  String? accountLabel,
 }) {
   final planned = <PlannedNotification>[];
   for (final alert in alerts) {
@@ -58,9 +59,12 @@ List<PlannedNotification> planResinThresholdNotifications({
         alert.threshold.toString(),
       ),
       kind: 'resinThreshold',
-      title: alert.threshold == state.cap
-          ? 'Resin is full'
-          : 'Resin reaches ${alert.threshold}',
+      title: _withAccount(
+        accountLabel,
+        alert.threshold == state.cap
+            ? 'Resin is full'
+            : 'Resin reaches ${alert.threshold}',
+      ),
       body: 'Open Routine Planner to spend it before it caps.',
       scheduledAt: scheduledAt,
     ));
@@ -76,6 +80,7 @@ List<PlannedNotification> planTransientExpiryNotifications({
   required List<TransientResinBatch> transient,
   required DateTime now,
   required bool enabled,
+  String? accountLabel,
 }) {
   if (!enabled) return [];
 
@@ -87,10 +92,61 @@ List<PlannedNotification> planTransientExpiryNotifications({
     planned.add((
       id: stableNotificationId(profileId, 'transientExpiry', batch.id),
       kind: 'transientExpiry',
-      title: 'Transient Resin expiring soon',
+      title: _withAccount(accountLabel, 'Transient Resin expiring soon'),
       body: 'A transient resin stack expires in 24 hours.',
       scheduledAt: scheduledAt,
     ));
   }
   return planned;
+}
+
+/// A reminder that this account's daily commissions are unfinished,
+/// fired [leadTime] before its own server reset. Nothing is planned once
+/// they're all done, when the lead-in has already passed, or when the
+/// account has opted out.
+///
+/// [dayStartUtc] is the account's *next* reset instant, so accounts on
+/// different servers each get their own time.
+List<PlannedNotification> planCommissionReminder({
+  required String profileId,
+  required DateTime nextResetUtc,
+  required DateTime now,
+  required int completed,
+  required int total,
+  required bool enabled,
+  String? accountLabel,
+  Duration leadTime = commissionReminderLeadTime,
+}) {
+  if (!enabled || total <= 0 || completed >= total) return [];
+
+  final scheduledAt = nextResetUtc.subtract(leadTime);
+  if (!scheduledAt.isAfter(now)) return [];
+
+  final remaining = total - completed;
+  return [
+    (
+      id: stableNotificationId(
+        profileId,
+        'commissionReminder',
+        nextResetUtc.toIso8601String(),
+      ),
+      kind: 'commissionReminder',
+      title: _withAccount(accountLabel, 'Commissions unfinished'),
+      body: remaining == 1
+          ? '1 commission left before the day resets.'
+          : '$remaining commissions left before the day resets.',
+      scheduledAt: scheduledAt,
+    ),
+  ];
+}
+
+/// How long before an account's server reset the commission reminder
+/// fires. A product choice, not a game rule (docs/ASSUMPTIONS.md).
+const commissionReminderLeadTime = Duration(hours: 2);
+
+/// Prefixes a title with the account name, but only when one is given —
+/// a single-account player should never see a redundant label.
+String _withAccount(String? accountLabel, String title) {
+  if (accountLabel == null || accountLabel.isEmpty) return title;
+  return '$accountLabel: $title';
 }

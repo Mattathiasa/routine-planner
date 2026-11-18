@@ -11,6 +11,7 @@ typedef SettingsSnapshot = ({
   int worldLevel,
   bool totalsOnlyMode,
   bool transientExpiryAlertEnabled,
+  bool commissionReminderEnabled,
 });
 
 @riverpod
@@ -23,6 +24,7 @@ Future<SettingsSnapshot> settingsSnapshot(Ref ref) async {
     worldLevel: settings.worldLevel,
     totalsOnlyMode: settings.totalsOnlyMode,
     transientExpiryAlertEnabled: settings.transientExpiryAlertEnabled,
+    commissionReminderEnabled: settings.commissionReminderEnabled,
   );
 }
 
