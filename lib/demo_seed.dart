@@ -1,7 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/clock/game_server.dart';
+import 'core/clock/server_clock.dart';
 import 'core/database/ids.dart';
+import 'core/providers/clock_providers.dart';
 import 'core/database/user_database.dart';
 import 'core/providers/current_profile_provider.dart';
 import 'core/providers/repository_providers.dart';
@@ -81,4 +84,45 @@ Future<void> maybeApplyDemoSeed(ProviderContainer container) async {
     fullIn: const Duration(hours: 9, minutes: 4),
   );
   await resinRepository.saveResinMutation(profile.id, synced, event);
+
+  // A second account, so the all-accounts strip has something to show:
+  // on a different server, with its own resin and a part-done manual
+  // commission count.
+  final profiles = container.read(profileRepositoryProvider);
+  final alt = await profiles.createProfile(displayName: 'Alt', server: 'europe');
+  final altInitial = await resinRepository.loadResinState(alt.id);
+  final (altSynced, altEvent) = engine.sync(
+    altInitial,
+    now,
+    x: 48,
+    fullIn: const Duration(hours: 20, minutes: 16),
+  );
+  await resinRepository.saveResinMutation(alt.id, altSynced, altEvent);
+
+  final status = container.read(accountStatusRepositoryProvider);
+  final serverClock = ServerClock(container.read(clockProvider), GameServer.asia);
+  final mainRow = await status.ensureCommissionRow(
+    profile.id,
+    periodAnchor: serverClock.serverDateFor(now),
+    now: now,
+  );
+  await status.setCommissionProgress(
+    mainRow.id,
+    completed: 3,
+    bonusClaimed: false,
+    now: now,
+  );
+
+  final altClock = ServerClock(container.read(clockProvider), GameServer.europe);
+  final altRow = await status.ensureCommissionRow(
+    alt.id,
+    periodAnchor: altClock.serverDateFor(now),
+    now: now,
+  );
+  await status.setCommissionProgress(
+    altRow.id,
+    completed: 1,
+    bonusClaimed: false,
+    now: now,
+  );
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/clock/game_server.dart';
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/profile_providers.dart';
+import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/providers/repository_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
@@ -90,11 +91,17 @@ class _ProfileRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final serverLabel = GameServer.values.byName(server).label;
+    // Whether this account has its own HoYoLab login, and which UID —
+    // the quickest way to see which accounts pull live data.
+    final credentials = ref.watch(hoyolabCredentialsForProvider(id)).value;
+    final subtitle = credentials == null
+        ? serverLabel
+        : '$serverLabel · UID ${credentials.uid}';
 
     return InkWell(
       onTap: () => RadioGroup.maybeOf<String>(context)?.onChanged(id),
-      child: SizedBox(
-        height: 56,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 56),
         child: Row(
           children: [
             const SizedBox(width: AppSpacing.lg),
@@ -103,8 +110,35 @@ class _ProfileRow extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(displayName, style: textTheme.titleMedium),
-                  Text(serverLabel, style: textTheme.bodyMedium),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          displayName,
+                          style: textTheme.titleMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (credentials != null) ...[
+                        const SizedBox(width: AppSpacing.xs),
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: context.colors.successDot,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  Text(
+                    subtitle,
+                    style: textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),

@@ -15,17 +15,25 @@ A dark theme derived from the same design tokens follows the system setting
 
 ## Features
 
+- **Multiple accounts, side by side** — every local account appears on Today with its
+  own resin, daily commission progress, expeditions, weekly boss discounts and realm
+  currency; tap a card to switch. Each account carries its **own HoYoLab login**, so two
+  real game accounts stay completely separate. Pull to refresh, or let it refresh when the
+  app opens.
+- **Daily commissions** — live per account when HoYoLab is connected, or tracked manually
+  (tap to count 0-4 and claim the bonus) when it isn't, keyed to that account's own server
+  day so it rolls over correctly for accounts on different servers.
 - **Resin tracker** — anchor-based regen math (never a drifting counter), manual
   sync or opt-in HoYoLab auto-sync, spend/craft/use actions with undo,
-  threshold alerts as local notifications (exact alarms where permitted, labelled
-  approximate otherwise), animated ring and forecast.
+  threshold alerts as local notifications for **every** account (exact alarms where
+  permitted, labelled approximate otherwise), plus a commission reminder before each
+  account's reset. Animated ring and forecast.
 - **Today** — server-day aware (per-server reset at 04:00 server time, immune to
   device timezone and DST), open-domain farm checklist with haptic check-off,
   "+1 run" tied to the resin tracker so the two never disagree.
 - **Planner** — character/weapon targets with ascension + talent tracking,
   pooled material needs with 3:1 tier-carry aggregation, inventory editing,
   "Most needed" with farm-day availability.
-- **Multiple accounts** — profile-scoped data, switchable in Settings.
 - **Backup** — JSON export/import of all user data.
 
 ## Data & assumptions

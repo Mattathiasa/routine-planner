@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/providers/current_profile_provider.dart';
+import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
+import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/features/settings/presentation/accounts_section.dart';
 
@@ -12,7 +14,9 @@ import 'package:routine_planner/features/settings/presentation/accounts_section.
 // in accounts_section.dart, so `find.byType` (which needs an exact runtime
 // type match) can't be used from here — these predicates use the raw,
 // type-argument-free `is` check instead, which matches any instantiation.
-final _popupMenuButtonFinder = find.byWidgetPredicate((w) => w is PopupMenuButton);
+final _popupMenuButtonFinder = find.byWidgetPredicate(
+  (w) => w is PopupMenuButton,
+);
 
 void main() {
   late UserDatabase userDb;
@@ -23,10 +27,17 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [userDatabaseProvider.overrideWithValue(userDb)],
+        overrides: [
+          userDatabaseProvider.overrideWithValue(userDb),
+          hoyolabCredentialsStoreProvider.overrideWithValue(
+            FakeHoyolabCredentialsStore(),
+          ),
+        ],
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: SingleChildScrollView(child: AccountsSection())),
+          home: const Scaffold(
+            body: SingleChildScrollView(child: AccountsSection()),
+          ),
         ),
       ),
     );
@@ -35,7 +46,14 @@ void main() {
 
   ProviderContainer pumpSectionWithContainer(WidgetTester tester) {
     final container = ProviderContainer(
-      overrides: [userDatabaseProvider.overrideWithValue(UserDatabase(NativeDatabase.memory()))],
+      overrides: [
+        userDatabaseProvider.overrideWithValue(
+          UserDatabase(NativeDatabase.memory()),
+        ),
+        hoyolabCredentialsStoreProvider.overrideWithValue(
+          FakeHoyolabCredentialsStore(),
+        ),
+      ],
     );
     addTearDown(container.dispose);
     return container;
@@ -63,7 +81,9 @@ void main() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: SingleChildScrollView(child: AccountsSection())),
+          home: const Scaffold(
+            body: SingleChildScrollView(child: AccountsSection()),
+          ),
         ),
       ),
     );
@@ -77,14 +97,18 @@ void main() {
     expect(active.id, isNot(original.id));
   });
 
-  testWidgets('tapping another profile row switches the active profile', (tester) async {
+  testWidgets('tapping another profile row switches the active profile', (
+    tester,
+  ) async {
     final container = pumpSectionWithContainer(tester);
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: SingleChildScrollView(child: AccountsSection())),
+          home: const Scaffold(
+            body: SingleChildScrollView(child: AccountsSection()),
+          ),
         ),
       ),
     );
@@ -93,8 +117,14 @@ void main() {
     final original = await container.read(currentProfileProvider.future);
     await addProfile(tester, 'Alt');
 
-    final playerRow = find.ancestor(of: find.text('Player'), matching: find.byType(Row)).first;
-    await tester.tap(find.descendant(of: playerRow, matching: find.byType(Radio<String>)));
+    // The display name sits inside a nested Row (name + connection dot),
+    // so the row holding the Radio is the outermost ancestor, not the first.
+    final playerRow = find
+        .ancestor(of: find.text('Player'), matching: find.byType(Row))
+        .last;
+    await tester.tap(
+      find.descendant(of: playerRow, matching: find.byType(Radio<String>)),
+    );
     await tester.pumpAndSettle();
 
     final active = await container.read(currentProfileProvider.future);
@@ -117,7 +147,9 @@ void main() {
     expect(find.text('Player'), findsNothing);
   });
 
-  testWidgets('delete is disabled when exactly one profile remains', (tester) async {
+  testWidgets('delete is disabled when exactly one profile remains', (
+    tester,
+  ) async {
     await pumpSection(tester);
 
     await tester.tap(_popupMenuButtonFinder);
@@ -126,14 +158,18 @@ void main() {
     expect(find.text('Delete (last account)'), findsOneWidget);
   });
 
-  testWidgets('deleting a non-selected profile removes it from the list', (tester) async {
+  testWidgets('deleting a non-selected profile removes it from the list', (
+    tester,
+  ) async {
     final container = pumpSectionWithContainer(tester);
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: SingleChildScrollView(child: AccountsSection())),
+          home: const Scaffold(
+            body: SingleChildScrollView(child: AccountsSection()),
+          ),
         ),
       ),
     );
@@ -142,8 +178,14 @@ void main() {
     await addProfile(tester, 'Alt');
 
     // Alt is now selected; delete "Player" (not selected).
-    final playerRow = find.ancestor(of: find.text('Player'), matching: find.byType(Row)).first;
-    await tester.tap(find.descendant(of: playerRow, matching: _popupMenuButtonFinder));
+    // The display name sits inside a nested Row (name + connection dot),
+    // so the row holding the Radio is the outermost ancestor, not the first.
+    final playerRow = find
+        .ancestor(of: find.text('Player'), matching: find.byType(Row))
+        .last;
+    await tester.tap(
+      find.descendant(of: playerRow, matching: _popupMenuButtonFinder),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
@@ -154,14 +196,18 @@ void main() {
     expect(find.text('Alt'), findsOneWidget);
   });
 
-  testWidgets('deleting the selected profile falls back correctly', (tester) async {
+  testWidgets('deleting the selected profile falls back correctly', (
+    tester,
+  ) async {
     final container = pumpSectionWithContainer(tester);
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: SingleChildScrollView(child: AccountsSection())),
+          home: const Scaffold(
+            body: SingleChildScrollView(child: AccountsSection()),
+          ),
         ),
       ),
     );
@@ -171,8 +217,12 @@ void main() {
     await addProfile(tester, 'Alt');
 
     // Alt is selected now; delete it.
-    final altRow = find.ancestor(of: find.text('Alt'), matching: find.byType(Row)).first;
-    await tester.tap(find.descendant(of: altRow, matching: _popupMenuButtonFinder));
+    final altRow = find
+        .ancestor(of: find.text('Alt'), matching: find.byType(Row))
+        .last;
+    await tester.tap(
+      find.descendant(of: altRow, matching: _popupMenuButtonFinder),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();

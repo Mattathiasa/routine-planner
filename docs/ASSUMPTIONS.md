@@ -60,3 +60,26 @@ assumption tests — they document the current guess, they do not prove it.
    (e.g. Crown of Insight) are stored under the untiered `bossMaterial` category with no
    farm domain; and each boss is modelled as its own always-open "domain" whose name is
    mechanically derived from the dataset's drop-source text.
+
+## Live account data (HoYoLab)
+
+9. **The `dailyNote` field names are community-sourced and unverified.** Resin
+   (`current_resin`, `max_resin`, `resin_recovery_time`) is required and a missing field is
+   treated as a broken response. Everything added for the per-account view — commissions
+   (`finished_task_num`, `total_task_num`, `is_extra_task_reward_received`), weekly boss
+   discounts (`remain_resin_discount_num`, `resin_discount_num_limit`), expeditions
+   (`expeditions[].status`/`remained_time`, `current_expedition_num`, `max_expedition_num`)
+   and realm currency (`current_home_coin`, `max_home_coin`, `home_coin_recovery_time`) —
+   is optional and degrades to "unknown" rather than zero, so an upstream rename can never
+   break resin sync (`lib/core/hoyolab/domain/hoyolab_notes.dart`).
+
+10. **Four commissions per server day** is assumed only for the *manual* tracker used by
+    accounts with no HoYoLab login (`defaultDailyCommissionCount`). A connected account
+    always prefers the live `total_task_num` over this constant.
+
+11. **Two product choices, not game rules**: the commission reminder fires
+    `commissionReminderLeadTime` (2 hours) before an account's own server reset
+    (`lib/core/notifications/domain/notification_plan.dart`), and a cached snapshot counts
+    as fresh for `accountSnapshotFreshness` (5 minutes), which throttles app-open refreshes
+    against an unofficial endpoint (`lib/features/accounts/data/accounts_refresh_service.dart`).
+    Pull-to-refresh deliberately ignores the freshness window.
