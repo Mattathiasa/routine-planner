@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:routine_planner/core/catalog/seed/seed_catalog.dart';
 import 'package:routine_planner/core/clock/fake_clock.dart';
+import 'package:routine_planner/core/database/repositories/profile_repository.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/hoyolab/data/hoyolab_client.dart';
@@ -67,7 +68,11 @@ void main() {
     addTearDown(userDb.close);
 
     final credentialsStore = FakeHoyolabCredentialsStore();
-    await credentialsStore.save(cookie: 'ltoken_v2=abc', uid: '800000001');
+    await credentialsStore.save(
+      profileId: (await ProfileRepository(userDb).getActiveProfile()).id,
+      cookie: 'ltoken_v2=abc',
+      uid: '800000001',
+    );
 
     await tester.pumpWidget(
       ProviderScope(

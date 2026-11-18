@@ -1,21 +1,37 @@
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:routine_planner/core/database/repositories/profile_repository.dart';
+import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_web_login.dart';
+import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/features/settings/presentation/hoyolab_account_section.dart';
 
 void main() {
-  Future<FakeHoyolabCredentialsStore> pumpSection(
+  /// Credentials are keyed by profile id now, so tests need the id the
+  /// lazily-bootstrapped profile actually got.
+  Future<({FakeHoyolabCredentialsStore store, String profileId})> pumpSection(
     WidgetTester tester, {
     String? webLoginCookie = 'ltoken_v2=abc; ltuid_v2=1',
+    bool connected = false,
   }) async {
+    final userDb = UserDatabase(NativeDatabase.memory());
+    addTearDown(userDb.close);
+    final profileId = (await ProfileRepository(userDb).getActiveProfile()).id;
+
     final store = FakeHoyolabCredentialsStore();
+    if (connected) {
+      await store.save(profileId: profileId, cookie: 'c', uid: 'u');
+    }
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          userDatabaseProvider.overrideWithValue(userDb),
           hoyolabCredentialsStoreProvider.overrideWithValue(store),
           hoyolabWebLoginProvider.overrideWithValue(FakeHoyolabWebLogin(cookie: webLoginCookie)),
         ],
@@ -26,7 +42,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    return store;
+    return (store: store, profileId: profileId);
   }
 
   testWidgets('starts disconnected, and the form stays hidden until the disclaimer is acknowledged', (
@@ -53,7 +69,7 @@ void main() {
   testWidgets('acknowledging the disclaimer logs in via the WebView, then saving a UID connects', (
     tester,
   ) async {
-    final store = await pumpSection(tester, webLoginCookie: 'ltoken_v2=abc; ltuid_v2=1');
+    final session = await pumpSection(tester, webLoginCookie: 'ltoken_v2=abc; ltuid_v2=1');
 
     await tester.tap(find.text('Connect'));
     await tester.pumpAndSettle();
@@ -73,7 +89,7 @@ void main() {
     expect(find.text('Connected'), findsOneWidget);
     expect(find.text('UID 800000001'), findsOneWidget);
 
-    final saved = await store.read();
+    final saved = await session.store.read(session.profileId);
     expect(saved, isNotNull);
     expect(saved!.uid, '800000001');
     expect(saved.cookie, 'ltoken_v2=abc; ltuid_v2=1');
@@ -92,22 +108,7 @@ void main() {
   });
 
   testWidgets('disconnecting clears the stored credentials', (tester) async {
-    final store = FakeHoyolabCredentialsStore();
-    await store.save(cookie: 'c', uid: 'u');
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hoyolabCredentialsStoreProvider.overrideWithValue(store),
-          hoyolabWebLoginProvider.overrideWithValue(FakeHoyolabWebLogin()),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light(),
-          home: const Scaffold(body: HoyolabAccountSection()),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+    final session = await pumpSection(tester, connected: true);
 
     expect(find.text('Connected'), findsOneWidget);
 
@@ -115,6 +116,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Not connected'), findsOneWidget);
-    expect(await store.read(), isNull);
+    expect(await session.store.read(session.profileId), isNull);
   });
 }

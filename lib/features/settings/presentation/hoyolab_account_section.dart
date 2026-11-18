@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/hoyolab_providers.dart';
+import '../../../core/providers/profile_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
@@ -11,6 +13,9 @@ import '../../../core/theme/app_spacing.dart';
 /// action. This is the one place the ToS/account-risk disclaimer actually
 /// gets surfaced — not buried in subtext — since connecting is the one
 /// action in this whole app that touches a real external account.
+///
+/// Scoped to the selected local account: the header names it, and
+/// connecting here leaves every other account's login untouched.
 class HoyolabAccountSection extends ConsumerWidget {
   const HoyolabAccountSection({super.key});
 
@@ -18,11 +23,12 @@ class HoyolabAccountSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final credentialsAsync = ref.watch(hoyolabCredentialsProvider);
     final textTheme = Theme.of(context).textTheme;
+    final heading = _headingFor(ref);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('HoYoLab account', style: textTheme.labelMedium),
+        Text(heading, style: textTheme.labelMedium),
         const SizedBox(height: AppSpacing.sm),
         ClipRRect(
           borderRadius: AppRadius.cardRadius,
@@ -54,8 +60,24 @@ class HoyolabAccountSection extends ConsumerWidget {
     );
   }
 
+  /// Names the account this section acts on, but only once there is more
+  /// than one — with a single account the plain heading reads better.
+  String _headingFor(WidgetRef ref) {
+    final profiles = ref.watch(profileListProvider).value;
+    if (profiles == null || profiles.length < 2) return 'HoYoLab account';
+    final currentId = ref.watch(currentProfileProvider).value?.id;
+    for (final profile in profiles) {
+      if (profile.id == currentId) {
+        return 'HoYoLab account for ${profile.displayName}';
+      }
+    }
+    return 'HoYoLab account';
+  }
+
   Future<void> _disconnect(WidgetRef ref) async {
-    await ref.read(hoyolabCredentialsStoreProvider).clear();
+    final profileId = (await ref.read(currentProfileProvider.future)).id;
+    await ref.read(hoyolabCredentialsStoreProvider).clear(profileId);
+    ref.invalidate(hoyolabCredentialsForProvider(profileId));
     ref.invalidate(hoyolabCredentialsProvider);
   }
 
@@ -191,9 +213,11 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
     if (uid.isEmpty || int.tryParse(uid) == null) return;
 
     final navigator = Navigator.of(context);
+    final profileId = (await ref.read(currentProfileProvider.future)).id;
     await ref
         .read(hoyolabCredentialsStoreProvider)
-        .save(cookie: widget.cookie, uid: uid);
+        .save(profileId: profileId, cookie: widget.cookie, uid: uid);
+    ref.invalidate(hoyolabCredentialsForProvider(profileId));
     ref.invalidate(hoyolabCredentialsProvider);
     if (mounted) navigator.pop();
   }

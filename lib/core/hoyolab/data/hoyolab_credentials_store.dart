@@ -4,15 +4,29 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// Android-Keystore-backed secure storage, never in the plain, unencrypted
 /// `user.db`, and never leaves the device.
 ///
-/// One global credential, not per-profile: connecting a HoYoLab account
-/// affects resin sync under every local profile, not just whichever one
-/// was selected when you connected. A deliberate v1 limitation — proper
-/// multi-login support (one HoYoLab account per profile) is a separate,
-/// larger piece of work, not an oversight here.
+/// One credential per local profile: each account carries its own HoYoLab
+/// login, so connecting one leaves the others untouched. Keys are
+/// namespaced by profile id (see [SecureHoyolabCredentialsStore]).
+///
+/// Soft-deleting a profile deliberately leaves its credential in place,
+/// matching the delete dialog's promise that the data stays on the device
+/// — otherwise Undo would restore the profile but silently drop its
+/// HoYoLab link. [clear] is the only thing that forgets a credential.
 abstract class HoyolabCredentialsStore {
-  Future<void> save({required String cookie, required String uid});
-  Future<({String cookie, String uid})?> read();
-  Future<void> clear();
+  Future<void> save({
+    required String profileId,
+    required String cookie,
+    required String uid,
+  });
+
+  Future<({String cookie, String uid})?> read(String profileId);
+
+  Future<void> clear(String profileId);
+
+  /// Moves a pre-multi-login credential (stored under the old global keys)
+  /// onto [profileId], then forgets the global copy. A no-op once there is
+  /// nothing left to adopt, so it is safe to call on every app start.
+  Future<void> adoptLegacyCredential(String profileId);
 }
 
 class SecureHoyolabCredentialsStore implements HoyolabCredentialsStore {
@@ -21,26 +35,58 @@ class SecureHoyolabCredentialsStore implements HoyolabCredentialsStore {
 
   final FlutterSecureStorage _storage;
 
-  static const _cookieKey = 'hoyolab_cookie';
-  static const _uidKey = 'hoyolab_uid';
+  /// Pre-multi-login keys. Read once by [adoptLegacyCredential], then
+  /// deleted; nothing else may write them.
+  static const _legacyCookieKey = 'hoyolab_cookie';
+  static const _legacyUidKey = 'hoyolab_uid';
+
+  static String _cookieKey(String profileId) => 'hoyolab_cookie_$profileId';
+  static String _uidKey(String profileId) => 'hoyolab_uid_$profileId';
 
   @override
-  Future<void> save({required String cookie, required String uid}) async {
-    await _storage.write(key: _cookieKey, value: cookie);
-    await _storage.write(key: _uidKey, value: uid);
+  Future<void> save({
+    required String profileId,
+    required String cookie,
+    required String uid,
+  }) async {
+    await _storage.write(key: _cookieKey(profileId), value: cookie);
+    await _storage.write(key: _uidKey(profileId), value: uid);
   }
 
   @override
-  Future<({String cookie, String uid})?> read() async {
-    final cookie = await _storage.read(key: _cookieKey);
-    final uid = await _storage.read(key: _uidKey);
+  Future<({String cookie, String uid})?> read(String profileId) async {
+    final cookie = await _storage.read(key: _cookieKey(profileId));
+    final uid = await _storage.read(key: _uidKey(profileId));
     if (cookie == null || uid == null) return null;
     return (cookie: cookie, uid: uid);
   }
 
   @override
-  Future<void> clear() async {
-    await _storage.delete(key: _cookieKey);
-    await _storage.delete(key: _uidKey);
+  Future<void> clear(String profileId) async {
+    await _storage.delete(key: _cookieKey(profileId));
+    await _storage.delete(key: _uidKey(profileId));
+  }
+
+  @override
+  Future<void> adoptLegacyCredential(String profileId) async {
+    final cookie = await _storage.read(key: _legacyCookieKey);
+    final uid = await _storage.read(key: _legacyUidKey);
+    if (cookie == null || uid == null) {
+      // Nothing to adopt, but a half-written legacy pair should still not
+      // linger in the keystore.
+      await _deleteLegacy();
+      return;
+    }
+    // Never clobber a credential the user has already connected for this
+    // profile under the new keys.
+    if (await read(profileId) == null) {
+      await save(profileId: profileId, cookie: cookie, uid: uid);
+    }
+    await _deleteLegacy();
+  }
+
+  Future<void> _deleteLegacy() async {
+    await _storage.delete(key: _legacyCookieKey);
+    await _storage.delete(key: _legacyUidKey);
   }
 }

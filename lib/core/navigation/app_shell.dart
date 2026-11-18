@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../providers/hoyolab_providers.dart';
 import '../providers/notification_providers.dart';
 import '../theme/app_colors.dart';
 import 'pill_nav_bar.dart';
@@ -22,6 +23,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(notificationReconcileProvider);
+    ref.watch(hoyolabLegacyCredentialAdoptionProvider);
 
     return Scaffold(
       backgroundColor: context.colors.background,
