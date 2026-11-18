@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../catalog/catalog_repository.dart';
+import '../database/repositories/account_status_repository.dart';
 import '../database/repositories/planner_repository.dart';
 import '../database/repositories/profile_repository.dart';
 import '../database/repositories/settings_repository.dart';
@@ -21,6 +22,11 @@ SettingsRepository settingsRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 PlannerRepository plannerRepository(Ref ref) {
   return PlannerRepository(ref.watch(userDatabaseProvider));
+}
+
+@Riverpod(keepAlive: true)
+AccountStatusRepository accountStatusRepository(Ref ref) {
+  return AccountStatusRepository(ref.watch(userDatabaseProvider));
 }
 
 @Riverpod(keepAlive: true)
