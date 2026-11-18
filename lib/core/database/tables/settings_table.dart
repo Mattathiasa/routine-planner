@@ -23,6 +23,11 @@ class Settings extends Table {
   BoolColumn get transientExpiryAlertEnabled =>
       boolean().withDefault(const Constant(true))();
 
+  /// Remind this account before server reset when its daily commissions
+  /// are unfinished.
+  BoolColumn get commissionReminderEnabled =>
+      boolean().withDefault(const Constant(true))();
+
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 

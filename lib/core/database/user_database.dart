@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../features/resin/data/tables/resin_tables.dart';
 import 'ids.dart';
+import 'tables/account_status_tables.dart';
 import 'tables/app_state_table.dart';
 import 'tables/daily_tasks_table.dart';
 import 'tables/planner_tables.dart';
@@ -25,6 +26,8 @@ part 'user_database.g.dart';
     TransientResinBatches,
     ResinEvents,
     AppState,
+    AccountSnapshots,
+    DailyCommissions,
   ],
 )
 class UserDatabase extends _$UserDatabase {
@@ -41,13 +44,18 @@ class UserDatabase extends _$UserDatabase {
       );
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
+    // Each branch is bounded by `to` as well as `from`. In production `to`
+    // is always schemaVersion, so it changes nothing — but the migration
+    // verifier validates intermediate targets (1 -> 2 on a database whose
+    // Dart schema is already v3), and an unbounded `from < 3` would run
+    // the v3 step during that check and fail it.
     onUpgrade: (m, from, to) async {
-      if (from < 2) {
+      if (from < 2 && to >= 2) {
         // Not m.addColumn: SQLite's ALTER TABLE ADD COLUMN rejects a
         // non-constant default like CURRENT_TIMESTAMP outright, even though
         // the same expression is fine as a CREATE TABLE column default.
@@ -72,6 +80,17 @@ class UserDatabase extends _$UserDatabase {
             updatedAt: DateTime.now().toUtc(),
           ),
         );
+      }
+      if (from < 3 && to >= 3) {
+        // Per-account live status. Both tables are new and empty, and the
+        // settings column has a constant default, so plain addColumn is
+        // fine here — unlike the v2 createdAt backfill above.
+        await m.createTable(accountSnapshots);
+        await m.createTable(dailyCommissions);
+        // createTable does not bring a table's declared indexes with it.
+        await m.create(accountSnapshotProfileUnique);
+        await m.create(dailyCommissionsUnique);
+        await m.addColumn(settings, settings.commissionReminderEnabled);
       }
     },
   );
