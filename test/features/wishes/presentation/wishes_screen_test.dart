@@ -162,4 +162,73 @@ void main() {
 
     expect(find.text('Guaranteed next wish'), findsOneWidget);
   });
+
+  group('import flow', () {
+    testWidgets('the empty state offers the import', (tester) async {
+      await pumpScreen(tester);
+
+      expect(find.text('Import wish history'), findsOneWidget);
+    });
+
+    testWidgets('the disclaimer comes before the paste field', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Import wish history'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Import wish history?'), findsOneWidget);
+      expect(find.textContaining('reverse-engineered'), findsOneWidget);
+      // No way to paste anything until the disclaimer is acknowledged.
+      expect(find.text('Wish history link'), findsNothing);
+    });
+
+    testWidgets('cancelling the disclaimer opens nothing', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Import wish history'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Wish history link'), findsNothing);
+    });
+
+    testWidgets('acknowledging it opens the paste field', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Import wish history'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I understand, continue'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Wish history link'), findsOneWidget);
+      expect(find.textContaining('Wish → History'), findsOneWidget);
+    });
+
+    testWidgets('a link with no authkey is rejected without a network call', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Import wish history'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I understand, continue'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byType(TextField),
+        'https://example.com/getGachaLog?gacha_type=301',
+      );
+      await tester.tap(find.widgetWithText(TextButton, 'Import'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('no authkey'), findsOneWidget);
+    });
+
+    testWidgets('an account with history offers an update instead', (tester) async {
+      await seed([pull(1)]);
+      await pumpScreen(tester);
+
+      expect(find.text('Update'), findsOneWidget);
+      expect(find.text('Wish history'), findsOneWidget);
+    });
+  });
 }
