@@ -4,9 +4,10 @@ import '../../features/planner/presentation/planner_screen.dart';
 import '../../features/resin/presentation/resin_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
+import '../../features/wishes/presentation/wishes_screen.dart';
 import 'app_shell.dart';
 
-/// 3 branches (Today/Resin/Planner) share the floating pill nav via
+/// 4 branches (Today/Resin/Planner/Wishes) share the floating pill nav via
 /// [AppShell]; Settings is a sibling route outside the shell entirely —
 /// no nav tab, pushed over everything, exits via its own back link —
 /// matching the approved design exactly (confirmed: no `<nav>` element
@@ -38,6 +39,14 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/planner',
               builder: (context, state) => const PlannerScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/wishes',
+              builder: (context, state) => const WishesScreen(),
             ),
           ],
         ),

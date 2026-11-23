@@ -62,7 +62,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        for (final tab in const ['Resin', 'Planner', 'Today']) {
+        for (final tab in const ['Resin', 'Planner', 'Wishes', 'Today']) {
           await tester.tap(find.text(tab).last);
           await tester.pumpAndSettle();
         }

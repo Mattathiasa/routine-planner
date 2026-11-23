@@ -52,6 +52,12 @@ void main() {
     expect(find.text('0 targets · 0 materials short'), findsOneWidget);
     expect(find.text('Nothing missing — fully stocked.'), findsOneWidget);
 
+    // Only the nav label exists yet, so this is unambiguous; once the screen
+    // is up its own title matches too.
+    await tester.tap(find.text('Wishes'));
+    await tester.pumpAndSettle();
+    expect(find.text('No wishes yet'), findsOneWidget);
+
     await tester.tap(find.text('Today'));
     await tester.pumpAndSettle();
     expect(find.text('Original Resin'), findsOneWidget);

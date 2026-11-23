@@ -17,11 +17,18 @@ const _tabs = [
   _PillNavTab(Icons.wb_sunny_rounded, 'Today'),
   _PillNavTab(Icons.water_drop_rounded, 'Resin'),
   _PillNavTab(Icons.track_changes, 'Planner'),
+  _PillNavTab(Icons.auto_awesome_rounded, 'Wishes'),
 ];
 
-/// The floating pill bottom nav — 3 tabs only (Today/Resin/Planner).
-/// Settings has no tab; it's reached via a gear icon on Today/Resin's
-/// headers instead, matching the approved design exactly.
+/// The floating pill bottom nav — 4 tabs (Today/Resin/Planner/Wishes).
+/// Settings still has no tab; it's reached via a gear icon on the other
+/// screens' headers instead, matching the approved design.
+///
+/// The tabs stack their icon above their label rather than sitting side by
+/// side. Four horizontal icon-and-label pairs do not fit a phone width: at
+/// 320dp each tab gets about 64 logical pixels, which ellipsises every label
+/// into nonsense. Stacking keeps all four readable at every supported width
+/// and text scale, and leaves the pill's own styling untouched.
 class PillNavBar extends StatelessWidget {
   const PillNavBar({super.key, required this.navigationShell});
 
@@ -56,7 +63,7 @@ class PillNavBar extends StatelessWidget {
   Widget _buildTab(BuildContext context, int index) {
     final tab = _tabs[index];
     final active = navigationShell.currentIndex == index;
-    final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+    final textStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
       color: active
           ? context.colors.primaryHover
           : context.colors.textSecondary,
@@ -75,7 +82,7 @@ class PillNavBar extends StatelessWidget {
         child: ConstrainedBox(
           // 48dp minimum tap target for each nav destination.
           constraints: const BoxConstraints(minHeight: 48),
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -85,14 +92,12 @@ class PillNavBar extends StatelessWidget {
                     ? context.colors.primaryHover
                     : context.colors.textSecondary,
               ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  tab.label,
-                  style: textStyle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              const SizedBox(height: 2),
+              Text(
+                tab.label,
+                style: textStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
