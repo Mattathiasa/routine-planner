@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../hoyolab/data/gacha_log_client.dart';
 import '../hoyolab/data/hoyolab_client.dart';
 import '../hoyolab/data/hoyolab_credentials_store.dart';
 import '../hoyolab/data/hoyolab_web_login.dart';
@@ -10,6 +11,12 @@ part 'hoyolab_providers.g.dart';
 
 @Riverpod(keepAlive: true)
 HoyolabClient hoyolabClient(Ref ref) => HoyolabClient();
+
+/// Reads wish history from the game's own endpoint. Separate from
+/// [hoyolabClient] because it authenticates with a pasted authkey rather than
+/// a stored cookie, and shares none of the DS-signing machinery.
+@Riverpod(keepAlive: true)
+GachaLogClient gachaLogClient(Ref ref) => GachaLogClient();
 
 @Riverpod(keepAlive: true)
 HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) =>
