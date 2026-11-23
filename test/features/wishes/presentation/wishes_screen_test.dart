@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:routine_planner/core/catalog/catalog_database.dart';
 import 'package:routine_planner/core/catalog/seed/seed_catalog.dart';
 import 'package:routine_planner/core/clock/fake_clock.dart';
+import 'package:routine_planner/core/database/repositories/profile_repository.dart';
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/notifications/data/fake_notification_scheduler.dart';
 import 'package:routine_planner/core/providers/clock_providers.dart';
-import 'package:routine_planner/core/providers/current_profile_provider.dart';
 import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
@@ -40,18 +40,6 @@ WishPull pull(
   );
 }
 
-/// Return type deliberately omitted so Dart infers the override list's type:
-/// riverpod's `Override` isn't exported from `flutter_riverpod`.
-buildOverrides(CatalogDatabase catalogDb, UserDatabase userDb) => [
-  catalogDatabaseProvider.overrideWithValue(catalogDb),
-  userDatabaseProvider.overrideWithValue(userDb),
-  hoyolabCredentialsStoreProvider.overrideWithValue(
-    FakeHoyolabCredentialsStore(),
-  ),
-  notificationSchedulerProvider.overrideWithValue(FakeNotificationScheduler()),
-  clockProvider.overrideWithValue(FakeClock(now)),
-];
-
 void main() {
   late UserDatabase userDb;
   late CatalogDatabase catalogDb;
@@ -63,15 +51,11 @@ void main() {
     addTearDown(userDb.close);
   });
 
-  /// Seeds through a throwaway container bound to the same database, the way
-  /// the golden test does.
+  /// Seeds straight through the repositories. getActiveProfile bootstraps the
+  /// profile the screen will resolve, so no provider container is needed here.
   Future<void> seed(List<WishPull> pulls) async {
-    final container = ProviderContainer(
-      overrides: buildOverrides(catalogDb, userDb),
-    );
-    final profileId = (await container.read(currentProfileProvider.future)).id;
-    await WishRepository(userDb).insertPulls(profileId, pulls, now: now);
-    container.dispose();
+    final profile = await ProfileRepository(userDb).getActiveProfile();
+    await WishRepository(userDb).insertPulls(profile.id, pulls, now: now);
   }
 
   Future<void> pumpScreen(WidgetTester tester) async {
@@ -82,7 +66,17 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: buildOverrides(catalogDb, userDb),
+        overrides: [
+          catalogDatabaseProvider.overrideWithValue(catalogDb),
+          userDatabaseProvider.overrideWithValue(userDb),
+          hoyolabCredentialsStoreProvider.overrideWithValue(
+            FakeHoyolabCredentialsStore(),
+          ),
+          notificationSchedulerProvider.overrideWithValue(
+            FakeNotificationScheduler(),
+          ),
+          clockProvider.overrideWithValue(FakeClock(now)),
+        ],
         child: MaterialApp(theme: AppTheme.light(), home: const WishesScreen()),
       ),
     );
