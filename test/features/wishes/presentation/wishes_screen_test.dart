@@ -14,6 +14,7 @@ import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
+import 'package:routine_planner/core/widgets/app_card.dart';
 import 'package:routine_planner/features/wishes/data/wish_repository.dart';
 import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
 import 'package:routine_planner/features/wishes/domain/wish_pull.dart';
@@ -37,6 +38,18 @@ WishPull pull(
     kind: kind,
     rarity: rarity,
     pulledAtUtc: now.add(Duration(minutes: n)),
+  );
+}
+
+/// The "Set pity" button inside a named banner's card. Untouched banners
+/// render in enum order, so index-based targeting would be brittle.
+Finder setPityButtonFor(String bannerLabel) {
+  return find.descendant(
+    of: find.ancestor(
+      of: find.text(bannerLabel, skipOffstage: false),
+      matching: find.byType(AppCard),
+    ),
+    matching: find.text('Set pity', skipOffstage: false),
   );
 }
 
@@ -229,6 +242,96 @@ void main() {
 
       expect(find.text('Update'), findsOneWidget);
       expect(find.text('Wish history'), findsOneWidget);
+    });
+  });
+
+  group('manual pity', () {
+    testWidgets('an untouched banner offers to set pity by hand', (tester) async {
+      await seed([pull(1)]);
+      await pumpScreen(tester);
+
+      // One per untouched banner.
+      expect(
+        find.text('Set pity', skipOffstage: false),
+        findsNWidgets(WishBanner.values.length - 1),
+      );
+    });
+
+    testWidgets('with nothing tracked at all the empty state replaces the cards', (tester) async {
+      await pumpScreen(tester);
+
+      expect(find.text('No wishes yet'), findsOneWidget);
+      expect(find.text('Set pity', skipOffstage: false), findsNothing);
+    });
+
+    testWidgets('a banner tracked by hand shows its number and can be edited', (tester) async {
+      await seed([pull(1)]);
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Set pity', skipOffstage: false).first);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, '62');
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('62'), findsWidgets);
+      expect(find.text('Tracked manually · edit'), findsOneWidget);
+    });
+
+    testWidgets('a pity above the guarantee is rejected', (tester) async {
+      await seed([pull(1)]);
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Set pity', skipOffstage: false).first);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, '400');
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Enter a 5★ pity'), findsOneWidget);
+    });
+
+    testWidgets('clearing a manual number stops tracking that banner', (tester) async {
+      await seed([pull(1)]);
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Set pity', skipOffstage: false).first);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).first, '20');
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('Tracked manually · edit'), findsOneWidget);
+
+      await tester.tap(find.text('Tracked manually · edit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Clear'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tracked manually · edit'), findsNothing);
+    });
+
+    testWidgets('the 50/50 switch appears on the character banner', (tester) async {
+      await seed([pull(1, banner: WishBanner.weapon)]);
+      await pumpScreen(tester);
+
+      await tester.tap(setPityButtonFor('Character Event'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Character Event pity'), findsOneWidget);
+      expect(find.text('Next 5★ is guaranteed'), findsOneWidget);
+    });
+
+    testWidgets('it does not appear on banners without a 50/50', (tester) async {
+      await seed([pull(1, banner: WishBanner.weapon)]);
+      await pumpScreen(tester);
+
+      await tester.tap(setPityButtonFor('Standard Wish'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Standard Wish pity'), findsOneWidget);
+      expect(find.text('Next 5★ is guaranteed'), findsNothing);
     });
   });
 }

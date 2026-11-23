@@ -29,6 +29,11 @@ enum WishBanner {
   /// [characterSecondGachaType], whose records fold into `character`.
   static const queryableGachaTypes = <int>[100, 200, 301, 302, 400, 500];
 
+  /// Whether a 50/50 applies at all. Only the character banner has one: the
+  /// standard and beginner banners have no featured 5★, and the weapon
+  /// banner's guarantee runs on Epitomized Path fate points instead.
+  bool get showsFiftyFifty => this == WishBanner.character;
+
   /// Null rather than throwing: an unknown future banner code should be
   /// skipped on import, not crash it.
   static WishBanner? fromGachaType(int gachaType) {
