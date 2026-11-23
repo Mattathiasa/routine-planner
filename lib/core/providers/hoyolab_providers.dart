@@ -5,6 +5,7 @@ import '../hoyolab/data/hoyolab_client.dart';
 import '../hoyolab/data/hoyolab_credentials_store.dart';
 import '../hoyolab/data/hoyolab_web_login.dart';
 import '../hoyolab/data/hoyolab_web_login_real.dart';
+import '../hoyolab/data/traveler_diary_client.dart';
 import 'current_profile_provider.dart';
 
 part 'hoyolab_providers.g.dart';
@@ -17,6 +18,12 @@ HoyolabClient hoyolabClient(Ref ref) => HoyolabClient();
 /// a stored cookie, and shares none of the DS-signing machinery.
 @Riverpod(keepAlive: true)
 GachaLogClient gachaLogClient(Ref ref) => GachaLogClient();
+
+/// Reads primogem income from the Traveler's Diary. Uses the same stored
+/// cookie as [hoyolabClient], but a different endpoint that may not accept
+/// it — see `TravelerDiaryClient`.
+@Riverpod(keepAlive: true)
+TravelerDiaryClient travelerDiaryClient(Ref ref) => TravelerDiaryClient();
 
 @Riverpod(keepAlive: true)
 HoyolabCredentialsStore hoyolabCredentialsStore(Ref ref) =>
