@@ -11,6 +11,10 @@ import '../../../../core/database/tables/profiles_table.dart';
 /// uniqueness check on every row of every re-import.
 ///
 /// Rows are append-only in practice: the game never edits a past wish.
+///
+/// Named `WishPullRow` so the generated data class doesn't collide with the
+/// domain's `WishPull`, the same way `ResinEvents` yields `ResinEventRow`.
+@DataClassName('WishPullRow')
 @TableIndex(name: 'wish_pulls_profile_banner', columns: {#profileId, #bannerType})
 @TableIndex(name: 'wish_pulls_profile_pulled_at', columns: {#profileId, #pulledAt})
 class WishPulls extends Table {
