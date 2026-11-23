@@ -28,6 +28,16 @@ class Settings extends Table {
   BoolColumn get commissionReminderEnabled =>
       boolean().withDefault(const Constant(true))();
 
+  /// Whether this account has an active Blessing of the Welkin Moon, which
+  /// the primogem forecast adds to projected daily income. Off by default —
+  /// assuming a purchase nobody made would overstate the forecast.
+  BoolColumn get welkinActive => boolean().withDefault(const Constant(false))();
+
+  /// Whether this account buys the battle pass each cycle. Same reasoning as
+  /// [welkinActive].
+  BoolColumn get battlePassActive =>
+      boolean().withDefault(const Constant(false))();
+
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 

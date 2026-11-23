@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../../features/primogems/data/tables/primogem_tables.dart';
 import '../../features/resin/data/tables/resin_tables.dart';
+import '../../features/wishes/data/tables/wish_tables.dart';
 import 'ids.dart';
 import 'tables/account_status_tables.dart';
 import 'tables/app_state_table.dart';
@@ -28,6 +30,11 @@ part 'user_database.g.dart';
     AppState,
     AccountSnapshots,
     DailyCommissions,
+    WishPulls,
+    WishImportState,
+    PrimogemAnchors,
+    PrimogemMonthlyIncome,
+    PrimogemAdjustments,
   ],
 )
 class UserDatabase extends _$UserDatabase {
@@ -44,7 +51,7 @@ class UserDatabase extends _$UserDatabase {
       );
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -91,6 +98,24 @@ class UserDatabase extends _$UserDatabase {
         await m.create(accountSnapshotProfileUnique);
         await m.create(dailyCommissionsUnique);
         await m.addColumn(settings, settings.commissionReminderEnabled);
+      }
+      if (from < 4 && to >= 4) {
+        // Wish history and the primogem ledger. All five tables are new and
+        // empty and both settings columns have constant defaults, so this is
+        // the same shape as the v3 step.
+        await m.createTable(wishPulls);
+        await m.createTable(wishImportState);
+        await m.createTable(primogemAnchors);
+        await m.createTable(primogemMonthlyIncome);
+        await m.createTable(primogemAdjustments);
+        // Again: createTable does not bring declared indexes with it.
+        await m.create(wishPullsProfileBanner);
+        await m.create(wishPullsProfilePulledAt);
+        await m.create(wishImportStateUnique);
+        await m.create(primogemAnchorProfileUnique);
+        await m.create(primogemMonthlyIncomeUnique);
+        await m.addColumn(settings, settings.welkinActive);
+        await m.addColumn(settings, settings.battlePassActive);
       }
     },
   );
