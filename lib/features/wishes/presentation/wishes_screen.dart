@@ -5,7 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_status_views.dart';
 import '../../../core/widgets/circle_icon_button.dart';
+import '../application/wish_view_models.dart';
 import '../application/wishes_controller.dart';
+import 'banner_pity_section.dart';
+
+bool _hasManualPity(WishesViewData data) =>
+    data.banners.any((card) => card.source == PitySource.manual);
 
 class WishesScreen extends ConsumerWidget {
   const WishesScreen({super.key});
@@ -50,15 +55,21 @@ class WishesScreen extends ConsumerWidget {
             wishes.when(
               loading: () => const AppLoadingView(height: 240),
               error: (error, _) => AppErrorView(error: error),
-              data: (data) => data.hasHistory
-                  ? const SizedBox.shrink()
-                  : const AppEmptyView(
+              data: (data) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!data.hasHistory && !_hasManualPity(data))
+                    const AppEmptyView(
                       icon: Icons.auto_awesome_outlined,
                       title: 'No wishes yet',
                       caption:
                           'Import your wish history to see pity, your 5★ '
                           'list and what it all cost.',
-                    ),
+                    )
+                  else
+                    BannerPitySection(banners: data.banners),
+                ],
+              ),
             ),
           ],
         ),
