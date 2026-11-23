@@ -15,6 +15,7 @@ import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/core/widgets/app_card.dart';
+import 'package:routine_planner/features/planner/presentation/rarity_chip.dart';
 import 'package:routine_planner/features/wishes/data/wish_repository.dart';
 import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
 import 'package:routine_planner/features/wishes/domain/wish_pull.dart';
@@ -332,6 +333,80 @@ void main() {
 
       expect(find.text('Standard Wish pity'), findsOneWidget);
       expect(find.text('Next 5★ is guaranteed'), findsNothing);
+    });
+  });
+
+  group('statistics and history', () {
+    testWidgets('sums up the history and lists every 5-star', (tester) async {
+      await seed([
+        for (var i = 1; i <= 9; i++) pull(i),
+        pull(10, rarity: 5, name: 'Aster', kind: WishItemKind.character),
+        pull(11, rarity: 4, name: 'Wren', kind: WishItemKind.character),
+        for (var i = 12; i <= 70; i++) pull(i),
+        pull(71, rarity: 5, name: 'Corvin', kind: WishItemKind.character),
+      ]);
+      await pumpScreen(tester);
+
+      expect(find.text('Your luck'), findsOneWidget);
+      expect(find.text('Every 5★', skipOffstage: false), findsOneWidget);
+      // 71 wishes at 160 primogems each, grouped.
+      expect(find.text('11,360', skipOffstage: false), findsOneWidget);
+      expect(find.text('Corvin', skipOffstage: false), findsWidgets);
+      expect(find.text('pity 61', skipOffstage: false), findsWidgets);
+    });
+
+    testWidgets('a single 5-star reports no average, and says why', (tester) async {
+      await seed([
+        for (var i = 1; i <= 9; i++) pull(i),
+        pull(10, rarity: 5, name: 'Aster', kind: WishItemKind.character),
+      ]);
+      await pumpScreen(tester);
+
+      expect(find.text('—', skipOffstage: false), findsOneWidget);
+      expect(
+        find.textContaining('needs a second 5★', skipOffstage: false),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('lists recent wishes newest first', (tester) async {
+      await seed([
+        pull(1, name: 'Oldest'),
+        pull(2, name: 'Middle'),
+        pull(3, name: 'Newest'),
+      ]);
+      await pumpScreen(tester);
+
+      expect(find.text('Recent wishes'), findsOneWidget);
+
+      final newest = tester.getTopLeft(
+        find.text('Newest', skipOffstage: false),
+      );
+      final oldest = tester.getTopLeft(
+        find.text('Oldest', skipOffstage: false),
+      );
+      expect(newest.dy, lessThan(oldest.dy));
+    });
+
+    testWidgets('a rarity chip marks 4-stars and 5-stars only', (tester) async {
+      await seed([
+        pull(1),
+        pull(2, rarity: 4, name: 'Wren', kind: WishItemKind.character),
+        pull(3, rarity: 5, name: 'Aster', kind: WishItemKind.character),
+      ]);
+      await pumpScreen(tester);
+
+      // Two chips, not three: the 3★ row gets none. Counting the widget
+      // rather than its text, because the statistics card also prints a
+      // literal '4★' as a column label.
+      expect(find.byType(RarityChip, skipOffstage: false), findsNWidgets(2));
+    });
+
+    testWidgets('no statistics section before anything is imported', (tester) async {
+      await pumpScreen(tester);
+
+      expect(find.text('Your luck'), findsNothing);
+      expect(find.text('Recent wishes'), findsNothing);
     });
   });
 }

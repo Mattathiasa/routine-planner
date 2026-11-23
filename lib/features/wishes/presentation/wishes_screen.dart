@@ -9,7 +9,9 @@ import '../application/wish_view_models.dart';
 import '../application/wishes_controller.dart';
 import 'banner_pity_section.dart';
 import 'import_wish_history_sheet.dart';
+import 'wish_history_section.dart';
 import 'wish_import_row.dart';
+import 'wish_stats_section.dart';
 
 bool _hasManualPity(WishesViewData data) =>
     data.banners.any((card) => card.source == PitySource.manual);
@@ -74,6 +76,12 @@ class WishesScreen extends ConsumerWidget {
                     BannerPitySection(banners: data.banners),
                     const SizedBox(height: AppSpacing.sm),
                     WishImportRow(data: data),
+                    if (data.hasHistory) ...[
+                      const SizedBox(height: AppSpacing.xl),
+                      WishStatsSection(stats: data.stats),
+                      const SizedBox(height: AppSpacing.xl),
+                      WishHistorySection(entries: data.recentHistory),
+                    ],
                   ],
                 ],
               ),
