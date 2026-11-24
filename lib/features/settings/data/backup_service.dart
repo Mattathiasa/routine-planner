@@ -9,6 +9,12 @@ import '../../../core/database/user_database.dart';
 /// needed to reconstruct current state) and `DailyTasks` (day-scoped,
 /// regenerates naturally) — a stated scope cut, not an oversight.
 ///
+/// Wish history is included, and is the one part of this that can't be
+/// recovered any other way: upstream keeps about six months, so a wish from
+/// last year exists only in this file. `ProfileOrder` is excluded for the
+/// opposite reason — a position in a list of accounts means nothing in a
+/// single-account export.
+///
 /// Export is always scoped to one profile at a time — whichever one the
 /// caller passes — with no UI to export every profile at once. A
 /// deliberate v1 limitation, same as the HoYoLab credential being global
@@ -22,7 +28,11 @@ class BackupService {
 
   final UserDatabase _db;
 
-  static const formatVersion = 1;
+  static const formatVersion = 2;
+
+  /// Versions this app can read. A v1 file predates wish and primogem
+  /// tracking; its missing tables simply import as empty.
+  static const supportedFormatVersions = {1, 2};
 
   Future<String> exportBackupJson(String profileId) async {
     final profile = await (_db.select(
@@ -68,6 +78,36 @@ class BackupService {
             ))
             .get();
 
+    final wishPulls =
+        await (_db.select(_db.wishPulls)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
+
+    final wishImportState =
+        await (_db.select(_db.wishImportState)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
+
+    final primogemAnchors =
+        await (_db.select(_db.primogemAnchors)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
+
+    final primogemIncome =
+        await (_db.select(_db.primogemMonthlyIncome)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
+
+    final primogemAdjustments =
+        await (_db.select(_db.primogemAdjustments)..where(
+              (t) => t.profileId.equals(profileId) & t.deletedAt.isNull(),
+            ))
+            .get();
+
     final payload = {
       'formatVersion': formatVersion,
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
@@ -81,6 +121,15 @@ class BackupService {
         ],
         'plannerTargets': [for (final row in targets) row.toJson()],
         'materialInventory': [for (final row in inventory) row.toJson()],
+        'wishPulls': [for (final row in wishPulls) row.toJson()],
+        'wishImportState': [for (final row in wishImportState) row.toJson()],
+        'primogemAnchors': [for (final row in primogemAnchors) row.toJson()],
+        'primogemMonthlyIncome': [
+          for (final row in primogemIncome) row.toJson(),
+        ],
+        'primogemAdjustments': [
+          for (final row in primogemAdjustments) row.toJson(),
+        ],
       },
     };
     return jsonEncode(payload);
@@ -94,13 +143,18 @@ class BackupService {
   Future<String> importBackupJson(String jsonString) async {
     final data = jsonDecode(jsonString) as Map<String, dynamic>;
     final version = data['formatVersion'];
-    if (version != formatVersion) {
+    if (!supportedFormatVersions.contains(version)) {
       throw FormatException('Unsupported backup format version: $version');
     }
     final tables = data['tables'] as Map<String, dynamic>;
 
+    /// A table absent from the file imports as empty, which is what lets a
+    /// v1 backup — written before wishes and primogems existed — still
+    /// restore cleanly.
     List<Map<String, dynamic>> rowsOf(String key) {
-      return (tables[key] as List).cast<Map<String, dynamic>>();
+      final rows = tables[key];
+      if (rows is! List) return const [];
+      return rows.cast<Map<String, dynamic>>();
     }
 
     final profileId = rowsOf('profiles').single['id'] as String;
@@ -129,6 +183,21 @@ class BackupService {
       )..where((t) => t.profileId.equals(profileId))).go();
       await (_db.delete(
         _db.plannerTargets,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.wishPulls,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.wishImportState,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.primogemAnchors,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.primogemMonthlyIncome,
+      )..where((t) => t.profileId.equals(profileId))).go();
+      await (_db.delete(
+        _db.primogemAdjustments,
       )..where((t) => t.profileId.equals(profileId))).go();
       await (_db.delete(
         _db.settings,
@@ -180,6 +249,41 @@ class BackupService {
             .into(_db.materialInventory)
             .insertOnConflictUpdate(
               MaterialInventoryData.fromJson(json).toCompanion(false),
+            );
+      }
+      for (final json in rowsOf('wishPulls')) {
+        await _db
+            .into(_db.wishPulls)
+            .insertOnConflictUpdate(
+              WishPullRow.fromJson(json).toCompanion(false),
+            );
+      }
+      for (final json in rowsOf('wishImportState')) {
+        await _db
+            .into(_db.wishImportState)
+            .insertOnConflictUpdate(
+              WishImportStateData.fromJson(json).toCompanion(false),
+            );
+      }
+      for (final json in rowsOf('primogemAnchors')) {
+        await _db
+            .into(_db.primogemAnchors)
+            .insertOnConflictUpdate(
+              PrimogemAnchor.fromJson(json).toCompanion(false),
+            );
+      }
+      for (final json in rowsOf('primogemMonthlyIncome')) {
+        await _db
+            .into(_db.primogemMonthlyIncome)
+            .insertOnConflictUpdate(
+              PrimogemMonthlyIncomeData.fromJson(json).toCompanion(false),
+            );
+      }
+      for (final json in rowsOf('primogemAdjustments')) {
+        await _db
+            .into(_db.primogemAdjustments)
+            .insertOnConflictUpdate(
+              PrimogemAdjustment.fromJson(json).toCompanion(false),
             );
       }
     });
