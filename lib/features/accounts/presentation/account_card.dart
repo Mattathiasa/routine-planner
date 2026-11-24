@@ -116,6 +116,13 @@ class AccountCard extends StatelessWidget {
         'Boss discounts ${data.remainBossDiscounts}/${data.bossDiscountLimit} left',
       if (data.realmCurrency != null && data.realmCurrencyCap != null)
         'Realm ${data.realmCurrency}/${data.realmCurrencyCap}',
+      // Wishes and primogems are tracked per account too, so they belong on
+      // every card and not only the selected account's screen.
+      if (data.characterPity != null && data.characterHardPity != null)
+        'Pity ${data.characterPity}/${data.characterHardPity}'
+            '${data.pityIsManual ? ' (by hand)' : ''}',
+      if (data.primogems != null && data.wishesAffordable != null)
+        '${data.primogems} primogems · ${data.wishesAffordable} wishes',
     ];
     if (lines.isEmpty) return const [];
 

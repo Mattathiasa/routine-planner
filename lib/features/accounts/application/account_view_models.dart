@@ -65,5 +65,19 @@ abstract class AccountOverviewData with _$AccountOverviewData {
     int? totalExpeditions,
     int? realmCurrency,
     int? realmCurrencyCap,
+
+    /// Character-banner pity, null when this account tracks no wishes at
+    /// all. Wish history can't be refreshed in the background — that needs
+    /// an authkey, which is never stored — so this is whatever the last
+    /// import or manual entry left behind.
+    int? characterPity,
+    int? characterHardPity,
+
+    /// True when [characterPity] was typed in rather than imported.
+    @Default(false) bool pityIsManual,
+
+    /// Primogem balance, null until this account has an anchor.
+    int? primogems,
+    int? wishesAffordable,
   }) = _AccountOverviewData;
 }

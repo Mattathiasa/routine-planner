@@ -11,7 +11,14 @@ import '../../../core/providers/repository_providers.dart';
 import '../../resin/application/resin_controller.dart';
 import '../../resin/data/resin_providers.dart';
 import '../../resin/data/resin_repository.dart';
+import '../../primogems/data/primogem_providers.dart';
+import '../../primogems/data/primogem_repository.dart';
+import '../../primogems/domain/primogem_ledger.dart';
 import '../../resin/domain/resin_engine.dart';
+import '../../wishes/data/wish_providers.dart';
+import '../../wishes/data/wish_repository.dart';
+import '../../wishes/domain/pity_calculator.dart';
+import '../../wishes/domain/wish_banner.dart';
 import '../data/accounts_refresh_providers.dart';
 import 'account_view_models.dart';
 
@@ -33,6 +40,8 @@ class AccountsOverviewController extends _$AccountsOverviewController {
 
     final resinRepository = ref.watch(resinRepositoryProvider);
     final statusRepository = ref.watch(accountStatusRepositoryProvider);
+    final wishRepository = ref.watch(wishRepositoryProvider);
+    final primogemRepository = ref.watch(primogemRepositoryProvider);
     final errors = ref.watch(accountRefreshErrorsProvider);
 
     // Resin for other accounts is read straight from the repository, but
@@ -53,6 +62,8 @@ class AccountsOverviewController extends _$AccountsOverviewController {
           now: now,
           resinRepository: resinRepository,
           statusRepository: statusRepository,
+          wishRepository: wishRepository,
+          primogemRepository: primogemRepository,
           errors: errors,
         ),
     ]);
@@ -64,12 +75,16 @@ class AccountsOverviewController extends _$AccountsOverviewController {
     required DateTime now,
     required ResinRepository resinRepository,
     required AccountStatusRepository statusRepository,
+    required WishRepository wishRepository,
+    required PrimogemRepository primogemRepository,
     required Map<String, String> errors,
   }) async {
-    final (credentials, resinState, snapshot) = await (
+    final (credentials, resinState, snapshot, pity, primogems) = await (
       ref.watch(hoyolabCredentialsForProvider(profile.id).future),
       resinRepository.loadResinState(profile.id),
       statusRepository.snapshotFor(profile.id),
+      _pityFor(wishRepository, profile.id),
+      _primogemsFor(primogemRepository, wishRepository, profile.id, now),
     ).wait;
     final connected = credentials != null;
 
@@ -122,6 +137,11 @@ class AccountsOverviewController extends _$AccountsOverviewController {
       totalExpeditions: connected ? snapshot?.currentExpeditionNum : null,
       realmCurrency: connected ? snapshot?.currentHomeCoin : null,
       realmCurrencyCap: connected ? snapshot?.maxHomeCoin : null,
+      characterPity: pity?.pity,
+      characterHardPity: pity?.hardPity,
+      pityIsManual: pity?.manual ?? false,
+      primogems: primogems?.balance,
+      wishesAffordable: primogems?.wishes,
     );
   }
 
@@ -173,6 +193,82 @@ class AccountsOverviewController extends _$AccountsOverviewController {
     final server = GameServer.values.byName(profile.server);
     return ServerClock(ref.read(clockProvider), server).serverDateFor(now);
   }
+}
+
+/// The character banner's pity for one account, or null when it tracks no
+/// wishes at all.
+///
+/// Imported history wins over a manual number, the same rule the Wishes
+/// screen follows — blending the two would produce a figure that is neither.
+Future<({int pity, int hardPity, bool manual})?> _pityFor(
+  WishRepository repository,
+  String profileId,
+) async {
+  final pulls = await repository.pullsFor(
+    profileId,
+    banner: WishBanner.character,
+  );
+  if (pulls.isNotEmpty) {
+    final banner = pityFor(WishBanner.character, pulls);
+    return (
+      pity: banner.pullsSinceFive,
+      hardPity: banner.hardPity,
+      manual: false,
+    );
+  }
+
+  final state = await repository.importStateFor(profileId);
+  for (final row in state) {
+    if (row.bannerType != WishBanner.character.gachaType) continue;
+    final manual = row.manualPityFive;
+    if (manual != null) {
+      return (
+        pity: manual,
+        hardPity: hardPityFor(WishBanner.character),
+        manual: true,
+      );
+    }
+  }
+  return null;
+}
+
+/// One account's primogem balance, or null until it has an anchor.
+Future<({int balance, int wishes})?> _primogemsFor(
+  PrimogemRepository primogems,
+  WishRepository wishes,
+  String profileId,
+  DateTime now,
+) async {
+  final anchor = await primogems.anchorFor(profileId);
+  if (anchor == null) return null;
+
+  final (income, adjustments, wishesSinceAnchor) = await (
+    primogems.monthlyIncomeFor(profileId),
+    primogems.adjustmentsFor(profileId),
+    wishes.pullCountSince(profileId, anchor.anchoredAt),
+  ).wait;
+
+  final balance = balanceAt(
+    anchor: (
+      balance: anchor.balance,
+      fates: anchor.fates,
+      anchoredAt: anchor.anchoredAt,
+      anchorMonth: anchor.anchorMonth,
+      monthIncomeAtAnchor: anchor.anchorMonthIncomeAtAnchor,
+    ),
+    monthlyIncome: income,
+    adjustments: [
+      for (final adjustment in adjustments)
+        (at: adjustment.occurredAt, delta: adjustment.delta),
+    ],
+    wishesSinceAnchor: wishesSinceAnchor,
+    now: now,
+  );
+
+  return (
+    balance: balance,
+    wishes: wishesAffordable(balance, fates: anchor.fates),
+  );
 }
 
 /// Commissions available per server day. Community knowledge, not a

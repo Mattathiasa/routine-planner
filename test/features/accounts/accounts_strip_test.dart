@@ -17,6 +17,10 @@ import 'package:routine_planner/core/widgets/percent_ring_gauge.dart';
 import 'package:routine_planner/features/accounts/data/accounts_refresh_providers.dart';
 import 'package:routine_planner/features/accounts/presentation/account_card.dart';
 import 'package:routine_planner/features/accounts/presentation/accounts_strip.dart';
+import 'package:routine_planner/features/primogems/data/primogem_repository.dart';
+import 'package:routine_planner/features/wishes/data/wish_repository.dart';
+import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
+import 'package:routine_planner/features/wishes/domain/wish_pull.dart';
 
 void main() {
   late UserDatabase userDb;
@@ -164,5 +168,93 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Not logged in'), findsOneWidget);
+  });
+
+  group('wishes and primogems per account', () {
+    testWidgets('a card shows that account own pity and balance', (tester) async {
+      final mainId = (await profiles.getActiveProfile()).id;
+      await profiles.createProfile(displayName: 'Alt', server: 'europe');
+
+      // The main account has imported history; the alt has neither.
+      await WishRepository(userDb).insertPulls(mainId, [
+        for (var i = 1; i <= 12; i++)
+          WishPull(
+            id: (1700000000000000000 + i).toString(),
+            banner: WishBanner.character,
+            itemName: 'Cool Steel',
+            kind: WishItemKind.weapon,
+            rarity: 3,
+            pulledAtUtc: now.add(Duration(minutes: i)),
+          ),
+      ], now: now);
+      await PrimogemRepository(userDb).setAnchor(
+        mainId,
+        balance: 4000,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+
+      await pumpStrip(tester);
+
+      expect(find.text('Pity 12/90'), findsOneWidget);
+      // 4000 anchored, less the 12 seeded wishes at 160 each: the card runs
+      // the same ledger as the Wishes screen, per account.
+      expect(find.text('2080 primogems · 13 wishes'), findsOneWidget);
+      // The alt account shows neither line rather than a zero.
+      expect(find.textContaining('Pity 0/'), findsNothing);
+    });
+
+    testWidgets('a manually tracked pity is labelled as such', (tester) async {
+      final mainId = (await profiles.getActiveProfile()).id;
+      await WishRepository(userDb).saveManualPity(
+        mainId,
+        WishBanner.character,
+        pityFive: 62,
+        pityFour: 3,
+        guaranteed: true,
+        now: now,
+      );
+
+      await pumpStrip(tester);
+
+      expect(find.text('Pity 62/90 (by hand)'), findsOneWidget);
+    });
+
+    testWidgets('imported history wins over a manual number on the card', (tester) async {
+      final mainId = (await profiles.getActiveProfile()).id;
+      await WishRepository(userDb).saveManualPity(
+        mainId,
+        WishBanner.character,
+        pityFive: 62,
+        pityFour: 3,
+        guaranteed: true,
+        now: now,
+      );
+      await WishRepository(userDb).insertPulls(mainId, [
+        WishPull(
+          id: '1700000000000000001',
+          banner: WishBanner.character,
+          itemName: 'Cool Steel',
+          kind: WishItemKind.weapon,
+          rarity: 3,
+          pulledAtUtc: now,
+        ),
+      ], now: now);
+
+      await pumpStrip(tester);
+
+      expect(find.text('Pity 1/90'), findsOneWidget);
+      expect(find.textContaining('by hand'), findsNothing);
+    });
+
+    testWidgets('an account with no anchor shows no balance line', (tester) async {
+      await profiles.getActiveProfile();
+
+      await pumpStrip(tester);
+
+      expect(find.textContaining('primogems'), findsNothing);
+    });
   });
 }
