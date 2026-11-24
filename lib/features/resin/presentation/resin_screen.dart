@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/circle_icon_button.dart';
+import '../../accounts/presentation/account_switcher_bar.dart';
 import 'resin_actions_section.dart';
 import 'resin_activity_section.dart';
 import 'resin_forecast_section.dart';
@@ -36,6 +37,7 @@ class ResinScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
+            const AccountSwitcherBar(),
             const ResinRingSection(),
             const SizedBox(height: AppSpacing.xl),
             const ResinForecastSection(),

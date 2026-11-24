@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_spacing.dart';
+import '../../accounts/presentation/account_switcher_bar.dart';
 import '../application/planner_controller.dart';
 import 'add_target_screen.dart';
 import 'most_needed_section.dart';
@@ -33,6 +34,7 @@ class PlannerScreen extends ConsumerWidget {
                 materialsShortCount: data.materialsShortCount,
               ),
               const SizedBox(height: AppSpacing.xl),
+              const AccountSwitcherBar(),
               Text('Targets', style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: AppSpacing.md),
               if (data.targets.isEmpty)
