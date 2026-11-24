@@ -50,6 +50,20 @@ class SettingsRepository {
     );
   }
 
+  Future<void> updateWelkinActive(String profileId, bool active) {
+    return _updateSettings(
+      profileId,
+      SettingsCompanion(welkinActive: Value(active)),
+    );
+  }
+
+  Future<void> updateBattlePassActive(String profileId, bool active) {
+    return _updateSettings(
+      profileId,
+      SettingsCompanion(battlePassActive: Value(active)),
+    );
+  }
+
   Future<void> updateCommissionReminderEnabled(String profileId, bool enabled) {
     return _updateSettings(
       profileId,

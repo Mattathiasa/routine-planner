@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_status_views.dart';
 import '../../../core/widgets/circle_icon_button.dart';
+import '../../primogems/presentation/primogem_balance_section.dart';
 import '../application/wish_view_models.dart';
 import '../application/wishes_controller.dart';
 import 'banner_pity_section.dart';
@@ -55,6 +56,8 @@ class WishesScreen extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: AppSpacing.xl),
+            const PrimogemBalanceSection(),
             const SizedBox(height: AppSpacing.xl),
             wishes.when(
               loading: () => const AppLoadingView(height: 240),
