@@ -10,7 +10,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/widgets/app_status_views.dart';
+import '../../accounts/presentation/all_accounts_screen.dart';
 
 class AccountsSection extends ConsumerWidget {
   const AccountsSection({super.key});
@@ -59,6 +61,10 @@ class AccountsSection extends ConsumerWidget {
                       _AddProfileRow(
                         server: currentAsync.value?.server ?? 'asia',
                       ),
+                      if (profiles.length > 1) ...[
+                        Divider(height: 1, color: context.colors.divider),
+                        const _SeeAllRow(),
+                      ],
                     ],
                   ),
                 ),
@@ -354,6 +360,44 @@ class _RenameProfileDialogState extends State<_RenameProfileDialog> {
           child: const Text('Save'),
         ),
       ],
+    );
+  }
+}
+
+/// Reaches the all-accounts screen from Settings as well as from Today's
+/// strip. Only offered with more than one account, where comparing them is
+/// the point.
+class _SeeAllRow extends StatelessWidget {
+  const _SeeAllRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          AppPageRoute<void>(builder: (_) => const AllAccountsScreen()),
+        ),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 56),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Compare all accounts',
+                  style: textTheme.titleMedium?.copyWith(
+                    color: context.colors.primary,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right, color: context.colors.textSecondary),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -17,6 +17,7 @@ import 'package:routine_planner/core/widgets/percent_ring_gauge.dart';
 import 'package:routine_planner/features/accounts/data/accounts_refresh_providers.dart';
 import 'package:routine_planner/features/accounts/presentation/account_card.dart';
 import 'package:routine_planner/features/accounts/presentation/accounts_strip.dart';
+import 'package:routine_planner/features/accounts/presentation/all_accounts_screen.dart';
 import 'package:routine_planner/features/primogems/data/primogem_repository.dart';
 import 'package:routine_planner/features/wishes/data/wish_repository.dart';
 import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
@@ -256,5 +257,17 @@ void main() {
 
       expect(find.textContaining('primogems'), findsNothing);
     });
+  });
+
+  testWidgets('the header reaches the all-accounts screen', (tester) async {
+    await profiles.getActiveProfile();
+    await profiles.createProfile(displayName: 'Alt', server: 'europe');
+
+    await pumpStrip(tester);
+
+    await tester.tap(find.text('See all'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AllAccountsScreen), findsOneWidget);
   });
 }

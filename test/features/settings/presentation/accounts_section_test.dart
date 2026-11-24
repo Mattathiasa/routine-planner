@@ -8,6 +8,7 @@ import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store
 import 'package:routine_planner/core/providers/database_providers.dart';
 import 'package:routine_planner/core/providers/hoyolab_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
+import 'package:routine_planner/features/accounts/presentation/all_accounts_screen.dart';
 import 'package:routine_planner/features/settings/presentation/accounts_section.dart';
 
 // PopupMenuButton/PopupMenuItem are instantiated with a private enum type
@@ -232,5 +233,23 @@ void main() {
     expect(find.text('Alt'), findsNothing);
     final active = await container.read(currentProfileProvider.future);
     expect(active.id, original.id);
+  });
+
+  group('comparing all accounts', () {
+    testWidgets('is not offered with a single account', (tester) async {
+      await pumpSection(tester);
+
+      expect(find.text('Compare all accounts'), findsNothing);
+    });
+
+    testWidgets('reaches the all-accounts screen once there are two', (tester) async {
+      await pumpSection(tester);
+      await addProfile(tester, 'Alt');
+
+      await tester.tap(find.text('Compare all accounts'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AllAccountsScreen), findsOneWidget);
+    });
   });
 }

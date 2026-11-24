@@ -5,9 +5,11 @@ import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/repository_providers.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_status_views.dart';
+import '../../../core/theme/app_motion.dart';
 import '../application/account_view_models.dart';
 import '../application/accounts_overview_controller.dart';
 import 'account_card.dart';
+import 'all_accounts_screen.dart';
 
 /// Every local account's resin and daily commission progress, side by
 /// side at the top of Today — the one place a multi-account player can see
@@ -47,6 +49,20 @@ class AccountsStrip extends ConsumerWidget {
                       _commissionSummary(accounts),
                       style: textTheme.bodyLarge,
                     ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      AppPageRoute<void>(
+                        builder: (_) => const AllAccountsScreen(),
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                      ),
+                      minimumSize: const Size(0, 48),
+                    ),
+                    child: const Text('See all'),
+                  ),
                 ],
               ),
             ),

@@ -25,8 +25,12 @@ class AccountCard extends StatelessWidget {
     required this.onSelect,
     required this.onBumpCommissions,
     required this.onToggleBonus,
+    this.fillWidth = false,
   });
 
+  /// The strip's fixed card width. The all-accounts screen lists the same
+  /// cards vertically instead, where a fixed width would look wrong — hence
+  /// [fillWidth].
   static const width = 212.0;
 
   final AccountOverviewData data;
@@ -34,13 +38,16 @@ class AccountCard extends StatelessWidget {
   final VoidCallback onBumpCommissions;
   final VoidCallback onToggleBonus;
 
+  /// Fill the available width instead of using [width].
+  final bool fillWidth;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final selected = data.isSelected;
 
     return SizedBox(
-      width: width,
+      width: fillWidth ? double.infinity : width,
       // explicitChildNodes, not ExcludeSemantics: the card names itself
       // for the switch gesture while its own controls (log a commission,
       // claim the bonus) keep their separate, reachable nodes.
