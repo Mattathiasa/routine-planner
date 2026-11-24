@@ -120,8 +120,7 @@ void main() {
     await tester.tap(find.widgetWithText(TextButton, 'Save'));
     await tester.pumpAndSettle();
 
-    expect(find.text('9 wishes'), findsOneWidget);
-    expect(find.text('+ 7 fates'), findsOneWidget);
+    expect(find.text('9 wishes · including 7 fates'), findsOneWidget);
   });
 
   testWidgets('a non-numeric balance is rejected', (tester) async {

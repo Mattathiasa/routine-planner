@@ -6,9 +6,12 @@ Offline-first Flutter companion for a gacha RPG: resin tracker, farming schedule
 daily checklist and material planner. Unofficial, free, no ads. **Not affiliated
 with or endorsed by HoYoverse.**
 
-| Today | Resin | Planner | Wishes | Settings |
-| --- | --- | --- | --- | --- |
-| ![Today](docs/screenshots/today.png) | ![Resin](docs/screenshots/resin.png) | ![Planner](docs/screenshots/planner.png) | ![Wishes](docs/screenshots/wishes.png) | ![Settings](docs/screenshots/settings.png) |
+| Today | Resin | Planner | Settings |
+| --- | --- | --- | --- |
+| ![Today](docs/screenshots/today.png) | ![Resin](docs/screenshots/resin.png) | ![Planner](docs/screenshots/planner.png) | ![Settings](docs/screenshots/settings.png) |
+
+<!-- The Wishes tab has no shot here yet; regenerate the set from a
+     demo-seeded web build (see "Release builds" below) to add it. -->
 
 A dark theme derived from the same design tokens follows the system setting
 ([dark screenshots](docs/screenshots/)).

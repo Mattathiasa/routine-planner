@@ -20,12 +20,17 @@ import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/providers/repository_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/features/planner/presentation/planner_screen.dart';
+import 'package:routine_planner/features/wishes/data/wish_providers.dart';
+import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
+import 'package:routine_planner/features/wishes/domain/wish_pull.dart';
 import 'package:routine_planner/features/resin/application/resin_controller.dart';
+import 'package:routine_planner/features/primogems/data/primogem_providers.dart';
 import 'package:routine_planner/features/resin/presentation/resin_screen.dart';
 import 'package:routine_planner/features/settings/presentation/settings_screen.dart';
 import 'package:routine_planner/features/today/presentation/today_screen.dart';
+import 'package:routine_planner/features/wishes/presentation/wishes_screen.dart';
 
-/// Golden coverage: each of the four screens in light and dark, with
+/// Golden coverage: each of the five screens in light and dark, with
 /// deterministic fixture data (seed catalog, fixed clock, one planner
 /// target, a synced resin value). Text renders in the FlutterTest font
 /// (google_fonts fetching is disabled in flutter_test_config.dart), so
@@ -63,6 +68,44 @@ void main() {
     await container
         .read(resinControllerProvider.notifier)
         .sync(132, fullIn: const Duration(hours: 9, minutes: 4));
+
+    // Wishes: enough history for pity, a 5★ row and real statistics. Names
+    // are the seed catalog's own sample characters.
+    await container.read(wishRepositoryProvider).insertPulls(profileId, [
+      for (var i = 1; i <= 34; i++)
+        WishPull(
+          id: (1700000000000000000 + i).toString(),
+          banner: WishBanner.character,
+          itemName: switch (i) {
+            6 => 'Aster',
+            18 => 'Wren',
+            _ => 'Larkspur Spear',
+          },
+          kind: i == 6 || i == 18 ? WishItemKind.character : WishItemKind.weapon,
+          rarity: switch (i) {
+            6 => 5,
+            18 => 4,
+            _ => 3,
+          },
+          pulledAtUtc: fixedNow.subtract(Duration(hours: (34 - i) * 3)),
+        ),
+    ], now: fixedNow);
+
+    final primogems = container.read(primogemRepositoryProvider);
+    await primogems.setAnchor(
+      profileId,
+      balance: 12480,
+      fates: 6,
+      anchoredAt: fixedNow.subtract(const Duration(days: 9)),
+      anchorMonth: '2026-11',
+      monthIncomeAtAnchor: 2140,
+    );
+    await primogems.saveMonthlyIncome(
+      profileId,
+      month: '2026-11',
+      primogems: 3860,
+      fetchedAt: fixedNow,
+    );
   }
 
   for (final (mode, theme) in [
@@ -73,6 +116,7 @@ void main() {
       ('today', const TodayScreen()),
       ('resin', const ResinScreen()),
       ('planner', const PlannerScreen()),
+      ('wishes', const WishesScreen()),
       ('settings', const SettingsScreen()),
     ]) {
       testWidgets('$name screen · $mode', (tester) async {

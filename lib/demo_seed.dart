@@ -8,8 +8,12 @@ import 'core/providers/clock_providers.dart';
 import 'core/database/user_database.dart';
 import 'core/providers/current_profile_provider.dart';
 import 'core/providers/repository_providers.dart';
+import 'features/primogems/data/primogem_providers.dart';
 import 'features/resin/data/resin_providers.dart';
 import 'features/resin/domain/resin_engine.dart';
+import 'features/wishes/data/wish_providers.dart';
+import 'features/wishes/domain/wish_banner.dart';
+import 'features/wishes/domain/wish_pull.dart';
 
 /// Screenshot/demo fixture: compiled in only with
 /// `--dart-define=DEMO_SEED=true` (used to capture the README screens) and
@@ -125,4 +129,77 @@ Future<void> maybeApplyDemoSeed(ProviderContainer container) async {
     bonusClaimed: false,
     now: now,
   );
+
+  // Wish history for the main account, so the Wishes tab has pity, a 5★
+  // list and real statistics to show. Names reference the bundled catalog.
+  final wishes = container.read(wishRepositoryProvider);
+  await wishes.insertPulls(profile.id, _demoWishHistory(now), now: now);
+
+  // The alt account is tracked by hand instead, which is the other half of
+  // the story the screen tells.
+  await wishes.saveManualPity(
+    alt.id,
+    WishBanner.character,
+    pityFive: 58,
+    pityFour: 4,
+    guaranteed: true,
+    now: now,
+  );
+
+  final primogems = container.read(primogemRepositoryProvider);
+  await primogems.setAnchor(
+    profile.id,
+    balance: 12480,
+    fates: 6,
+    anchoredAt: now.subtract(const Duration(days: 9)),
+    anchorMonth: _monthKey(now),
+    monthIncomeAtAnchor: 2140,
+  );
+  await primogems.saveMonthlyIncome(
+    profile.id,
+    month: _monthKey(now),
+    primogems: 3860,
+    fetchedAt: now,
+  );
+  await primogems.addAdjustment(
+    profile.id,
+    delta: -1600,
+    note: 'Topped up resin',
+    occurredAt: now.subtract(const Duration(days: 3)),
+  );
+}
+
+String _monthKey(DateTime at) =>
+    '${at.year.toString().padLeft(4, '0')}-${at.month.toString().padLeft(2, '0')}';
+
+/// A plausible character-banner history: two 5★s at believable pity, 4★s
+/// roughly every ten pulls, 3★ weapons in between. Snowflake-shaped ids,
+/// ascending, since that ordering is what the domain reads.
+List<WishPull> _demoWishHistory(DateTime now) {
+  const fiveStarsAt = {12: 'Nahida', 86: 'Furina'};
+  const fourStarsAt = {4: 'Xingqiu', 23: 'Bennett', 31: 'Fischl', 47: 'Xingqiu', 58: 'Bennett', 70: 'Fischl', 79: 'Xingqiu'};
+
+  final pulls = <WishPull>[];
+  for (var i = 1; i <= 94; i++) {
+    final fiveStar = fiveStarsAt[i];
+    final fourStar = fourStarsAt[i];
+    pulls.add(
+      WishPull(
+        id: (1700000000000000000 + i).toString(),
+        banner: WishBanner.character,
+        itemName: fiveStar ?? fourStar ?? 'Cool Steel',
+        kind: fiveStar != null || fourStar != null
+            ? WishItemKind.character
+            : WishItemKind.weapon,
+        rarity: fiveStar != null
+            ? 5
+            : fourStar != null
+            ? 4
+            : 3,
+        // Spread backwards from now, newest last.
+        pulledAtUtc: now.subtract(Duration(hours: (94 - i) * 4)),
+      ),
+    );
+  }
+  return pulls;
 }

@@ -128,25 +128,12 @@ class _Balance extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            RollingNumber(data.balance, style: AppDisplayNumbers.heroNumber()),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8, left: 6),
-              child: Text(
-                data.fates > 0 ? '+ ${data.fates} fates' : '',
-                style: textTheme.titleMedium?.copyWith(
-                  color: context.colors.onGradientSecondary,
-                ),
-              ),
-            ),
-          ],
-        ),
+        // The hero number gets the row to itself: at 412dp a six-figure
+        // balance plus a trailing label overflows, and fates read better
+        // next to the wish count anyway.
+        RollingNumber(data.balance, style: AppDisplayNumbers.heroNumber()),
         Text(
-          data.wishesAffordable == 1
-              ? '1 wish'
-              : '${data.wishesAffordable} wishes',
+          _wishesLine(data),
           style: textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -179,6 +166,15 @@ class _Balance extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// How many wishes that buys, counting any Fates already held.
+String _wishesLine(PrimogemViewData data) {
+  final wishes = data.wishesAffordable == 1
+      ? '1 wish'
+      : '${data.wishesAffordable} wishes';
+  if (data.fates == 0) return wishes;
+  return '$wishes · including ${data.fates} fates';
 }
 
 /// Says where the number comes from, so a stale balance is never presented as
