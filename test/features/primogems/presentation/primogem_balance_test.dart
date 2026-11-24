@@ -16,6 +16,7 @@ import 'package:routine_planner/core/providers/notification_providers.dart';
 import 'package:routine_planner/core/theme/app_theme.dart';
 import 'package:routine_planner/features/primogems/data/primogem_repository.dart';
 import 'package:routine_planner/features/primogems/presentation/primogem_balance_section.dart';
+import 'package:routine_planner/features/primogems/presentation/primogem_forecast_section.dart';
 import 'package:routine_planner/features/wishes/data/wish_repository.dart';
 import 'package:routine_planner/features/wishes/domain/wish_banner.dart';
 import 'package:routine_planner/features/wishes/domain/wish_pull.dart';
@@ -69,7 +70,14 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light(),
           home: const Scaffold(
-            body: SingleChildScrollView(child: PrimogemBalanceSection()),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  PrimogemBalanceSection(),
+                  PrimogemForecastSection(),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -278,5 +286,109 @@ void main() {
 
     expect(find.text('20'), findsOneWidget);
     expect(find.text('0 wishes'), findsOneWidget);
+  });
+
+  group('forecast', () {
+    testWidgets('is hidden until a balance is anchored', (tester) async {
+      await seedProfile();
+      await pumpCard(tester);
+
+      expect(find.text('Saving up'), findsNothing);
+    });
+
+    testWidgets('projects a date for a guaranteed 5-star', (tester) async {
+      final profileId = await seedProfile();
+      await PrimogemRepository(userDb).setAnchor(
+        profileId,
+        balance: 14000,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+      await pumpCard(tester);
+
+      // 90 wishes is 14400; 400 short at 60 a day is 7 days.
+      expect(find.text('Saving up'), findsOneWidget);
+      expect(find.textContaining('A guaranteed 5★ by'), findsOneWidget);
+      expect(find.textContaining('400 primogems to go'), findsOneWidget);
+    });
+
+    testWidgets('says so outright when a guaranteed 5-star is affordable', (tester) async {
+      final profileId = await seedProfile();
+      await PrimogemRepository(userDb).setAnchor(
+        profileId,
+        balance: 20000,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+      await pumpCard(tester);
+
+      expect(
+        find.text('You can afford a guaranteed 5★ now'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('turning on the Welkin brings the date closer', (tester) async {
+      final profileId = await seedProfile();
+      await PrimogemRepository(userDb).setAnchor(
+        profileId,
+        balance: 0,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+      await pumpCard(tester);
+
+      expect(find.textContaining('at 60 a day'), findsOneWidget);
+
+      // Only the switch toggles, matching the settings screen's rows. The
+      // card renders Welkin first, battle pass second.
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('at 150 a day'), findsOneWidget);
+    });
+
+    testWidgets('the battle pass adds its per-day share', (tester) async {
+      final profileId = await seedProfile();
+      await PrimogemRepository(userDb).setAnchor(
+        profileId,
+        balance: 0,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+      await pumpCard(tester);
+
+      await tester.tap(find.byType(Switch).last);
+      await tester.pumpAndSettle();
+
+      // 60 + 680 / 42.
+      expect(find.textContaining('at 76 a day'), findsOneWidget);
+    });
+
+    testWidgets('says what the projection leaves out', (tester) async {
+      final profileId = await seedProfile();
+      await PrimogemRepository(userDb).setAnchor(
+        profileId,
+        balance: 0,
+        fates: 0,
+        anchoredAt: now,
+        anchorMonth: '2026-11',
+        monthIncomeAtAnchor: 0,
+      );
+      await pumpCard(tester);
+
+      expect(
+        find.textContaining('Spiral Abyss and quests are not counted'),
+        findsOneWidget,
+      );
+    });
   });
 }
