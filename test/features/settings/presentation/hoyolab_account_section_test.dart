@@ -218,4 +218,101 @@ void main() {
     expect(two!.cookie, 'ltoken_v2=account-two');
     expect(two.uid, '700000002');
   });
+
+  testWidgets('refuses a UID another account is already connected to', (tester) async {
+    // Two local accounts on one game UID would race: both would sync the
+    // same resin into separate anchors, and every number on both cards
+    // would look almost-right and never agree.
+    final userDb = UserDatabase(NativeDatabase.memory());
+    addTearDown(userDb.close);
+    final profiles = ProfileRepository(userDb);
+    final first = (await profiles.getActiveProfile()).id;
+    final second = (await profiles.createProfile(
+      displayName: 'Second',
+      server: 'europe',
+    )).id;
+
+    final store = FakeHoyolabCredentialsStore();
+    await store.save(
+      profileId: first,
+      cookie: 'ltoken_v2=account-one',
+      uid: '800000001',
+    );
+    final webLogin = FakeHoyolabWebLogin();
+    final container = ProviderContainer(
+      overrides: [
+        userDatabaseProvider.overrideWithValue(userDb),
+        hoyolabCredentialsStoreProvider.overrideWithValue(store),
+        hoyolabWebLoginProvider.overrideWithValue(webLogin),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await profiles.selectProfile(second);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const Scaffold(body: HoyolabAccountSection()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Connect'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('I understand, continue'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Game UID'),
+      '800000001',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    // Names the account holding it, and stays open rather than closing on a
+    // silent failure.
+    expect(find.textContaining('already connected to "Player"'), findsOneWidget);
+    expect(find.text('Game UID'), findsOneWidget);
+    expect(await store.read(second), isNull);
+  });
+
+  testWidgets('reconnecting the same account to its own UID is allowed', (tester) async {
+    final session = await pumpSection(tester);
+
+    Future<void> connectWith(String uid) async {
+      await tester.tap(find.text('Connect'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I understand, continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Game UID'), uid);
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+    }
+
+    await connectWith('800000001');
+    await tester.tap(find.text('Disconnect'));
+    await tester.pumpAndSettle();
+
+    // The same UID again on the same account is not a clash with itself.
+    await connectWith('800000001');
+
+    expect((await session.store.read(session.profileId))!.uid, '800000001');
+  });
+
+  testWidgets('a non-numeric UID says so instead of doing nothing', (tester) async {
+    await pumpSection(tester);
+
+    await tester.tap(find.text('Connect'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('I understand, continue'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Game UID'), 'abc');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('digits only'), findsOneWidget);
+  });
 }

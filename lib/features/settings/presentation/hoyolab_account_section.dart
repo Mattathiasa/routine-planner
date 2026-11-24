@@ -209,6 +209,7 @@ class _ConnectFormDialog extends ConsumerStatefulWidget {
 
 class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
   final _uidController = TextEditingController();
+  String? _error;
 
   @override
   void dispose() {
@@ -218,16 +219,51 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
 
   Future<void> _save() async {
     final uid = _uidController.text.trim();
-    if (uid.isEmpty || int.tryParse(uid) == null) return;
+    if (uid.isEmpty || int.tryParse(uid) == null) {
+      setState(() => _error = 'Enter your in-game UID, digits only.');
+      return;
+    }
 
-    final navigator = Navigator.of(context);
     final profileId = (await ref.read(currentProfileProvider.future)).id;
+
+    // Two local accounts pointing at the same game UID would race each
+    // other: both would sync the same resin into two separate anchors, and
+    // every number on both cards would look almost-right and never agree.
+    // Easier to refuse than to explain afterwards.
+    final clash = await _profileAlreadyUsing(uid, besides: profileId);
+    if (clash != null) {
+      if (!mounted) return;
+      setState(() {
+        _error =
+            'UID $uid is already connected to "$clash". Each account needs '
+            'its own UID.';
+      });
+      return;
+    }
+
+    if (!mounted) return;
+    final navigator = Navigator.of(context);
     await ref
         .read(hoyolabCredentialsStoreProvider)
         .save(profileId: profileId, cookie: widget.cookie, uid: uid);
     ref.invalidate(hoyolabCredentialsForProvider(profileId));
     ref.invalidate(hoyolabCredentialsProvider);
     if (mounted) navigator.pop();
+  }
+
+  /// The display name of another account already connected to [uid], or null.
+  Future<String?> _profileAlreadyUsing(
+    String uid, {
+    required String besides,
+  }) async {
+    final profiles = await ref.read(profileListProvider.future);
+    final store = ref.read(hoyolabCredentialsStoreProvider);
+    for (final profile in profiles) {
+      if (profile.id == besides) continue;
+      final credentials = await store.read(profile.id);
+      if (credentials?.uid == uid) return profile.displayName;
+    }
+    return null;
   }
 
   @override
@@ -247,6 +283,15 @@ class _ConnectFormDialogState extends ConsumerState<_ConnectFormDialog> {
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(labelText: 'Game UID'),
           ),
+          if (_error != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              _error!,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: context.colors.warning,
+              ),
+            ),
+          ],
         ],
       ),
       actions: [
