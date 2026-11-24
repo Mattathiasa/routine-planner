@@ -3,19 +3,47 @@ import 'package:drift/drift.dart';
 import '../ids.dart';
 import '../user_database.dart';
 
+/// Sorts after every account that has a stored position.
+const _unordered = 1 << 30;
+
 /// Reads and writes game accounts, and tracks which one is active.
 class ProfileRepository {
   ProfileRepository(this._db);
 
   final UserDatabase _db;
 
-  /// Live profiles, oldest first — a stable order that doesn't shift when a
-  /// profile is renamed or its server changes (unlike `updatedAt`).
-  Future<List<Profile>> listProfiles() {
-    return (_db.select(_db.profiles)
-          ..where((t) => t.deletedAt.isNull())
-          ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
-        .get();
+  /// Live profiles in the user's own order, falling back to oldest first.
+  ///
+  /// Accounts with no stored position sort after the ones that have one, by
+  /// `createdAt` — so an install that has never reordered anything keeps the
+  /// order it always had, and a newly created account lands at the end.
+  /// `createdAt` rather than `updatedAt` because renaming an account or
+  /// changing its server must not move it.
+  Future<List<Profile>> listProfiles() async {
+    final profiles =
+        await (_db.select(_db.profiles)
+              ..where((t) => t.deletedAt.isNull())
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+            .get();
+
+    final positions = await _positions();
+    if (positions.isEmpty) return profiles;
+
+    // Sorted here rather than in SQL: the list is a handful of rows, and a
+    // LEFT JOIN with a null-last ordering is far more machinery than this.
+    profiles.sort((a, b) {
+      final byPosition = (positions[a.id] ?? _unordered).compareTo(
+        positions[b.id] ?? _unordered,
+      );
+      if (byPosition != 0) return byPosition;
+      return a.createdAt.compareTo(b.createdAt);
+    });
+    return profiles;
+  }
+
+  Future<Map<String, int>> _positions() async {
+    final rows = await _db.select(_db.profileOrder).get();
+    return {for (final row in rows) row.profileId: row.position};
   }
 
   Future<Profile?> getProfile(String id) {
@@ -43,7 +71,32 @@ class ProfileRepository {
             updatedAt: now,
           ),
         );
+    // No position row: an unordered account sorts last, which is where a new
+    // one belongs.
     return (await getProfile(id))!;
+  }
+
+  /// Rewrites the list order to match [orderedIds].
+  ///
+  /// Takes the whole order rather than a from/to pair so the result can't
+  /// drift out of step with what the user sees. Ids not in [orderedIds] keep
+  /// whatever position they had, which is what lets a soft-deleted profile
+  /// come back via Undo without disturbing anything.
+  Future<void> reorderProfiles(List<String> orderedIds) async {
+    final now = DateTime.now().toUtc();
+    await _db.transaction(() async {
+      for (var i = 0; i < orderedIds.length; i++) {
+        await _db
+            .into(_db.profileOrder)
+            .insertOnConflictUpdate(
+              ProfileOrderCompanion.insert(
+                profileId: orderedIds[i],
+                position: i,
+                updatedAt: now,
+              ),
+            );
+      }
+    });
   }
 
   Future<void> renameProfile(String id, String displayName) {

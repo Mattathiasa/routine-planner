@@ -47,16 +47,53 @@ class AccountsSection extends ConsumerWidget {
                   ),
                   child: Column(
                     children: [
-                      for (var i = 0; i < profiles.length; i++) ...[
-                        if (i > 0)
-                          Divider(height: 1, color: context.colors.divider),
+                      // Reorderable only once there's something to reorder.
+                      // ReorderableListView needs a bounded height and this
+                      // list lives inside the Settings scroll view, so with
+                      // one account a plain Column is both simpler and
+                      // correct.
+                      if (profiles.length == 1)
                         _ProfileRow(
-                          id: profiles[i].id,
-                          displayName: profiles[i].displayName,
-                          server: profiles[i].server,
-                          canDelete: profiles.length > 1,
+                          id: profiles.single.id,
+                          displayName: profiles.single.displayName,
+                          server: profiles.single.server,
+                          canDelete: false,
+                        )
+                      else
+                        ReorderableListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          buildDefaultDragHandles: false,
+                          itemCount: profiles.length,
+                          // onReorderItem, not the deprecated onReorder: it
+                          // reports the index the item actually lands on,
+                          // with the removal already accounted for.
+                          onReorderItem: (oldIndex, newIndex) async {
+                            final ids = [for (final p in profiles) p.id];
+                            ids.insert(newIndex, ids.removeAt(oldIndex));
+                            await ref
+                                .read(profileRepositoryProvider)
+                                .reorderProfiles(ids);
+                            ref.invalidate(profileListProvider);
+                          },
+                          itemBuilder: (context, i) => Column(
+                            key: ValueKey(profiles[i].id),
+                            children: [
+                              if (i > 0)
+                                Divider(
+                                  height: 1,
+                                  color: context.colors.divider,
+                                ),
+                              _ProfileRow(
+                                id: profiles[i].id,
+                                displayName: profiles[i].displayName,
+                                server: profiles[i].server,
+                                canDelete: profiles.length > 1,
+                                dragIndex: i,
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
                       Divider(height: 1, color: context.colors.divider),
                       _AddProfileRow(
                         server: currentAsync.value?.server ?? 'asia',
@@ -86,12 +123,17 @@ class _ProfileRow extends ConsumerWidget {
     required this.displayName,
     required this.server,
     required this.canDelete,
+    this.dragIndex,
   });
 
   final String id;
   final String displayName;
   final String server;
   final bool canDelete;
+
+  /// Set when the list is reorderable, which is only with two or more
+  /// accounts.
+  final int? dragIndex;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +152,25 @@ class _ProfileRow extends ConsumerWidget {
         constraints: const BoxConstraints(minHeight: 56),
         child: Row(
           children: [
-            const SizedBox(width: AppSpacing.lg),
+            if (dragIndex case final index?)
+              ReorderableDragStartListener(
+                index: index,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
+                  child: Semantics(
+                    label: 'Reorder $displayName',
+                    child: Icon(
+                      Icons.drag_handle,
+                      size: 20,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
+                ),
+              )
+            else
+              const SizedBox(width: AppSpacing.lg),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,7 @@ import '../../generated_migrations/schema_v1.dart' as v1;
 import '../../generated_migrations/schema_v2.dart' as v2;
 import '../../generated_migrations/schema_v3.dart' as v3;
 import '../../generated_migrations/schema_v4.dart' as v4;
+import '../../generated_migrations/schema_v5.dart' as v5;
 
 void main() {
   late SchemaVerifier verifier;
@@ -217,6 +218,54 @@ void main() {
     expect(await checkDb.select(checkDb.primogemAnchors).get(), isEmpty);
     expect(await checkDb.select(checkDb.primogemMonthlyIncome).get(), isEmpty);
     expect(await checkDb.select(checkDb.primogemAdjustments).get(), isEmpty);
+    await checkDb.close();
+  });
+
+  test('migrating 4 -> 5 produces exactly the schema a fresh v5 database has', () async {
+    final connection = await verifier.startAt(4);
+    final db = UserDatabase(connection);
+    await verifier.migrateAndValidate(db, 5);
+    await db.close();
+  });
+
+  test('migrating 1 -> 5 in one step produces the fresh v5 schema', () async {
+    final connection = await verifier.startAt(1);
+    final db = UserDatabase(connection);
+    await verifier.migrateAndValidate(db, 5);
+    await db.close();
+  });
+
+  test('migrating 4 -> 5 keeps existing accounts and adds an empty order table', () async {
+    final schema = await verifier.schemaAt(4);
+
+    final oldDb = v4.DatabaseAtV4(schema.newConnection());
+    for (final (id, name, day) in [
+      ('profile-2', 'Second', 2),
+      ('profile-1', 'First', 1),
+    ]) {
+      await oldDb
+          .into(oldDb.profiles)
+          .insert(
+            v4.ProfilesCompanion.insert(
+              id: id,
+              displayName: Value(name),
+              server: 'asia',
+              createdAt: Value(DateTime.utc(2026, 1, day).toIso8601String()),
+              updatedAt: DateTime.utc(2026, 1, day).toIso8601String(),
+            ),
+          );
+    }
+    await oldDb.close();
+
+    final dbForMigration = UserDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(dbForMigration, 5);
+    await dbForMigration.close();
+
+    final checkDb = v5.DatabaseAtV5(schema.newConnection());
+    expect(await checkDb.select(checkDb.profiles).get(), hasLength(2));
+    // Nothing to backfill: an account with no stored position already sorts
+    // by createdAt, which is the order the install always had.
+    expect(await checkDb.select(checkDb.profileOrder).get(), isEmpty);
     await checkDb.close();
   });
 }

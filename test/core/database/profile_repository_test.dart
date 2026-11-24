@@ -116,4 +116,74 @@ void main() {
     expect(active.id, isNot(only.id));
     expect(active.server, 'asia');
   });
+
+  group('reorderProfiles', () {
+    test('new accounts land at the end of the list', () async {
+      await repository.getActiveProfile();
+      await repository.createProfile(displayName: 'Second', server: 'asia');
+      await repository.createProfile(displayName: 'Third', server: 'asia');
+
+      final names = (await repository.listProfiles())
+          .map((p) => p.displayName)
+          .toList();
+
+      expect(names, ['Player', 'Second', 'Third']);
+    });
+
+    test('rewrites the order to match the ids given', () async {
+      final first = await repository.getActiveProfile();
+      final second = await repository.createProfile(
+        displayName: 'Second',
+        server: 'asia',
+      );
+      final third = await repository.createProfile(
+        displayName: 'Third',
+        server: 'asia',
+      );
+
+      await repository.reorderProfiles([third.id, first.id, second.id]);
+
+      expect(
+        (await repository.listProfiles()).map((p) => p.displayName),
+        ['Third', 'Player', 'Second'],
+      );
+    });
+
+    test('renaming a profile does not move it', () async {
+      final first = await repository.getActiveProfile();
+      final second = await repository.createProfile(
+        displayName: 'Second',
+        server: 'asia',
+      );
+
+      await repository.reorderProfiles([second.id, first.id]);
+      await repository.renameProfile(first.id, 'Renamed');
+
+      expect(
+        (await repository.listProfiles()).map((p) => p.displayName),
+        ['Second', 'Renamed'],
+      );
+    });
+
+    test('a restored profile keeps its place', () async {
+      final first = await repository.getActiveProfile();
+      final second = await repository.createProfile(
+        displayName: 'Second',
+        server: 'asia',
+      );
+      final third = await repository.createProfile(
+        displayName: 'Third',
+        server: 'asia',
+      );
+      await repository.reorderProfiles([third.id, second.id, first.id]);
+
+      await repository.deleteProfile(second.id);
+      await repository.restoreProfile(second.id);
+
+      expect(
+        (await repository.listProfiles()).map((p) => p.displayName),
+        ['Third', 'Second', 'Player'],
+      );
+    });
+  });
 }

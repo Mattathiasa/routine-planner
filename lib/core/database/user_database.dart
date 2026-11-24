@@ -9,6 +9,7 @@ import 'tables/account_status_tables.dart';
 import 'tables/app_state_table.dart';
 import 'tables/daily_tasks_table.dart';
 import 'tables/planner_tables.dart';
+import 'tables/profile_order_table.dart';
 import 'tables/profiles_table.dart';
 import 'tables/resin_alert_tables.dart';
 import 'tables/settings_table.dart';
@@ -35,6 +36,7 @@ part 'user_database.g.dart';
     PrimogemAnchors,
     PrimogemMonthlyIncome,
     PrimogemAdjustments,
+    ProfileOrder,
   ],
 )
 class UserDatabase extends _$UserDatabase {
@@ -51,7 +53,7 @@ class UserDatabase extends _$UserDatabase {
       );
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -116,6 +118,15 @@ class UserDatabase extends _$UserDatabase {
         await m.create(primogemMonthlyIncomeUnique);
         await m.addColumn(settings, settings.welkinActive);
         await m.addColumn(settings, settings.battlePassActive);
+      }
+      if (from < 5 && to >= 5) {
+        // A new table, not a column on `profiles` — see ProfileOrder's doc
+        // for why that distinction matters here.
+        //
+        // Left empty on upgrade: an account with no row sorts last by
+        // createdAt, which is exactly the order an existing install already
+        // had, so there is nothing to backfill.
+        await m.createTable(profileOrder);
       }
     },
   );
