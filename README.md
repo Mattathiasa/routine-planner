@@ -82,7 +82,7 @@ Requires Flutter 3.47 (CI pins 3.47.9).
 ```sh
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs   # riverpod/freezed/drift codegen
-flutter test                                               # 549 tests, incl. goldens
+flutter test                                               # 555 tests, incl. goldens
 flutter analyze
 flutter run                                                # Android device/emulator, or -d chrome
 ```
