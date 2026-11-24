@@ -10,7 +10,9 @@ import 'package:routine_planner/core/database/repositories/profile_repository.da
 import 'package:routine_planner/core/database/user_database.dart';
 import 'package:routine_planner/core/hoyolab/data/fake_hoyolab_credentials_store.dart';
 import 'package:routine_planner/core/hoyolab/data/hoyolab_client.dart';
+import 'package:routine_planner/core/hoyolab/data/traveler_diary_client.dart';
 import 'package:routine_planner/features/accounts/data/accounts_refresh_service.dart';
+import 'package:routine_planner/features/primogems/data/primogem_repository.dart';
 import 'package:routine_planner/features/resin/data/resin_repository.dart';
 import 'package:routine_planner/features/resin/domain/resin_engine.dart';
 
@@ -77,6 +79,23 @@ void main() {
       resinRepository: resinRepository,
       accountStatusRepository: statusRepository,
       clock: clock,
+    );
+  }
+
+  /// The same service with primogem income wired in. Both are optional on the
+  /// constructor, which is why every test above needs no change.
+  AccountsRefreshService serviceWithDiary(
+    http.Client httpClient,
+    PrimogemRepository primogems,
+  ) {
+    return AccountsRefreshService(
+      client: HoyolabClient(httpClient: httpClient),
+      credentialsStore: credentials,
+      resinRepository: resinRepository,
+      accountStatusRepository: statusRepository,
+      clock: clock,
+      diaryClient: TravelerDiaryClient(httpClient: httpClient),
+      primogemRepository: primogems,
     );
   }
 
@@ -260,6 +279,152 @@ void main() {
       await service.refreshAll([profileId], force: true);
 
       expect(requests, 2);
+    });
+  });
+
+
+  group('primogem income', () {
+    /// Routes the notes and diary endpoints apart, and records what the diary
+    /// was asked for.
+    MockClient routing({
+      required http.Response diaryResponse,
+      void Function(http.BaseRequest request)? onDiary,
+    }) {
+      return MockClient((request) async {
+        if (request.url.path.contains('ysledgeros')) {
+          onDiary?.call(request);
+          return diaryResponse;
+        }
+        return http.Response(_notesBody(), 200);
+      });
+    }
+
+    http.Response diaryBody({int primogems = 3200}) {
+      return http.Response(
+        jsonEncode({
+          'retcode': 0,
+          'data': {
+            'month_data': {'current_primogems': '$primogems'},
+            'day_data': {'current_primogems': '60'},
+          },
+        }),
+        200,
+      );
+    }
+
+    test('stores the month income alongside the resin sync', () async {
+      final profileId = (await profiles.getActiveProfile()).id;
+      await credentials.save(
+        profileId: profileId,
+        cookie: 'c',
+        uid: '800000001',
+      );
+      final primogems = PrimogemRepository(userDb);
+
+      final outcomes = await serviceWithDiary(
+        routing(diaryResponse: diaryBody()),
+        primogems,
+      ).refreshAll([profileId]);
+
+      expect(outcomes.single.refreshed, isTrue);
+      expect(await primogems.monthlyIncomeFor(profileId), {'2026-11': 3200});
+      expect(await primogems.incomeLastFetchedAt(profileId), clock.nowUtc());
+    });
+
+    test("asks for the month on the account's own server", () async {
+      // An America UID is -5 from UTC, so 2026-11-01 02:00 UTC is still
+      // October there.
+      clock.set(DateTime.utc(2026, 11, 1, 2));
+      final profileId = (await profiles.getActiveProfile()).id;
+      await credentials.save(
+        profileId: profileId,
+        cookie: 'c',
+        uid: '600000001',
+      );
+      final primogems = PrimogemRepository(userDb);
+
+      http.BaseRequest? diaryRequest;
+      await serviceWithDiary(
+        routing(
+          diaryResponse: diaryBody(),
+          onDiary: (request) => diaryRequest = request,
+        ),
+        primogems,
+      ).refreshAll([profileId]);
+
+      expect(diaryRequest!.url.queryParameters['month'], '10');
+      expect(diaryRequest!.url.queryParameters['region'], 'os_usa');
+      expect(await primogems.monthlyIncomeFor(profileId), {'2026-10': 3200});
+    });
+
+    test('a rejected diary login leaves the resin sync successful', () async {
+      // The known-fragile case: the diary wants a cookie the login may not
+      // have handed back, and that must never look like a resin failure.
+      final profileId = (await profiles.getActiveProfile()).id;
+      await credentials.save(
+        profileId: profileId,
+        cookie: 'c',
+        uid: '800000001',
+      );
+      final primogems = PrimogemRepository(userDb);
+
+      final outcomes = await serviceWithDiary(
+        routing(
+          diaryResponse: http.Response(
+            jsonEncode({'retcode': -100, 'message': 'Please login'}),
+            200,
+          ),
+        ),
+        primogems,
+      ).refreshAll([profileId]);
+
+      expect(outcomes.single.refreshed, isTrue);
+      expect(outcomes.single.error, isNull);
+      expect(await primogems.monthlyIncomeFor(profileId), isEmpty);
+      // No stored fetch is exactly what the balance card reads as
+      // "income isn't syncing".
+      expect(await primogems.incomeLastFetchedAt(profileId), isNull);
+    });
+
+    test('a diary outage leaves the previous income in place', () async {
+      final profileId = (await profiles.getActiveProfile()).id;
+      await credentials.save(
+        profileId: profileId,
+        cookie: 'c',
+        uid: '800000001',
+      );
+      final primogems = PrimogemRepository(userDb);
+      await primogems.saveMonthlyIncome(
+        profileId,
+        month: '2026-11',
+        primogems: 1000,
+        fetchedAt: clock.nowUtc(),
+      );
+
+      final outcomes = await serviceWithDiary(
+        routing(diaryResponse: http.Response('<html>502</html>', 502)),
+        primogems,
+      ).refreshAll([profileId], force: true);
+
+      expect(outcomes.single.refreshed, isTrue);
+      expect(await primogems.monthlyIncomeFor(profileId), {'2026-11': 1000});
+    });
+
+    test('an account with no login is not asked for a diary at all', () async {
+      final profileId = (await profiles.getActiveProfile()).id;
+      final primogems = PrimogemRepository(userDb);
+
+      var diaryCalls = 0;
+      await serviceWithDiary(
+        routing(
+          diaryResponse: diaryBody(),
+          onDiary: (_) => diaryCalls++,
+        ),
+        primogems,
+      ).refreshAll([profileId]);
+
+      expect(diaryCalls, 0);
+      expect(await primogems.monthlyIncomeFor(profileId), isEmpty);
     });
   });
 }

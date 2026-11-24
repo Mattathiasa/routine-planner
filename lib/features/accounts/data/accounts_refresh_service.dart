@@ -12,7 +12,9 @@ import '../../../core/clock/clock.dart';
 import '../../../core/database/repositories/account_status_repository.dart';
 import '../../../core/hoyolab/data/hoyolab_client.dart';
 import '../../../core/hoyolab/data/hoyolab_credentials_store.dart';
+import '../../../core/hoyolab/data/traveler_diary_client.dart';
 import '../../../core/hoyolab/domain/hoyolab_region.dart';
+import '../../primogems/data/primogem_repository.dart';
 import '../../resin/data/resin_repository.dart';
 import '../../resin/domain/resin_engine.dart';
 
@@ -41,12 +43,16 @@ class AccountsRefreshService {
     required ResinRepository resinRepository,
     required AccountStatusRepository accountStatusRepository,
     required Clock clock,
+    TravelerDiaryClient? diaryClient,
+    PrimogemRepository? primogemRepository,
     ResinEngine engine = const ResinEngine(),
   }) : _client = client,
        _credentialsStore = credentialsStore,
        _resinRepository = resinRepository,
        _accountStatusRepository = accountStatusRepository,
        _clock = clock,
+       _diaryClient = diaryClient,
+       _primogemRepository = primogemRepository,
        _engine = engine;
 
   final HoyolabClient _client;
@@ -54,6 +60,12 @@ class AccountsRefreshService {
   final ResinRepository _resinRepository;
   final AccountStatusRepository _accountStatusRepository;
   final Clock _clock;
+
+  /// Both optional: the diary is a strictly additive extra, and a caller that
+  /// doesn't want primogem income (or a test that doesn't care) can leave
+  /// them out without changing resin behaviour at all.
+  final TravelerDiaryClient? _diaryClient;
+  final PrimogemRepository? _primogemRepository;
   final ResinEngine _engine;
 
   /// Refreshes each of [profileIds] that has a HoYoLab login. Accounts
@@ -82,10 +94,11 @@ class AccountsRefreshService {
     }
 
     try {
+      final region = hoyolabRegionForUid(credentials.uid);
       final notes = await _client.fetchNotes(
         cookie: credentials.cookie,
         uid: credentials.uid,
-        region: hoyolabRegionForUid(credentials.uid),
+        region: region,
       );
 
       final state = await _resinRepository.loadResinState(profileId);
@@ -115,6 +128,14 @@ class AccountsRefreshService {
         homeCoinRecoverySeconds: notes.homeCoinRecoverySeconds,
       );
 
+      await _refreshDiaryIncome(
+        profileId: profileId,
+        cookie: credentials.cookie,
+        uid: credentials.uid,
+        region: region,
+        now: now,
+      );
+
       return (profileId: profileId, refreshed: true, error: null);
     } on HoyolabException catch (e) {
       return (profileId: profileId, refreshed: false, error: e.message);
@@ -126,6 +147,57 @@ class AccountsRefreshService {
       return (profileId: profileId, refreshed: false, error: _offlineMessage);
     } on TimeoutException {
       return (profileId: profileId, refreshed: false, error: _offlineMessage);
+    }
+  }
+
+  /// Fetches this account's primogem income for the current server month.
+  ///
+  /// Wrapped in its own try/catch and never allowed to affect the outcome: a
+  /// diary failure must not mask a resin sync that worked. The diary needs a
+  /// cookie the login may not have handed back, so failing here is expected
+  /// rather than exceptional — the balance card reads "income isn't syncing"
+  /// from the absence of a stored fetch, which is exactly this case.
+  Future<void> _refreshDiaryIncome({
+    required String profileId,
+    required String cookie,
+    required String uid,
+    required String region,
+    required DateTime now,
+  }) async {
+    final client = _diaryClient;
+    final repository = _primogemRepository;
+    if (client == null || repository == null) return;
+
+    try {
+      // The account's own server decides which month this is, so the offset
+      // comes from the region encoded in its UID.
+      final serverNow = now.add(serverOffsetForRegion(region));
+      final month =
+          '${serverNow.year.toString().padLeft(4, '0')}-'
+          '${serverNow.month.toString().padLeft(2, '0')}';
+
+      final diary = await client.fetchMonth(
+        cookie: cookie,
+        uid: uid,
+        region: region,
+        month: month,
+      );
+      await repository.saveMonthlyIncome(
+        profileId,
+        month: diary.month,
+        primogems: diary.primogems,
+        fetchedAt: now,
+      );
+    } on DiaryUnauthorizedException {
+      // Expected for a login without the diary's cookie. Nothing to do.
+    } on DiaryException {
+      // Upstream hiccup; the stored income simply stays as it was.
+    } on SocketException {
+      // Offline.
+    } on http.ClientException {
+      // Offline.
+    } on TimeoutException {
+      // Offline.
     }
   }
 

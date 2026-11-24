@@ -4,6 +4,8 @@ import '../../../core/providers/clock_providers.dart';
 import '../../../core/providers/hoyolab_providers.dart';
 import '../../../core/providers/profile_providers.dart';
 import '../../../core/providers/repository_providers.dart';
+import '../../primogems/application/primogems_controller.dart';
+import '../../primogems/data/primogem_providers.dart';
 import '../../resin/application/resin_controller.dart';
 import '../../resin/data/resin_providers.dart';
 import '../application/accounts_overview_controller.dart';
@@ -19,6 +21,8 @@ AccountsRefreshService accountsRefreshService(Ref ref) {
     resinRepository: ref.watch(resinRepositoryProvider),
     accountStatusRepository: ref.watch(accountStatusRepositoryProvider),
     clock: ref.watch(clockProvider),
+    diaryClient: ref.watch(travelerDiaryClientProvider),
+    primogemRepository: ref.watch(primogemRepositoryProvider),
   );
 }
 
@@ -57,6 +61,13 @@ Future<List<AccountRefreshOutcome>> refreshAllAccounts(
   final outcomes = await ref
       .read(accountsRefreshServiceProvider)
       .refreshAll([for (final p in profiles) p.id], force: force);
+
+  // A refresh can outlive its own provider: invalidating this provider while
+  // a fetch is in flight disposes the Ref, and touching it afterwards throws.
+  // The outcomes are still worth returning to whoever is awaiting them — only
+  // the bookkeeping has to be skipped.
+  if (!ref.mounted) return outcomes;
+
   ref.read(accountRefreshErrorsProvider.notifier).record(outcomes);
   if (outcomes.any((o) => o.refreshed)) {
     // Fresh rows are in the database; rebuild the cards that read them.
@@ -64,6 +75,8 @@ Future<List<AccountRefreshOutcome>> refreshAllAccounts(
     // holds state optimistically rather than re-reading — must reload.
     ref.invalidate(resinControllerProvider);
     ref.invalidate(accountsOverviewControllerProvider);
+    // Diary income may have moved too, and the balance is derived from it.
+    ref.invalidate(primogemsControllerProvider);
   }
   return outcomes;
 }

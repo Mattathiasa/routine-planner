@@ -34,3 +34,20 @@ String hoyolabRegionForUid(String uid) {
     _ => throw UnknownHoyolabUidException(uid),
   };
 }
+
+/// The UTC offset of the server a [hoyolabRegionForUid] region names.
+///
+/// The same four offsets as `GameServer`, but keyed by the region derived
+/// from the UID rather than by the app's own "Game server" setting. For
+/// anything describing the *account's* real data — which month the Traveler's
+/// Diary is reporting, for instance — this is the right one: the setting is a
+/// reset-math preference and the two are allowed to disagree.
+Duration serverOffsetForRegion(String region) {
+  return switch (region) {
+    'os_usa' => const Duration(hours: -5),
+    'os_euro' => const Duration(hours: 1),
+    'os_asia' => const Duration(hours: 8),
+    'os_cht' => const Duration(hours: 8),
+    _ => throw ArgumentError.value(region, 'region', 'Unknown HoYoLab region'),
+  };
+}
