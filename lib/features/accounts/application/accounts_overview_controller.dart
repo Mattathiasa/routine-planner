@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/clock/game_server.dart';
 import '../../../core/clock/server_clock.dart';
+import '../../../core/database/repositories/account_status_repository.dart';
 import '../../../core/providers/clock_providers.dart';
 import '../../../core/providers/current_profile_provider.dart';
 import '../../../core/providers/hoyolab_providers.dart';
@@ -9,6 +10,7 @@ import '../../../core/providers/profile_providers.dart';
 import '../../../core/providers/repository_providers.dart';
 import '../../resin/application/resin_controller.dart';
 import '../../resin/data/resin_providers.dart';
+import '../../resin/data/resin_repository.dart';
 import '../../resin/domain/resin_engine.dart';
 import '../data/accounts_refresh_providers.dart';
 import 'account_view_models.dart';
@@ -40,70 +42,87 @@ class AccountsOverviewController extends _$AccountsOverviewController {
     // — same reason `resinRecentEventsProvider` watches it.
     await ref.watch(resinControllerProvider.future);
 
-    final cards = <AccountOverviewData>[];
-    for (final profile in profiles) {
-      final credentials = await ref.watch(
-        hoyolabCredentialsForProvider(profile.id).future,
-      );
-      final connected = credentials != null;
-
-      final resinState = await resinRepository.loadResinState(profile.id);
-      final snapshot = await statusRepository.snapshotFor(profile.id);
-
-      // Each account's day rolls over on its own server, so the manual
-      // counter is keyed by that account's server date, not the selected
-      // account's.
-      final server = GameServer.values.byName(profile.server);
-      final serverDate = ServerClock(
-        ref.watch(clockProvider),
-        server,
-      ).serverDateFor(now);
-
-      final CommissionProgress commissions;
-      if (connected && snapshot?.totalTaskNum != null) {
-        commissions = CommissionProgress(
-          completed: snapshot!.finishedTaskNum ?? 0,
-          total: snapshot.totalTaskNum!,
-          bonusClaimed: snapshot.extraTaskRewardReceived ?? false,
-          source: CommissionSource.live,
-        );
-      } else {
-        final row = await statusRepository.ensureCommissionRow(
-          profile.id,
-          periodAnchor: serverDate,
+    // One card at a time would mean four awaits per account in series, and
+    // every account's reads are independent of every other's — so they run
+    // together and the list is assembled in profile order afterwards.
+    return Future.wait([
+      for (final profile in profiles)
+        _cardFor(
+          profile: profile,
+          currentId: currentId,
           now: now,
-        );
-        commissions = CommissionProgress(
-          completed: row.completed,
-          total: defaultDailyCommissionCount,
-          bonusClaimed: row.bonusClaimed,
-          source: CommissionSource.manual,
-        );
-      }
-
-      cards.add(
-        AccountOverviewData(
-          profileId: profile.id,
-          displayName: profile.displayName,
-          serverLabel: server.label,
-          isSelected: profile.id == currentId,
-          connected: connected,
-          resin: _engine.v(resinState, now),
-          resinCap: resinState.cap,
-          resinFullAt: _engine.timeToThreshold(resinState, resinState.cap),
-          commissions: commissions,
-          lastUpdated: snapshot?.fetchedAt,
-          refreshError: errors[profile.id],
-          remainBossDiscounts: connected ? snapshot?.remainResinDiscountNum : null,
-          bossDiscountLimit: connected ? snapshot?.resinDiscountNumLimit : null,
-          finishedExpeditions: connected ? snapshot?.finishedExpeditionNum : null,
-          totalExpeditions: connected ? snapshot?.currentExpeditionNum : null,
-          realmCurrency: connected ? snapshot?.currentHomeCoin : null,
-          realmCurrencyCap: connected ? snapshot?.maxHomeCoin : null,
+          resinRepository: resinRepository,
+          statusRepository: statusRepository,
+          errors: errors,
         ),
+    ]);
+  }
+
+  Future<AccountOverviewData> _cardFor({
+    required ({String id, String displayName, String server}) profile,
+    required String currentId,
+    required DateTime now,
+    required ResinRepository resinRepository,
+    required AccountStatusRepository statusRepository,
+    required Map<String, String> errors,
+  }) async {
+    final (credentials, resinState, snapshot) = await (
+      ref.watch(hoyolabCredentialsForProvider(profile.id).future),
+      resinRepository.loadResinState(profile.id),
+      statusRepository.snapshotFor(profile.id),
+    ).wait;
+    final connected = credentials != null;
+
+    // Each account's day rolls over on its own server, so the manual
+    // counter is keyed by that account's server date, not the selected
+    // account's.
+    final server = GameServer.values.byName(profile.server);
+    final serverDate = ServerClock(
+      ref.watch(clockProvider),
+      server,
+    ).serverDateFor(now);
+
+    final CommissionProgress commissions;
+    if (connected && snapshot?.totalTaskNum != null) {
+      commissions = CommissionProgress(
+        completed: snapshot!.finishedTaskNum ?? 0,
+        total: snapshot.totalTaskNum!,
+        bonusClaimed: snapshot.extraTaskRewardReceived ?? false,
+        source: CommissionSource.live,
+      );
+    } else {
+      final row = await statusRepository.ensureCommissionRow(
+        profile.id,
+        periodAnchor: serverDate,
+        now: now,
+      );
+      commissions = CommissionProgress(
+        completed: row.completed,
+        total: defaultDailyCommissionCount,
+        bonusClaimed: row.bonusClaimed,
+        source: CommissionSource.manual,
       );
     }
-    return cards;
+
+    return AccountOverviewData(
+      profileId: profile.id,
+      displayName: profile.displayName,
+      serverLabel: server.label,
+      isSelected: profile.id == currentId,
+      connected: connected,
+      resin: _engine.v(resinState, now),
+      resinCap: resinState.cap,
+      resinFullAt: _engine.timeToThreshold(resinState, resinState.cap),
+      commissions: commissions,
+      lastUpdated: snapshot?.fetchedAt,
+      refreshError: errors[profile.id],
+      remainBossDiscounts: connected ? snapshot?.remainResinDiscountNum : null,
+      bossDiscountLimit: connected ? snapshot?.resinDiscountNumLimit : null,
+      finishedExpeditions: connected ? snapshot?.finishedExpeditionNum : null,
+      totalExpeditions: connected ? snapshot?.currentExpeditionNum : null,
+      realmCurrency: connected ? snapshot?.currentHomeCoin : null,
+      realmCurrencyCap: connected ? snapshot?.maxHomeCoin : null,
+    );
   }
 
   /// Advances an unconnected account's manual commission counter, wrapping
