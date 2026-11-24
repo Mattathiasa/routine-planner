@@ -91,3 +91,55 @@ assumption tests — they document the current guess, they do not prove it.
     as fresh for `accountSnapshotFreshness` (5 minutes), which throttles app-open refreshes
     against an unofficial endpoint (`lib/features/accounts/data/accounts_refresh_service.dart`).
     Pull-to-refresh deliberately ignores the freshness window.
+
+## Wishes (gacha)
+
+13. **The `getGachaLog` field names and shape are community-sourced and unverified.**
+    `id`, `gacha_type`, `name`, `item_type`, `rank_type` and `time` are all required and a
+    missing one is treated as a broken response; an unrecognised `gacha_type` is skipped
+    instead, so a banner added in a future patch can't break an import
+    (`lib/features/wishes/domain/wish_pull.dart`).
+    - Also assumed: `time` is wall-clock time on the account's own server with no offset
+      attached, and snowflake `id`s are monotonic in time across banners — the second is
+      what makes one high-water mark per banner correct.
+    - If wrong: the import reports a mismatch rather than storing nonsense.
+
+14. **Upstream keeps roughly six months of history.** Not a configurable value, just what
+    the endpoint serves. One visible consequence: the earliest 5★ in an import has no
+    known starting point, so its pity is counted from the start of the window and is
+    excluded from the average (`wish_stats.dart`).
+
+15. **Pity constants** — 90-pull guarantee on the character, standard, beginner and
+    chronicled banners, 80 on the weapon banner, soft pity from 74 (63 on weapons), 4★
+    guarantee every 10 — are long-standing community knowledge, not dataset fields
+    (`lib/features/wishes/domain/pity_calculator.dart`).
+
+16. **A lost 50/50 is inferred, not reported.** Nothing records which 5★ was *featured* on
+    a given banner — not the catalog, not any endpoint — so a 5★ character from the
+    permanent pool is read as "that wasn't the featured one, the next is guaranteed". The
+    pool is the named constant `standardPool5StarCharacters` (Diluc, Jean, Qiqi, Mona,
+    Keqing, Tighnari, Dehya; all seven verified present in the shipped catalog).
+    HoYoverse adds to it every few years, so it needs a look whenever the catalog is
+    bumped. Inference is confined to the character banner: the standard and beginner
+    banners have no 50/50, and the weapon banner's guarantee runs on Epitomized Path fate
+    points, which nothing reports.
+
+## Primogems
+
+17. **160 primogems per wish**, and Fates bought at the same price
+    (`primogemsPerWish`). Community knowledge, not a dataset field.
+
+18. **The forecast's income constants are estimates, and deliberately incomplete**: 60 a
+    day from commissions, 90 from the Welkin, and the battle pass as 680 per 42-day cycle
+    (`lib/features/primogems/domain/primogem_ledger.dart`). Events, Spiral Abyss and
+    quests are **not** counted, which the forecast card says outright — so the real date
+    usually arrives sooner. Welkin and battle pass default off: assuming a purchase nobody
+    made would overstate every forecast.
+
+19. **The Traveler's Diary field names are community-sourced, and its auth requirement is
+    unverified.** Only `month_data.current_primogems` is required; everything else degrades
+    to null (`lib/core/hoyolab/domain/diary_month.dart`). The endpoint is believed to need
+    a different cookie from `dailyNote`, which the login WebView may not capture — so a
+    rejected login is treated as an expected, non-fatal state rather than an error, and the
+    whole feature is designed to work without it.
+

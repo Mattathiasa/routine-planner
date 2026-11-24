@@ -6,9 +6,9 @@ Offline-first Flutter companion for a gacha RPG: resin tracker, farming schedule
 daily checklist and material planner. Unofficial, free, no ads. **Not affiliated
 with or endorsed by HoYoverse.**
 
-| Today | Resin | Planner | Settings |
-| --- | --- | --- | --- |
-| ![Today](docs/screenshots/today.png) | ![Resin](docs/screenshots/resin.png) | ![Planner](docs/screenshots/planner.png) | ![Settings](docs/screenshots/settings.png) |
+| Today | Resin | Planner | Wishes | Settings |
+| --- | --- | --- | --- | --- |
+| ![Today](docs/screenshots/today.png) | ![Resin](docs/screenshots/resin.png) | ![Planner](docs/screenshots/planner.png) | ![Wishes](docs/screenshots/wishes.png) | ![Settings](docs/screenshots/settings.png) |
 
 A dark theme derived from the same design tokens follows the system setting
 ([dark screenshots](docs/screenshots/)).
@@ -16,10 +16,13 @@ A dark theme derived from the same design tokens follows the system setting
 ## Features
 
 - **Multiple accounts, side by side** — every local account appears on Today with its
-  own resin, daily commission progress, expeditions, weekly boss discounts and realm
-  currency; tap a card to switch. Each account carries its **own HoYoLab login**, so two
-  real game accounts stay completely separate. Pull to refresh, or let it refresh when the
-  app opens.
+  own resin, daily commission progress, expeditions, weekly boss discounts, realm
+  currency, wish pity and primogem balance; tap a card to switch, or switch in place from
+  Resin and Planner. Each account carries its **own HoYoLab login**, so two real game
+  accounts stay completely separate, and the same game UID can't be connected twice.
+  Drag to reorder them. **All accounts** is a screen of its own, with the totals across
+  them — pooled commissions, how many are near the resin cap, combined primogems. Pull to
+  refresh, or let it refresh when the app opens.
 - **Daily commissions** — live per account when HoYoLab is connected, or tracked manually
   (tap to count 0-4 and claim the bonus) when it isn't, keyed to that account's own server
   day so it rolls over correctly for accounts on different servers.
@@ -34,7 +37,17 @@ A dark theme derived from the same design tokens follows the system setting
 - **Planner** — character/weapon targets with ascension + talent tracking,
   pooled material needs with 3:1 tier-carry aggregation, inventory editing,
   "Most needed" with farm-day availability.
-- **Backup** — JSON export/import of all user data.
+- **Wishes** — import your wish history from the link the game hands out, and see pity
+  per banner, your 5★ list with the pity each came at, average pity and what it all cost.
+  Accounts that can't produce the link can be tracked by hand instead. The import is
+  incremental, so running it again reads a page or two rather than six months.
+- **Primogems** — nothing reports your balance, so you give it once and the app follows
+  along: income from the Traveler's Diary, 160 off per wish you made, and manual
+  corrections for everything else. Shows wishes affordable and when a guaranteed 5★ comes
+  into reach.
+- **Backup** — JSON export/import of all user data, wish history included (the one thing
+  that can't be recovered any other way — upstream only keeps about six months). Older
+  backups still import.
 
 ## Data & assumptions
 
@@ -54,8 +67,10 @@ behind named constants (`ResinEngine.assumedTimerRestartsFromZeroOnReset`,
 lives in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md).
 
 Architecture decisions and formulas: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-The HoYoLab connection uses an unofficial endpoint behind an explicit in-app
-disclaimer; see the architecture doc before enabling it.
+The HoYoLab connection and the wish-history import both use unofficial endpoints, each
+behind its own explicit in-app disclaimer; see the architecture doc before enabling
+either. The wish-history link carries a temporary key, which is used for one import and
+never stored.
 
 ## Getting started
 
@@ -64,7 +79,7 @@ Requires Flutter 3.47 (CI pins 3.47.9).
 ```sh
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs   # riverpod/freezed/drift codegen
-flutter test                                               # 254 tests, incl. goldens
+flutter test                                               # 549 tests, incl. goldens
 flutter analyze
 flutter run                                                # Android device/emulator, or -d chrome
 ```
