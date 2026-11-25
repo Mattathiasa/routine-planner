@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/current_profile_provider.dart';
+import '../../../core/notifications/domain/alert_delivery.dart';
 import '../../../core/providers/notification_providers.dart';
 import '../../../core/providers/repository_providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -18,7 +19,7 @@ class NotificationsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final alertsAsync = ref.watch(resinAlertsProvider);
     final settingsAsync = ref.watch(settingsSnapshotProvider);
-    final exactAllowedAsync = ref.watch(exactAlarmsAllowedProvider);
+    final deliveryAsync = ref.watch(alertDeliveryProvider);
     final textTheme = Theme.of(context).textTheme;
 
     final alerts = alertsAsync.value ?? const [];
@@ -87,7 +88,9 @@ class NotificationsSection extends ConsumerWidget {
                   },
                 ),
                 Divider(height: 1, color: context.colors.divider),
-                _ExactAlarmsBanner(allowed: exactAllowedAsync.value ?? false),
+                _AlertDeliveryBanner(
+                  delivery: deliveryAsync.value ?? AlertDelivery.onTime,
+                ),
               ],
             ),
           ),
@@ -162,28 +165,43 @@ class _AlertSwitch extends StatelessWidget {
   }
 }
 
-class _ExactAlarmsBanner extends StatelessWidget {
-  const _ExactAlarmsBanner({required this.allowed});
+/// Read-only status, no action button — the approved design
+/// (`design/v3/SettingsV3.dc.html`) has no affordance here, and on iOS the
+/// permission prompt is a system modal raised at initialize time anyway.
+///
+/// Says "Settings" rather than naming an OS: the blocked state is reachable
+/// on both platforms and the destination is the OS settings app on each.
+class _AlertDeliveryBanner extends StatelessWidget {
+  const _AlertDeliveryBanner({required this.delivery});
 
-  final bool allowed;
+  final AlertDelivery delivery;
 
   @override
   Widget build(BuildContext context) {
-    final dotColor = allowed
+    final onTime = delivery == AlertDelivery.onTime;
+    final dotColor = onTime
         ? context.colors.successDot
         : context.colors.warning;
-    final strongColor = allowed
+    final strongColor = onTime
         ? context.colors.success
         : context.colors.warning;
-    final background = allowed
+    final background = onTime
         ? context.colors.successContainer
         : context.colors.warningContainer;
-    final strongText = allowed
-        ? 'Exact alarms allowed. '
-        : 'Exact alarms not available. ';
-    final mutedText = allowed
-        ? 'Alerts fire on time.'
-        : 'Alerts may arrive late (approximate).';
+    final (strongText, mutedText) = switch (delivery) {
+      AlertDelivery.onTime => (
+        'Exact alarms allowed. ',
+        'Alerts fire on time.',
+      ),
+      AlertDelivery.approximate => (
+        'Exact alarms not available. ',
+        'Alerts may arrive late (approximate).',
+      ),
+      AlertDelivery.blocked => (
+        'Notifications are off. ',
+        'Turn them on in Settings to get alerts.',
+      ),
+    };
 
     return Container(
       padding: const EdgeInsets.symmetric(

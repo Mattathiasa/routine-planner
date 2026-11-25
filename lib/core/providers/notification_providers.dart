@@ -8,6 +8,7 @@ import '../clock/game_server.dart';
 import '../clock/server_clock.dart';
 import '../notifications/data/fake_notification_scheduler.dart';
 import '../notifications/data/notification_scheduler.dart';
+import '../notifications/domain/alert_delivery.dart';
 import '../notifications/domain/notification_plan.dart';
 import 'clock_providers.dart';
 import 'profile_providers.dart';
@@ -18,16 +19,21 @@ part 'notification_providers.g.dart';
 @Riverpod(keepAlive: true)
 NotificationScheduler notificationScheduler(Ref ref) {
   if (kIsWeb) {
-    return FakeNotificationScheduler(exactAlarmsAllowed: false);
+    // Web schedules nothing — the scheduler is a no-op. `approximate`
+    // keeps the banner exactly as it renders today rather than inventing
+    // unapproved web copy; `blocked` would be the literal truth but reads
+    // as an iOS/Android permission problem the user can't act on.
+    // See docs/ASSUMPTIONS.md.
+    return FakeNotificationScheduler(delivery: AlertDelivery.approximate);
   }
   return FlutterLocalNotificationsScheduler();
 }
 
 @riverpod
-Future<bool> exactAlarmsAllowed(Ref ref) async {
+Future<AlertDelivery> alertDelivery(Ref ref) async {
   final scheduler = ref.watch(notificationSchedulerProvider);
   await scheduler.initialize();
-  return scheduler.canScheduleExactAlarms();
+  return scheduler.alertDelivery();
 }
 
 /// Reactive, idempotent reconcile: watching resin state, alerts, settings
@@ -99,7 +105,10 @@ Future<void> notificationReconcile(Ref ref) async {
 
     // Each account resets on its own server clock, so the reminder time
     // is computed per account rather than from the selected profile.
-    final serverClock = ServerClock(clock, GameServer.values.byName(profile.server));
+    final serverClock = ServerClock(
+      clock,
+      GameServer.values.byName(profile.server),
+    );
     final commissions = accounts
         .where((a) => a.profileId == profile.id)
         .map((a) => a.commissions)
@@ -108,7 +117,9 @@ Future<void> notificationReconcile(Ref ref) async {
       planned.addAll(
         planCommissionReminder(
           profileId: profile.id,
-          nextResetUtc: serverClock.dayStartUtc(now).add(const Duration(days: 1)),
+          nextResetUtc: serverClock
+              .dayStartUtc(now)
+              .add(const Duration(days: 1)),
           now: now,
           completed: commissions.completed,
           total: commissions.total,
