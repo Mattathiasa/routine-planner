@@ -30,6 +30,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  # Transitive via drift, named here because integration_test/ opens a
+  # second raw connection to assert a write reached the real file.
+  sqlite3: ^3.5.2
   flutter_lints: ^6.0.0
   build_runner: ^2.17.1
   riverpod_generator: ^4.0.10
