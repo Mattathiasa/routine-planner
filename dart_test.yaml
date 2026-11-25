@@ -1,0 +1,6 @@
+# Declares the `golden` tag so `flutter test` stops warning about an
+# unknown tag on every run. The tag itself is load-bearing: goldens are
+# rasterizer-pinned to macOS, so Linux CI runs `--exclude-tags golden`
+# and the macOS CI job runs `--tags golden`.
+tags:
+  golden:

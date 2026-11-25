@@ -86,3 +86,65 @@ jobs:
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    runs-on: macos-latest
+    # Gated on the cheap Linux job: a macOS runner is billed at a higher
+    # multiplier, so don't burn one on code that doesn't analyze. Independent
+    # of build-apk — the two run in parallel.
+    needs: analyze-and-test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # Goldens are rasterizer-pinned to macOS, so this is the only runner
+      # that could enforce them — and they are currently enforced nowhere.
+      # Starting non-blocking on purpose: the images were generated on a
+      # different macOS/Xcode image than macos-latest, and they compare at
+      # zero tolerance, so one antialiased pixel on a rounded card corner
+      # would fail. Promote to a hard failure once it proves stable across
+      # a few runs; until then a red run here would mean nothing.
+      - name: Verify goldens (non-blocking, see comment)
+        id: goldens
+        continue-on-error: true
+        run: flutter test --tags golden
+
+      - name: Upload golden diffs
+        if: steps.goldens.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: test/goldens/failures/
+          if-no-files-found: ignore
+
+      # No signing identity on CI, hence --no-codesign. This compiles the
+      # iOS project and the pods, and runs the native build hooks:
+      # package:sqlite3 downloads a prebuilt libsqlite3 from its GitHub
+      # release (sha256-verified) and objective_c compiles against the iOS
+      # SDK, so this step needs network egress to github.com.
+      - name: Build iOS (unsigned)
+        run: flutter build ios --release --no-codesign
+
+      # flutter build ios exits 0 even when no code assets were copied, so
+      # a native-assets regression (a Flutter upgrade, a dependency change)
+      # would otherwise ship green CI and an app that dies on launch.
+      - name: Verify native code assets were embedded
+        run: |
+          APP=build/ios/iphoneos/Runner.app
+          test -f "$APP/Frameworks/sqlite3.framework/sqlite3"
+          test -f "$APP/Frameworks/objective_c.framework/objective_c"
+          lipo -info "$APP/Frameworks/sqlite3.framework/sqlite3"
+          otool -D "$APP/Frameworks/sqlite3.framework/sqlite3"
