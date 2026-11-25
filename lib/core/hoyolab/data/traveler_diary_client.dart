@@ -54,13 +54,17 @@ class TravelerDiaryClient {
     required String region,
     required String month,
   }) async {
-    final uri = Uri.https('sg-hk4e-api.hoyolab.com', '/event/ysledgeros/month_info', {
-      'region': region,
-      'uid': uid,
-      // Upstream wants the month as a bare number, not YYYY-MM.
-      'month': _monthNumberOf(month),
-      'lang': 'en-us',
-    });
+    final uri = Uri.https(
+      'sg-hk4e-api.hoyolab.com',
+      '/event/ysledgeros/month_info',
+      {
+        'region': region,
+        'uid': uid,
+        // Upstream wants the month as a bare number, not YYYY-MM.
+        'month': _monthNumberOf(month),
+        'lang': 'en-us',
+      },
+    );
 
     final response = await _http.get(
       uri,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_cookie_manager_flutter/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../data/hoyolab_cookie_capture.dart';
+
 const _hoyolabHome = 'https://www.hoyolab.com/home';
 
 /// Renders HoYoLab's real login page in an embedded WebView — the user
@@ -12,6 +14,12 @@ const _hoyolabHome = 'https://www.hoyolab.com/home';
 /// this sees `HttpOnly` cookies even though in-page JavaScript can't —
 /// `ltoken_v2`/`ltuid_v2` are typically set `HttpOnly` for session-hijack
 /// protection.
+///
+/// The check is a bounded poll rather than a single read: on iOS
+/// `WKHTTPCookieStore` is populated asynchronously and can lag
+/// `onPageFinished`, so the cookies sometimes land a moment after the page
+/// reports done. Android's `CookieManager` is synchronous enough that the
+/// first attempt wins, so the retry costs nothing there.
 ///
 /// We send HoYoLab's *entire* cookie jar for the domain on every request,
 /// not just `ltoken_v2`/`ltuid_v2` — a real browser does the same, and the
@@ -31,6 +39,13 @@ class HoyolabLoginWebviewScreen extends StatefulWidget {
 class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
   late final WebViewController _controller;
   bool _checkingCookies = false;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -44,17 +59,18 @@ class _HoyolabLoginWebviewScreenState extends State<HoyolabLoginWebviewScreen> {
   }
 
   Future<void> _checkLoggedIn() async {
-    if (_checkingCookies || !mounted) return;
+    // One poll at a time. HoYoLab redirects several times during login, so
+    // page-finish events overlap; the in-flight poll covers them.
+    if (_checkingCookies || _disposed || !mounted) return;
     _checkingCookies = true;
     try {
-      final cookies = await WebviewCookieManager().getCookies(_hoyolabHome);
-      final byName = {for (final cookie in cookies) cookie.name: cookie.value};
-      final loggedIn =
-          byName['ltoken_v2'] != null && byName['ltuid_v2'] != null;
-      if (loggedIn && mounted) {
-        final cookieHeader = cookies
-            .map((c) => '${c.name}=${c.value}')
-            .join('; ');
+      final cookieHeader = await pollForSessionCookie(
+        read: WebviewCookieManager().getCookies,
+        url: _hoyolabHome,
+        sleep: Future<void>.delayed,
+        isCancelled: () => _disposed || !mounted,
+      );
+      if (cookieHeader != null && mounted) {
         Navigator.of(context).pop(cookieHeader);
       }
     } finally {

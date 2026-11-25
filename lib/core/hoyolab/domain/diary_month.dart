@@ -35,10 +35,7 @@ class DiaryMonthFormatException implements Exception {
 }
 
 /// Parses the `data` object of a `month_info` response.
-DiaryMonth parseDiaryMonth(
-  Map<String, dynamic> json, {
-  required String month,
-}) {
+DiaryMonth parseDiaryMonth(Map<String, dynamic> json, {required String month}) {
   final monthData = json['month_data'];
   if (monthData is! Map) {
     throw const DiaryMonthFormatException(
