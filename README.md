@@ -82,9 +82,19 @@ Requires Flutter 3.47 (CI pins 3.47.9).
 ```sh
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs   # riverpod/freezed/drift codegen
-flutter test                                               # 555 tests, incl. goldens
+flutter test                                               # 588 tests, incl. goldens
 flutter analyze
 flutter run                                                # Android device/emulator, or -d chrome
+```
+
+On iOS, pass a simulator UDID rather than a name — names repeat across
+runtimes (there is an "iPhone 17" on both iOS 26.3 and 26.5), so `-d "iPhone
+17"` is ambiguous:
+
+```sh
+xcrun simctl list devices available
+xcrun simctl boot <UDID> && open -a Simulator
+flutter run -d <UDID>
 ```
 
 Regenerate the catalog after editing the scope or bumping the dataset:
@@ -95,9 +105,12 @@ dart run tool/build_catalog.dart --scope full
 ```
 
 Golden tests render with the deterministic FlutterTest font but are still
-rasterizer-pinned to macOS, so CI excludes the `golden` tag; run them locally
-with `flutter test --tags golden`, and after an intentional UI change
-regenerate with `flutter test --tags golden --update-goldens`.
+rasterizer-pinned to macOS, so Linux CI excludes the `golden` tag; run them
+locally with `flutter test --tags golden`, and after an intentional UI change
+regenerate with `flutter test --tags golden --update-goldens`. The macOS
+`build-ios` CI job also runs them, but non-blocking for now — the images were
+generated on a different macOS image than the runner's and they compare at zero
+tolerance, so that step reports rather than gates until it proves stable.
 
 The README screenshots come from a demo-seeded web build:
 `flutter build web --release --dart-define=DEMO_SEED=true`.
@@ -119,6 +132,34 @@ distributable) so local smoke builds keep working. CI builds an APK artifact on
 every push and release-signs it when the `RP_KEYSTORE_BASE64`,
 `RP_KEYSTORE_PASSWORD`, `RP_KEY_ALIAS` and `RP_KEY_PASSWORD` repository secrets
 are configured (`RP_KEYSTORE_BASE64` is the keystore file base64-encoded).
+
+### iOS
+
+iOS builds but is **not distributed**. There is no Apple Developer Program
+membership behind this project, so there is no distribution certificate, no
+TestFlight and no App Store build — and nothing to download from the landing
+page. What is supported is a simulator run and an unsigned release build, which
+is also what CI verifies on a macOS runner:
+
+```sh
+flutter build ios --release --no-codesign
+```
+
+### Integration tests
+
+`integration_test/` runs the real app against the real on-device database — the
+only place the iOS native code assets (`sqlite3.framework`,
+`objective_c.framework`) are actually exercised, since `flutter test` on the
+host never loads them:
+
+```sh
+xcrun simctl uninstall <UDID> com.mattathiasa.routinePlanner
+flutter test integration_test/app_boot_test.dart -d <UDID>
+```
+
+The uninstall is not optional: a simulator keeps the app sandbox between runs,
+so without it `user.sqlite` survives from the previous run and the database
+assertions pass vacuously.
 
 ## Repository map
 

@@ -14,12 +14,12 @@ A cross-platform Flutter companion app for Genshin Impact players that tracks Or
 
 ## 3. Language / Tags
 
-`Flutter` · `Dart` · `Mobile` · `Android` · `Web` · `Offline-first` · `Local-first` · `SQLite` · `Riverpod` · `Clean Architecture` · `Domain-Driven Design` · `Unit Testing` · `Timezones` · `Notifications` · `Open Source` · `Fan Project`
+`Flutter` · `Dart` · `Mobile` · `Android` · `iOS` · `Web` · `Offline-first` · `Local-first` · `SQLite` · `Riverpod` · `Clean Architecture` · `Domain-Driven Design` · `Unit Testing` · `Timezones` · `Notifications` · `Open Source` · `Fan Project`
 
 ## 4. Full Tech Stack
 
 **Application**
-- Flutter (Dart SDK ^3.13.7), Android-first release with a Flutter Web build
+- Flutter (Dart SDK ^3.13.7), Android-first release with a Flutter Web build and an iOS target verified on simulator (unsigned; no store distribution)
 - Riverpod 3 (`flutter_riverpod`, `riverpod_annotation` + `riverpod_generator`) for state and dependency injection — no BLoC
 - `go_router` 18 for navigation with a shell + floating pill bottom nav
 - `freezed` 3 for immutable domain models and sealed event types
@@ -40,7 +40,7 @@ A cross-platform Flutter companion app for Genshin Impact players that tracks Or
 - `webview_flutter` + `webview_cookie_manager_flutter` for an in-app HoYoLab login, `http` for the unofficial `dailyNote` endpoint, `flutter_secure_storage` for the session cookie
 
 **Tooling & delivery**
-- `build_runner` codegen (Drift, Riverpod, freezed), `flutter_lints`, 37 test files across domain, repository, migration and widget layers
+- `build_runner` codegen (Drift, Riverpod, freezed), `flutter_lints`, 69 test files across domain, repository, migration, widget and platform-channel layers, plus `integration_test` on a real simulator
 - GitHub Pages hosting: a hand-built marketing landing page (HTML/CSS, vanilla JS, Three.js, GSAP + ScrollTrigger, Lenis) alongside the Flutter Web build and the signed Android APK
 
 ## 5. Long Description
@@ -96,4 +96,4 @@ The optional HoYoLab sync required reproducing HoYoLab's `ds` request signing (a
 Several features would have been easy to fake and hard to do right: run-count estimates need drop rates that have no clean public source, an official inventory API doesn't exist at all, and level 90→100 needs a non-farmable item. Rather than ship plausible-looking numbers, v1 stops at level 90, shows missing material counts instead of predicted run counts, and treats inventory as zero in totals-only mode — with those limits documented at the source. Multi-profile support follows the same rule: every table is `profileId`-scoped and every screen reads the active profile through one provider, while the two deliberate v1 gaps (background reminders and the HoYoLab credential are not per-profile) are written down where a future contributor will find them.
 
 **Shipping the same codebase three ways.**
-The app runs on Android and in the browser from one codebase, which meant confronting Drift's web story: `sqlite3.wasm` and `drift_worker.js` have to be served and configured explicitly, and the app has to degrade gracefully where native-only features (WebView login, exact alarms) aren't available. The launch page was then built by hand — Three.js hero, GSAP scroll choreography, custom cursor — with skip links for keyboard users and an in-page interactive resin calculator that mirrors the real engine's math, so visitors can verify the app's core claim before installing anything.
+The app runs on Android, iOS and in the browser from one codebase, which meant confronting Drift's web story: `sqlite3.wasm` and `drift_worker.js` have to be served and configured explicitly, and the app has to degrade gracefully where native-only features (WebView login, exact alarms) aren't available. The launch page was then built by hand — Three.js hero, GSAP scroll choreography, custom cursor — with skip links for keyboard users and an in-page interactive resin calculator that mirrors the real engine's math, so visitors can verify the app's core claim before installing anything. Adding iOS later was mostly a test of whether those boundaries had held: the domain layers, the server-day math, the absolute-UTC notification instants and the Drift migrations all moved untouched, and the codebase still contains no `Platform.isIOS` branch. Four things genuinely differed, and the most interesting one cut both ways — iOS has no inexact-alarm mode, so "approximate" would have been a lie there, and replacing the exact-alarms bool with a three-state delivery report surfaced an Android bug where a denied notification permission still rendered as "Alerts fire on time".

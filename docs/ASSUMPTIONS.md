@@ -143,3 +143,36 @@ assumption tests — they document the current guess, they do not prove it.
     rejected login is treated as an expected, non-fatal state rather than an error, and the
     whole feature is designed to work without it.
 
+## iOS
+
+20. **Restoring an iPhone backup yields the data but a disconnected HoYoLab
+    account.** `user.sqlite` lives in `Documents/`, which is included in
+    iCloud/device backups, so profiles, resin state, planner targets and wish
+    history come back. The credential does not: it is stored
+    `first_unlock_this_device`
+    (`lib/core/hoyolab/data/hoyolab_credentials_store.dart`), which is
+    `ThisDeviceOnly` and therefore ineligible for restore onto another device.
+    That is the intended trade — it is what makes "never leaves the device"
+    true — but the symptom reads like a bug, so it is recorded here. Android is
+    near-parity: `allowBackup` is unset, so Auto Backup is on by default there
+    too. **Not verified on a device**: a simulator has no lock state, so the
+    first-unlock behaviour rests on Apple's documentation rather than
+    observation.
+
+21. **Web renders the `approximate` delivery banner, which is a hold rather
+    than a claim.** The web scheduler is a no-op fake
+    (`lib/core/providers/notification_providers.dart`), so the literal answer
+    is `blocked` — but "Notifications are off. Turn them on in Settings" names
+    an action a browser user cannot take, and there is no approved web copy for
+    a third state. `approximate` keeps the rendering exactly as it was before
+    the three-state refactor. Worth revisiting if web notifications are ever
+    actually wired up.
+
+22. **Whether the Traveler's Diary accepts a cookie captured by `WKWebView` is
+    still unknown.** Entry 19 predicts the diary may reject a login that
+    `dailyNote` accepts, because it wants a different cookie the login WebView
+    may not hand back. The Darwin cookie store is a different implementation
+    from Android's `CookieManager`, so iOS could resolve this either way. It
+    needs a real HoYoLab account to find out; until then the graceful-failure
+    path (`DiaryUnauthorizedException` → "income isn't syncing" on the balance
+    card) is the only thing relied on.
