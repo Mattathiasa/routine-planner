@@ -1,8 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// The HoYoLab session cookie is a real credential — it stays in
-/// Android-Keystore-backed secure storage, never in the plain, unencrypted
-/// `user.db`, and never leaves the device.
+/// platform-backed secure storage (Android Keystore / iOS Keychain), never
+/// in the plain, unencrypted `user.db`, and never leaves the device.
 ///
 /// One credential per local profile: each account carries its own HoYoLab
 /// login, so connecting one leaves the others untouched. Keys are
@@ -31,7 +31,24 @@ abstract class HoyolabCredentialsStore {
 
 class SecureHoyolabCredentialsStore implements HoyolabCredentialsStore {
   SecureHoyolabCredentialsStore({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage(iOptions: _iosOptions);
+
+  /// `first_unlock_this_device` rather than the plugin's default `unlocked`:
+  /// the launch-time notification reconcile reads every profile's credential,
+  /// and an `unlocked` item is unreadable before the first unlock after a
+  /// reboot — which would return null and read as "not connected" rather
+  /// than failing loudly. `ThisDeviceOnly` (and `synchronizable: false`,
+  /// already the default) is what makes "never leaves the device" literally
+  /// true: the item is ineligible for iCloud Keychain and is not restored
+  /// onto a different device from a backup.
+  ///
+  /// Accessibility is part of the keychain add attributes, so changing it
+  /// later can orphan items written under the old value. No migration is
+  /// needed for this first iOS release — no iOS install has ever existed.
+  static const _iosOptions = IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock_this_device,
+    synchronizable: false,
+  );
 
   final FlutterSecureStorage _storage;
 
